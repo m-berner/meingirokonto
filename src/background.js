@@ -826,7 +826,7 @@ const useListener = () => {
             }
         }
         else {
-            console.info('BACKGROUND: No stockmanager tab found!');
+            console.info('BACKGROUND: No meingirokonto tab found!');
         }
     };
     const onConnect = (aPort) => {

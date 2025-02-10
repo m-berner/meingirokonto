@@ -738,7 +738,7 @@ const useListener = () => {
           console.error("BACKGROUND: missing fetchApi event type");
       }
     } else {
-      console.info("BACKGROUND: No stockmanager tab found!");
+      console.info("BACKGROUND: No meingirokonto tab found!");
     }
   };
   const onConnect2 = (aPort) => {

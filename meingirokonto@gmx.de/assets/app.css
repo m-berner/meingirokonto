@@ -5449,43 +5449,43 @@ textarea.v-field__input::placeholder {
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
   transition-duration: 75ms;
 }
-.put-into-background[data-v-a688a0b3] {
+.put-into-background[data-v-bdbc8c26] {
   z-index: -500;
 }
 
-.winloss[data-v-0d064159] {
+.winloss[data-v-8fbbfa9c] {
   font-weight: bold;
   color: green;
 }
-.winloss_minus[data-v-0d064159],
-.fees_minus[data-v-0d064159],
-.taxes_minus[data-v-0d064159],
-.withdrawals_minus[data-v-0d064159],
-.account_minus[data-v-0d064159],
-.earnings_minus[data-v-0d064159] {
+.winloss_minus[data-v-8fbbfa9c],
+.fees_minus[data-v-8fbbfa9c],
+.taxes_minus[data-v-8fbbfa9c],
+.withdrawals_minus[data-v-8fbbfa9c],
+.account_minus[data-v-8fbbfa9c],
+.earnings_minus[data-v-8fbbfa9c] {
   color: red;
 }
-.hide-scroll-bar[data-v-0d064159] {
+.hide-scroll-bar[data-v-8fbbfa9c] {
   overflow: hidden;
 }
 
-.cssPartnerLinks[data-v-d99fc21c] {
+.cssPartnerLinks[data-v-df94414a] {
   width: 525px;
 }
 
-.nowrap[data-v-aeafc508] {
+.nowrap[data-v-c9af5de9] {
   white-space: nowrap;
 }
 
-.background-orange[data-v-33494c95] {
+.background-orange[data-v-df8d47c0] {
   background-color: #ff9800;
 }
-.background-secondary[data-v-33494c95] {
+.background-secondary[data-v-df8d47c0] {
   /*noinspection CssUnresolvedCustomProperty*/
   background-color: var(--v-theme-secondary);
 }
 
-.v-btn--icon[data-v-b099bcb1] {
+.v-btn--icon[data-v-a83455e9] {
   border: thin solid white;
 }
 @keyframes v-shake {
@@ -23408,7 +23408,7 @@ html.overflow-y-hidden {
     float: left !important;
   }
 }
-.sheet[data-v-9a0b6edb] {
+.sheet[data-v-12b9229d] {
   overflow: auto;
   height: calc(100vh - 300px);
 }

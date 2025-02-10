@@ -26,14 +26,14 @@ export default defineConfig({
         },
         {
           src: '../meingirokonto@gmx.de',
-          dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions',
+          dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
           overwrite: true
         }
       ]
     }),
     zipPack({
       inDir: './meingirokonto@gmx.de',
-      outDir: 'C:/Users/Martin/Projekte/Privat/stockmanager/releases/firefox',
+      outDir: 'C:/Users/Martin/Projekte/Privat/meingirokonto/releases/firefox',
       outFileName: 'meingirokonto@gmx.de.xpi'
     })
   ],

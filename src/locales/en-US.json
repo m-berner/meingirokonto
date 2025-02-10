@@ -497,11 +497,11 @@
     "requests": [
       {
         "title": "Settings - Privacy - History",
-        "content": "StockManager does not work in private mode. ",
+        "content": "MeinGiroKonto does not work in private mode. ",
         "icon": ""
       },
       {
-        "title": "Start stock manager",
+        "title": "Start MeinGiroKonto",
         "content": "The symbol shown appears in the Firefox toolbar after installation. ",
         "icon": "$sm"
       }
@@ -652,14 +652,14 @@
     ]
   },
   "privacyPage": {
-    "title": "Stockmanager data protection guidelines",
+    "title": "MeinGiroKonto data protection guidelines",
     "local": {
       "title": "Local data",
-      "content": "StockManager saves all data locally in the browser. "
+      "content": "MeinGiroKonto saves all data locally in the browser. "
     },
     "public": {
       "title": "Public data",
-      "content": "StockManager uses price data from public price providers. "
+      "content": "MeinGiroKonto uses price data from public price providers. "
     },
     "connections": {
       "title": "Internet connections",

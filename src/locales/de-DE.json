@@ -492,16 +492,16 @@
     }
   },
   "helpPage": {
-    "title": "Stockmanager Hilfe",
+    "title": "MeinGiroKonto Hilfe",
     "requestsTitle": "Anforderungen",
     "requests": [
       {
         "title": "Einstellungen - Datenschutz - Chronik",
-        "content": "StockManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
+        "content": "MeinGiroKonto funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
         "icon": ""
       },
       {
-        "title": "Stockmanager starten",
+        "title": "MeinGiroKonto starten",
         "content": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden.",
         "icon": "$sm"
       }
@@ -580,7 +580,7 @@
       },
       {
         "title": "Einstellungen",
-        "content": "Klicken um das Stockmanager Einstellungen-Tab anzuzeigen.",
+        "content": "Klicken um das MeinGiroKonto Einstellungen-Tab anzuzeigen.",
         "icon": "$settings"
       }
     ],
@@ -652,14 +652,14 @@
     ]
   },
   "privacyPage": {
-    "title": "Stockmanager Datenschutz Richtlinien",
+    "title": "MeinGiroKonto Datenschutz Richtlinien",
     "local": {
       "title": "Lokale Daten",
-      "content": "StockManager speichert alle Daten lokal im Browser. Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. StockManager personalisiert keine Daten."
+      "content": "MeinGiroKonto speichert alle Daten lokal im Browser. Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. MeinGiroKonto personalisiert keine Daten."
     },
     "public": {
       "title": "Öffentliche Daten",
-      "content": "StockManager verwendet Kursdaten von öffentlichen Kursanbietern. Diese Daten werden über das Internet abgerufen. Die Kursanbieter können die Daten jederzeit ändern oder abschalten. StockManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden Aktien-Kürzel, ISIN bzw. WKN über das Internet versendet. Andere Daten werden nicht weitergegeben."
+      "content": "MeinGiroKonto verwendet Kursdaten von öffentlichen Kursanbietern. Diese Daten werden über das Internet abgerufen. Die Kursanbieter können die Daten jederzeit ändern oder abschalten. MeinGiroKonto übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden Aktien-Kürzel, ISIN bzw. WKN über das Internet versendet. Andere Daten werden nicht weitergegeben."
     },
     "connections": {
       "title": "Internetverbindungen",
@@ -675,7 +675,7 @@
     }
   },
   "partnerPage": {
-    "title": "Stockmanager Partner",
+    "title": "MeinGiroKonto Partner",
     "buttonText": "Öffnen",
     "linkData": [
       {

@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 
 declare global {
@@ -425,8 +425,8 @@ export const useApp = (): IUseApp => {
       MILLIPERMIN: 60000
     },
     DB: {
-      BKFN: 'stockmanager.json',
-      NAME: 'stockmanager.db',
+      BKFN: 'meingirokonto.json',
+      NAME: 'meingirokonto.db',
       RECORD_TYPES: {
         // do not change! (part of database records)
         BUY: 1,
@@ -857,7 +857,7 @@ export const useApp = (): IUseApp => {
       COPYRIGHT: '2013-2025 Martin Berner',
       FETCHTO: 20,
       DELAY: 600,
-      EMAIL: 'mailto:stockmanager@gmx.de',
+      EMAIL: 'mailto:meingirokonto@gmx.de',
       GET: 'GET',
       HTMLENTITY:
         '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
@@ -1131,7 +1131,7 @@ export const useApp = (): IUseApp => {
         {
           type: 'basic',
           iconUrl: '_assets/icon16.png',
-          title: 'Stockmanager',
+          title: 'MeinGiroKonto',
           message: msg
         }
       await browser.notifications.create(notificationOption)

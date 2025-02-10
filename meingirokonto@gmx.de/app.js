@@ -102,13 +102,13 @@ const remove = (arr, el) => {
     arr.splice(i, 1);
   }
 };
-const hasOwnProperty$2 = Object.prototype.hasOwnProperty;
-const hasOwn$1 = (val, key) => hasOwnProperty$2.call(val, key);
+const hasOwnProperty$3 = Object.prototype.hasOwnProperty;
+const hasOwn$2 = (val, key) => hasOwnProperty$3.call(val, key);
 const isArray$3 = Array.isArray;
 const isMap = (val) => toTypeString$2(val) === "[object Map]";
 const isSet = (val) => toTypeString$2(val) === "[object Set]";
 const isFunction$2 = (val) => typeof val === "function";
-const isString$3 = (val) => typeof val === "string";
+const isString$2 = (val) => typeof val === "string";
 const isSymbol = (val) => typeof val === "symbol";
 const isObject$4 = (val) => val !== null && typeof val === "object";
 const isPromise$1 = (val) => {
@@ -120,7 +120,7 @@ const toRawType = (value) => {
   return toTypeString$2(value).slice(8, -1);
 };
 const isPlainObject$4 = (val) => toTypeString$2(val) === "[object Object]";
-const isIntegerKey = (key) => isString$3(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
+const isIntegerKey = (key) => isString$2(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
 const isReservedProp = /* @__PURE__ */ makeMap(
   // the leading comma is intentional so empty string "" is also included
   ",key,ref,ref_for,ref_key,onVnodeBeforeMount,onVnodeMounted,onVnodeBeforeUpdate,onVnodeUpdated,onVnodeBeforeUnmount,onVnodeUnmounted"
@@ -170,7 +170,7 @@ const looseToNumber = (val) => {
   return isNaN(n) ? val : n;
 };
 const toNumber = (val) => {
-  const n = isString$3(val) ? Number(val) : NaN;
+  const n = isString$2(val) ? Number(val) : NaN;
   return isNaN(n) ? val : n;
 };
 let _globalThis$2;
@@ -182,7 +182,7 @@ function normalizeStyle(value) {
     const res = {};
     for (let i = 0; i < value.length; i++) {
       const item = value[i];
-      const normalized = isString$3(item) ? parseStringStyle(item) : normalizeStyle(item);
+      const normalized = isString$2(item) ? parseStringStyle(item) : normalizeStyle(item);
       if (normalized) {
         for (const key in normalized) {
           res[key] = normalized[key];
@@ -190,7 +190,7 @@ function normalizeStyle(value) {
       }
     }
     return res;
-  } else if (isString$3(value) || isObject$4(value)) {
+  } else if (isString$2(value) || isObject$4(value)) {
     return value;
   }
 }
@@ -209,7 +209,7 @@ function parseStringStyle(cssText) {
 }
 function normalizeClass(value) {
   let res = "";
-  if (isString$3(value)) {
+  if (isString$2(value)) {
     res = value;
   } else if (isArray$3(value)) {
     for (let i = 0; i < value.length; i++) {
@@ -236,7 +236,7 @@ const isRef$1 = (val) => {
   return !!(val && val["__v_isRef"] === true);
 };
 const toDisplayString$1 = (val) => {
-  return isString$3(val) ? val : val == null ? "" : isArray$3(val) || isObject$4(val) && (val.toString === objectToString$2 || !isFunction$2(val.toString)) ? isRef$1(val) ? toDisplayString$1(val.value) : JSON.stringify(val, replacer, 2) : String(val);
+  return isString$2(val) ? val : val == null ? "" : isArray$3(val) || isObject$4(val) && (val.toString === objectToString$2 || !isFunction$2(val.toString)) ? isRef$1(val) ? toDisplayString$1(val.value) : JSON.stringify(val, replacer, 2) : String(val);
 };
 const replacer = (_key, val) => {
   if (isRef$1(val)) {
@@ -1026,7 +1026,7 @@ const isNonTrackableKeys = /* @__PURE__ */ makeMap(`__proto__,__v_isRef,__isVue`
 const builtInSymbols = new Set(
   /* @__PURE__ */ Object.getOwnPropertyNames(Symbol).filter((key) => key !== "arguments" && key !== "caller").map((key) => Symbol[key]).filter(isSymbol)
 );
-function hasOwnProperty$1(key) {
+function hasOwnProperty$2(key) {
   if (!isSymbol(key)) key = String(key);
   const obj = toRaw(this);
   track(obj, "has", key);
@@ -1061,7 +1061,7 @@ class BaseReactiveHandler {
         return fn;
       }
       if (key === "hasOwnProperty") {
-        return hasOwnProperty$1;
+        return hasOwnProperty$2;
       }
     }
     const res = Reflect.get(
@@ -1111,7 +1111,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
         }
       }
     }
-    const hadKey = isArray$3(target) && isIntegerKey(key) ? Number(key) < target.length : hasOwn$1(target, key);
+    const hadKey = isArray$3(target) && isIntegerKey(key) ? Number(key) < target.length : hasOwn$2(target, key);
     const result = Reflect.set(
       target,
       key,
@@ -1128,7 +1128,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
     return result;
   }
   deleteProperty(target, key) {
-    const hadKey = hasOwn$1(target, key);
+    const hadKey = hasOwn$2(target, key);
     target[key];
     const result = Reflect.deleteProperty(target, key);
     if (result && hadKey) {
@@ -1348,7 +1348,7 @@ function createInstrumentationGetter(isReadonly2, shallow) {
       return target;
     }
     return Reflect.get(
-      hasOwn$1(instrumentations, key) && key in target ? instrumentations : target,
+      hasOwn$2(instrumentations, key) && key in target ? instrumentations : target,
       key,
       receiver
     );
@@ -1468,7 +1468,7 @@ function toRaw(observed) {
   return raw ? toRaw(raw) : observed;
 }
 function markRaw(value) {
-  if (!hasOwn$1(value, "__v_skip") && Object.isExtensible(value)) {
+  if (!hasOwn$2(value, "__v_skip") && Object.isExtensible(value)) {
     def(value, "__v_skip", true);
   }
   return value;
@@ -1921,7 +1921,7 @@ function formatProps(props) {
   return res;
 }
 function formatProp(key, value, raw) {
-  if (isString$3(value)) {
+  if (isString$2(value)) {
     value = JSON.stringify(value);
     return raw ? value : [`${key}=${value}`];
   } else if (typeof value === "number" || typeof value === "boolean" || value == null) {
@@ -2228,7 +2228,7 @@ const isTargetSVG = (target) => typeof SVGElement !== "undefined" && target inst
 const isTargetMathML = (target) => typeof MathMLElement === "function" && target instanceof MathMLElement;
 const resolveTarget = (props, select) => {
   const targetSelector = props && props.to;
-  if (isString$3(targetSelector)) {
+  if (isString$2(targetSelector)) {
     if (!select) {
       return null;
     } else {
@@ -2939,10 +2939,10 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   const setupState = owner.setupState;
   const rawSetupState = toRaw(setupState);
   const canSetSetupRef = setupState === EMPTY_OBJ ? () => false : (key) => {
-    return hasOwn$1(rawSetupState, key);
+    return hasOwn$2(rawSetupState, key);
   };
   if (oldRef != null && oldRef !== ref3) {
-    if (isString$3(oldRef)) {
+    if (isString$2(oldRef)) {
       refs[oldRef] = null;
       if (canSetSetupRef(oldRef)) {
         setupState[oldRef] = null;
@@ -2954,7 +2954,7 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   if (isFunction$2(ref3)) {
     callWithErrorHandling(ref3, owner, 12, [value, refs]);
   } else {
-    const _isString = isString$3(ref3);
+    const _isString = isString$2(ref3);
     const _isRef = isRef(ref3);
     if (_isString || _isRef) {
       const doSet = () => {
@@ -3089,7 +3089,7 @@ function resolveComponent(name, maybeSelfReference) {
 }
 const NULL_DYNAMIC_COMPONENT = Symbol.for("v-ndc");
 function resolveDynamicComponent(component) {
-  if (isString$3(component)) {
+  if (isString$2(component)) {
     return resolveAsset(COMPONENTS, component, false) || component;
   } else {
     return component || NULL_DYNAMIC_COMPONENT;
@@ -3130,7 +3130,7 @@ function renderList(source, renderItem, cache2, index) {
   let ret;
   const cached = cache2;
   const sourceIsArray = isArray$3(source);
-  if (sourceIsArray || isString$3(source)) {
+  if (sourceIsArray || isString$2(source)) {
     const sourceIsReactiveArray = sourceIsArray && isReactive(source);
     let needsWrap = false;
     if (sourceIsReactiveArray) {
@@ -3198,7 +3198,7 @@ const publicPropertiesMap = (
     $watch: (i) => instanceWatch.bind(i)
   })
 );
-const hasSetupBinding = (state, key) => state !== EMPTY_OBJ && !state.__isScriptSetup && hasOwn$1(state, key);
+const hasSetupBinding = (state, key) => state !== EMPTY_OBJ && !state.__isScriptSetup && hasOwn$2(state, key);
 const PublicInstanceProxyHandlers = {
   get({ _: instance }, key) {
     if (key === "__v_skip") {
@@ -3222,17 +3222,17 @@ const PublicInstanceProxyHandlers = {
       } else if (hasSetupBinding(setupState, key)) {
         accessCache[key] = 1;
         return setupState[key];
-      } else if (data !== EMPTY_OBJ && hasOwn$1(data, key)) {
+      } else if (data !== EMPTY_OBJ && hasOwn$2(data, key)) {
         accessCache[key] = 2;
         return data[key];
       } else if (
         // only cache other properties when instance has declared (thus stable)
         // props
-        (normalizedProps = instance.propsOptions[0]) && hasOwn$1(normalizedProps, key)
+        (normalizedProps = instance.propsOptions[0]) && hasOwn$2(normalizedProps, key)
       ) {
         accessCache[key] = 3;
         return props[key];
-      } else if (ctx !== EMPTY_OBJ && hasOwn$1(ctx, key)) {
+      } else if (ctx !== EMPTY_OBJ && hasOwn$2(ctx, key)) {
         accessCache[key] = 4;
         return ctx[key];
       } else if (shouldCacheAccess) {
@@ -3251,12 +3251,12 @@ const PublicInstanceProxyHandlers = {
       (cssModule = type.__cssModules) && (cssModule = cssModule[key])
     ) {
       return cssModule;
-    } else if (ctx !== EMPTY_OBJ && hasOwn$1(ctx, key)) {
+    } else if (ctx !== EMPTY_OBJ && hasOwn$2(ctx, key)) {
       accessCache[key] = 4;
       return ctx[key];
     } else if (
       // global properties
-      globalProperties = appContext.config.globalProperties, hasOwn$1(globalProperties, key)
+      globalProperties = appContext.config.globalProperties, hasOwn$2(globalProperties, key)
     ) {
       {
         return globalProperties[key];
@@ -3268,10 +3268,10 @@ const PublicInstanceProxyHandlers = {
     if (hasSetupBinding(setupState, key)) {
       setupState[key] = value;
       return true;
-    } else if (data !== EMPTY_OBJ && hasOwn$1(data, key)) {
+    } else if (data !== EMPTY_OBJ && hasOwn$2(data, key)) {
       data[key] = value;
       return true;
-    } else if (hasOwn$1(instance.props, key)) {
+    } else if (hasOwn$2(instance.props, key)) {
       return false;
     }
     if (key[0] === "$" && key.slice(1) in instance) {
@@ -3287,12 +3287,12 @@ const PublicInstanceProxyHandlers = {
     _: { data, setupState, accessCache, ctx, appContext, propsOptions }
   }, key) {
     let normalizedProps;
-    return !!accessCache[key] || data !== EMPTY_OBJ && hasOwn$1(data, key) || hasSetupBinding(setupState, key) || (normalizedProps = propsOptions[0]) && hasOwn$1(normalizedProps, key) || hasOwn$1(ctx, key) || hasOwn$1(publicPropertiesMap, key) || hasOwn$1(appContext.config.globalProperties, key);
+    return !!accessCache[key] || data !== EMPTY_OBJ && hasOwn$2(data, key) || hasSetupBinding(setupState, key) || (normalizedProps = propsOptions[0]) && hasOwn$2(normalizedProps, key) || hasOwn$2(ctx, key) || hasOwn$2(publicPropertiesMap, key) || hasOwn$2(appContext.config.globalProperties, key);
   },
   defineProperty(target, key, descriptor) {
     if (descriptor.get != null) {
       target._.accessCache[key] = 0;
-    } else if (hasOwn$1(descriptor, "value")) {
+    } else if (hasOwn$2(descriptor, "value")) {
       this.set(target, key, descriptor.value, null);
     }
     return Reflect.defineProperty(target, key, descriptor);
@@ -3484,7 +3484,7 @@ function callHook$1(hook, instance, type) {
 }
 function createWatcher(raw, ctx, publicThis, key) {
   let getter = key.includes(".") ? createPathGetter(publicThis, key) : () => publicThis[key];
-  if (isString$3(raw)) {
+  if (isString$2(raw)) {
     const handler = ctx[raw];
     if (isFunction$2(handler)) {
       {
@@ -3845,7 +3845,7 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
         }
         const value = rawProps[key];
         if (options) {
-          if (hasOwn$1(attrs, key)) {
+          if (hasOwn$2(attrs, key)) {
             if (value !== attrs[key]) {
               attrs[key] = value;
               hasAttrsChanged = true;
@@ -3876,9 +3876,9 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
     let kebabKey;
     for (const key in rawCurrentProps) {
       if (!rawProps || // for camelCase
-      !hasOwn$1(rawProps, key) && // it's possible the original props was passed in as kebab-case
+      !hasOwn$2(rawProps, key) && // it's possible the original props was passed in as kebab-case
       // and converted to camelCase (#955)
-      ((kebabKey = hyphenate(key)) === key || !hasOwn$1(rawProps, kebabKey))) {
+      ((kebabKey = hyphenate(key)) === key || !hasOwn$2(rawProps, kebabKey))) {
         if (options) {
           if (rawPrevProps && // for camelCase
           (rawPrevProps[key] !== void 0 || // for kebab-case
@@ -3899,7 +3899,7 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
     }
     if (attrs !== rawCurrentProps) {
       for (const key in attrs) {
-        if (!rawProps || !hasOwn$1(rawProps, key) && true) {
+        if (!rawProps || !hasOwn$2(rawProps, key) && true) {
           delete attrs[key];
           hasAttrsChanged = true;
         }
@@ -3921,7 +3921,7 @@ function setFullProps(instance, rawProps, props, attrs) {
       }
       const value = rawProps[key];
       let camelKey;
-      if (options && hasOwn$1(options, camelKey = camelize(key))) {
+      if (options && hasOwn$2(options, camelKey = camelize(key))) {
         if (!needCastKeys || !needCastKeys.includes(camelKey)) {
           props[camelKey] = value;
         } else {
@@ -3946,7 +3946,7 @@ function setFullProps(instance, rawProps, props, attrs) {
         key,
         castValues[key],
         instance,
-        !hasOwn$1(castValues, key)
+        !hasOwn$2(castValues, key)
       );
     }
   }
@@ -3955,7 +3955,7 @@ function setFullProps(instance, rawProps, props, attrs) {
 function resolvePropValue(options, props, key, value, instance, isAbsent) {
   const opt = options[key];
   if (opt != null) {
-    const hasDefault = hasOwn$1(opt, "default");
+    const hasDefault = hasOwn$2(opt, "default");
     if (hasDefault && value === void 0) {
       const defaultValue = opt.default;
       if (opt.type !== Function && !opt.skipFactory && isFunction$2(defaultValue)) {
@@ -4065,7 +4065,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
           1
           /* shouldCastTrue */
         ] = shouldCastTrue;
-        if (shouldCast || hasOwn$1(prop, "default")) {
+        if (shouldCast || hasOwn$2(prop, "default")) {
           needCastKeys.push(normalizedKey);
         }
       }
@@ -5559,7 +5559,7 @@ function doWatch(source, cb, options = EMPTY_OBJ) {
 }
 function instanceWatch(source, value, options) {
   const publicThis = this.proxy;
-  const getter = isString$3(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
+  const getter = isString$2(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
   let cb;
   if (isFunction$2(value)) {
     cb = value;
@@ -5593,7 +5593,7 @@ function emit(instance, event, ...rawArgs) {
   const modifiers = isModelListener2 && getModelModifiers(props, event.slice(7));
   if (modifiers) {
     if (modifiers.trim) {
-      args = rawArgs.map((a) => isString$3(a) ? a.trim() : a);
+      args = rawArgs.map((a) => isString$2(a) ? a.trim() : a);
     }
     if (modifiers.number) {
       args = rawArgs.map(looseToNumber);
@@ -5677,7 +5677,7 @@ function isEmitListener(options, key) {
     return false;
   }
   key = key.slice(2).replace(/Once$/, "");
-  return hasOwn$1(options, key[0].toLowerCase() + key.slice(1)) || hasOwn$1(options, hyphenate(key)) || hasOwn$1(options, key);
+  return hasOwn$2(options, key[0].toLowerCase() + key.slice(1)) || hasOwn$2(options, hyphenate(key)) || hasOwn$2(options, key);
 }
 function markAttrsAccessed() {
 }
@@ -5951,7 +5951,7 @@ const normalizeRef = ({
   if (typeof ref3 === "number") {
     ref3 = "" + ref3;
   }
-  return ref3 != null ? isString$3(ref3) || isRef(ref3) || isFunction$2(ref3) ? { i: currentRenderingInstance, r: ref3, k: ref_key, f: !!ref_for } : ref3 : null;
+  return ref3 != null ? isString$2(ref3) || isRef(ref3) || isFunction$2(ref3) ? { i: currentRenderingInstance, r: ref3, k: ref_key, f: !!ref_for } : ref3 : null;
 };
 function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === Fragment ? 0 : 1, isBlockNode = false, needFullChildrenNormalization = false) {
   const vnode = {
@@ -5989,7 +5989,7 @@ function createBaseVNode(type, props = null, children = null, patchFlag = 0, dyn
       type.normalize(vnode);
     }
   } else if (children) {
-    vnode.shapeFlag |= isString$3(children) ? 8 : 16;
+    vnode.shapeFlag |= isString$2(children) ? 8 : 16;
   }
   if (isBlockTreeEnabled > 0 && // avoid a block node from tracking itself
   !isBlockNode && // has current parent block
@@ -6035,7 +6035,7 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
   if (props) {
     props = guardReactiveProps(props);
     let { class: klass, style } = props;
-    if (klass && !isString$3(klass)) {
+    if (klass && !isString$2(klass)) {
       props.class = normalizeClass(klass);
     }
     if (isObject$4(style)) {
@@ -6045,7 +6045,7 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
       props.style = normalizeStyle(style);
     }
   }
-  const shapeFlag = isString$3(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$4(type) ? 4 : isFunction$2(type) ? 2 : 0;
+  const shapeFlag = isString$2(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$4(type) ? 4 : isFunction$2(type) ? 2 : 0;
   return createBaseVNode(
     type,
     props,
@@ -6941,11 +6941,11 @@ const CSS_VAR_TEXT = Symbol("");
 const displayRE = /(^|;)\s*display\s*:/;
 function patchStyle(el, prev, next) {
   const style = el.style;
-  const isCssString = isString$3(next);
+  const isCssString = isString$2(next);
   let hasControlledDisplay = false;
   if (next && !isCssString) {
     if (prev) {
-      if (!isString$3(prev)) {
+      if (!isString$2(prev)) {
         for (const key in prev) {
           if (next[key] == null) {
             setStyle(style, key, "");
@@ -7186,7 +7186,7 @@ const patchProp = (el, key, prevValue, nextValue, namespace, parentComponent) =>
     }
   } else if (
     // #11081 force set props for possible async custom element
-    el._isVueCE && (/[A-Z]/.test(key) || !isString$3(nextValue))
+    el._isVueCE && (/[A-Z]/.test(key) || !isString$2(nextValue))
   ) {
     patchDOMProp(el, camelize(key), nextValue, parentComponent, key);
   } else {
@@ -7226,7 +7226,7 @@ function shouldSetAsProp(el, key, value, isSVG) {
       return false;
     }
   }
-  if (isNativeOn(key) && isString$3(value)) {
+  if (isNativeOn(key) && isString$2(value)) {
     return false;
   }
   return key in el;
@@ -7490,7 +7490,7 @@ function resolveRootNamespace(container) {
   }
 }
 function normalizeContainer(container) {
-  if (isString$3(container)) {
+  if (isString$2(container)) {
     const res = document.querySelector(container);
     return res;
   }
@@ -9237,7 +9237,7 @@ const skipHydrateSymbol = (
 function shouldHydrate(obj) {
   return !isPlainObject$2(obj) || !obj.hasOwnProperty(skipHydrateSymbol);
 }
-const { assign: assign$4 } = Object;
+const { assign: assign$3 } = Object;
 function isComputed(o) {
   return !!(isRef(o) && o.effect);
 }
@@ -9252,7 +9252,7 @@ function createOptionsStore(id, options, pinia2, hot) {
       }
     }
     const localState = toRefs(pinia2.state.value[id]);
-    return assign$4(localState, actions, Object.keys(getters || {}).reduce((computedGetters, name) => {
+    return assign$3(localState, actions, Object.keys(getters || {}).reduce((computedGetters, name) => {
       computedGetters[name] = markRaw(computed(() => {
         setActivePinia(pinia2);
         const store2 = pinia2._s.get(id);
@@ -9266,7 +9266,7 @@ function createOptionsStore(id, options, pinia2, hot) {
 }
 function createSetupStore($id, setup, options = {}, pinia2, hot, isOptionsStore) {
   let scope;
-  const optionsForPlugin = assign$4({ actions: {} }, options);
+  const optionsForPlugin = assign$3({ actions: {} }, options);
   const $subscribeOptions = { deep: true };
   let isListening;
   let isSyncListening;
@@ -9313,7 +9313,7 @@ function createSetupStore($id, setup, options = {}, pinia2, hot, isOptionsStore)
     const { state } = options;
     const newState = state ? state() : {};
     this.$patch(($state) => {
-      assign$4($state, newState);
+      assign$3($state, newState);
     });
   } : (
     /* istanbul ignore next */
@@ -9388,7 +9388,7 @@ function createSetupStore($id, setup, options = {}, pinia2, hot, isOptionsStore)
             events: debuggerEvents
           }, state);
         }
-      }, assign$4({}, $subscribeOptions, options2)));
+      }, assign$3({}, $subscribeOptions, options2)));
       return removeSubscription;
     },
     $dispose
@@ -9421,20 +9421,20 @@ function createSetupStore($id, setup, options = {}, pinia2, hot, isOptionsStore)
     } else ;
   }
   {
-    assign$4(store, setupStore);
-    assign$4(toRaw(store), setupStore);
+    assign$3(store, setupStore);
+    assign$3(toRaw(store), setupStore);
   }
   Object.defineProperty(store, "$state", {
     get: () => pinia2.state.value[$id],
     set: (state) => {
       $patch(($state) => {
-        assign$4($state, state);
+        assign$3($state, state);
       });
     }
   });
   pinia2._p.forEach((extender) => {
     {
-      assign$4(store, scope.run(() => extender({
+      assign$3(store, scope.run(() => extender({
         store,
         app: pinia2._a,
         pinia: pinia2,
@@ -26040,86 +26040,45 @@ const useRecordsStore = /* @__PURE__ */ defineStore("records", {
 });
 console.log("--- records.js ---");
 /*!
-  * shared v10.0.4
-  * (c) 2024 kazuya kawaguchi
-  * Released under the MIT License.
-  */
-const inBrowser = typeof window !== "undefined";
-const makeSymbol = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
-const isNumber$1 = (val) => typeof val === "number" && isFinite(val);
-const isRegExp$1 = (val) => toTypeString$1(val) === "[object RegExp]";
-const isEmptyObject$1 = (val) => isPlainObject$1(val) && Object.keys(val).length === 0;
-const assign$3 = Object.assign;
-let _globalThis$1;
-const getGlobalThis$1 = () => {
-  return _globalThis$1 || (_globalThis$1 = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {});
-};
-const hasOwnProperty = Object.prototype.hasOwnProperty;
-function hasOwn(obj, key) {
-  return hasOwnProperty.call(obj, key);
-}
-const isArray$2 = Array.isArray;
-const isFunction$1 = (val) => typeof val === "function";
-const isString$2 = (val) => typeof val === "string";
-const isBoolean$1 = (val) => typeof val === "boolean";
-const isObject$2 = (val) => val !== null && typeof val === "object";
-const objectToString$1 = Object.prototype.toString;
-const toTypeString$1 = (value) => objectToString$1.call(value);
-const isPlainObject$1 = (val) => toTypeString$1(val) === "[object Object]";
-const isNotObjectOrIsArray = (val) => !isObject$2(val) || isArray$2(val);
-function deepCopy(src, des) {
-  if (isNotObjectOrIsArray(src) || isNotObjectOrIsArray(des)) {
-    throw new Error("Invalid value");
-  }
-  const stack2 = [{ src, des }];
-  while (stack2.length) {
-    const { src: src2, des: des2 } = stack2.pop();
-    Object.keys(src2).forEach((key) => {
-      if (isObject$2(src2[key]) && !isObject$2(des2[key])) {
-        des2[key] = Array.isArray(src2[key]) ? [] : {};
-      }
-      if (isNotObjectOrIsArray(des2[key]) || isNotObjectOrIsArray(src2[key])) {
-        des2[key] = src2[key];
-      } else {
-        stack2.push({ src: src2[key], des: des2[key] });
-      }
-    });
-  }
-}
-/*!
-  * shared v10.0.4
-  * (c) 2024 kazuya kawaguchi
+  * shared v11.1.1
+  * (c) 2025 kazuya kawaguchi
   * Released under the MIT License.
   */
 const generateFormatCacheKey = (locale, key, source) => friendlyJSONstringify({ l: locale, k: key, s: source });
 const friendlyJSONstringify = (json) => JSON.stringify(json).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029").replace(/\u0027/g, "\\u0027");
-const isNumber = (val) => typeof val === "number" && isFinite(val);
-const isDate = (val) => toTypeString(val) === "[object Date]";
-const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
-const isEmptyObject = (val) => isPlainObject(val) && Object.keys(val).length === 0;
+const isNumber$1 = (val) => typeof val === "number" && isFinite(val);
+const isDate = (val) => toTypeString$1(val) === "[object Date]";
+const isRegExp$1 = (val) => toTypeString$1(val) === "[object RegExp]";
+const isEmptyObject$1 = (val) => isPlainObject$1(val) && Object.keys(val).length === 0;
 const assign$2 = Object.assign;
-let _globalThis;
-const getGlobalThis = () => {
-  return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {});
+const _create$1 = Object.create;
+const create$1 = (obj = null) => _create$1(obj);
+let _globalThis$1;
+const getGlobalThis$1 = () => {
+  return _globalThis$1 || (_globalThis$1 = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : create$1());
 };
 function escapeHtml(rawText) {
   return rawText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
-const isArray$1 = Array.isArray;
-const isFunction = (val) => typeof val === "function";
+const hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+function hasOwn$1(obj, key) {
+  return hasOwnProperty$1.call(obj, key);
+}
+const isArray$2 = Array.isArray;
+const isFunction$1 = (val) => typeof val === "function";
 const isString$1 = (val) => typeof val === "string";
-const isBoolean = (val) => typeof val === "boolean";
-const isObject$1 = (val) => val !== null && typeof val === "object";
+const isBoolean$1 = (val) => typeof val === "boolean";
+const isObject$2 = (val) => val !== null && typeof val === "object";
 const isPromise = (val) => {
-  return isObject$1(val) && isFunction(val.then) && isFunction(val.catch);
+  return isObject$2(val) && isFunction$1(val.then) && isFunction$1(val.catch);
 };
-const objectToString = Object.prototype.toString;
-const toTypeString = (value) => objectToString.call(value);
-const isPlainObject = (val) => toTypeString(val) === "[object Object]";
+const objectToString$1 = Object.prototype.toString;
+const toTypeString$1 = (value) => objectToString$1.call(value);
+const isPlainObject$1 = (val) => toTypeString$1(val) === "[object Object]";
 const toDisplayString = (val) => {
-  return val == null ? "" : isArray$1(val) || isPlainObject(val) && val.toString === objectToString ? JSON.stringify(val, null, 2) : String(val);
+  return val == null ? "" : isArray$2(val) || isPlainObject$1(val) && val.toString === objectToString$1 ? JSON.stringify(val, null, 2) : String(val);
 };
-function join$1(items, separator = "") {
+function join(items, separator = "") {
   return items.reduce((str, item, index) => index === 0 ? str + item : str + separator + item, "");
 }
 function warn(msg, err) {
@@ -26131,18 +26090,8 @@ function warn(msg, err) {
   }
 }
 /*!
-  * shared v10.0.4
-  * (c) 2024 kazuya kawaguchi
-  * Released under the MIT License.
-  */
-const assign$1 = Object.assign;
-const isString = (val) => typeof val === "string";
-function join(items, separator = "") {
-  return items.reduce((str, item, index) => index === 0 ? str + item : str + separator + item, "");
-}
-/*!
-  * message-compiler v10.0.4
-  * (c) 2024 kazuya kawaguchi
+  * message-compiler v11.1.1
+  * (c) 2025 kazuya kawaguchi
   * Released under the MIT License.
   */
 function createPosition(line, column, offset2) {
@@ -27147,7 +27096,7 @@ function createParser(options = {}) {
     }
   }
   function parse2(source) {
-    const tokenizer = createTokenizer(source, assign$1({}, options));
+    const tokenizer = createTokenizer(source, assign$2({}, options));
     const context = tokenizer.context();
     const node = startNode(0, context.offset, context.startLoc);
     if (location2 && node.loc) {
@@ -27514,8 +27463,8 @@ function generateNode(generator, node) {
   }
 }
 const generate = (ast, options = {}) => {
-  const mode = isString(options.mode) ? options.mode : "normal";
-  const filename = isString(options.filename) ? options.filename : "message.intl";
+  const mode = isString$1(options.mode) ? options.mode : "normal";
+  const filename = isString$1(options.filename) ? options.filename : "message.intl";
   !!options.sourceMap;
   const breakLineCode = options.breakLineCode != null ? options.breakLineCode : mode === "arrow" ? ";" : "\n";
   const needIndent = options.needIndent ? options.needIndent : mode !== "arrow";
@@ -27545,7 +27494,7 @@ const generate = (ast, options = {}) => {
   };
 };
 function baseCompile$1(source, options = {}) {
-  const assignedOptions = assign$1({}, options);
+  const assignedOptions = assign$2({}, options);
   const jit = !!assignedOptions.jit;
   const enalbeMinify = !!assignedOptions.minify;
   const enambeOptimize = assignedOptions.optimize == null ? true : assignedOptions.optimize;
@@ -27561,13 +27510,13 @@ function baseCompile$1(source, options = {}) {
   }
 }
 /*!
-  * core-base v10.0.4
-  * (c) 2024 kazuya kawaguchi
+  * core-base v11.1.1
+  * (c) 2025 kazuya kawaguchi
   * Released under the MIT License.
   */
 function initFeatureFlags$1() {
   if (typeof __INTLIFY_PROD_DEVTOOLS__ !== "boolean") {
-    getGlobalThis().__INTLIFY_PROD_DEVTOOLS__ = false;
+    getGlobalThis$1().__INTLIFY_PROD_DEVTOOLS__ = false;
   }
 }
 function format(ast) {
@@ -27575,10 +27524,17 @@ function format(ast) {
   return msg;
 }
 function formatParts(ctx, ast) {
-  const body = ast.b || ast.body;
-  if ((body.t || body.type) === 1) {
+  const body = resolveBody(ast);
+  if (body == null) {
+    throw createUnhandleNodeError(
+      0
+      /* NodeTypes.Resource */
+    );
+  }
+  const type = resolveType(body);
+  if (type === 1) {
     const plural = body;
-    const cases = plural.c || plural.cases;
+    const cases = resolveCases(plural);
     return ctx.plural(cases.reduce((messages2, c) => [
       ...messages2,
       formatMessageParts(ctx, c)
@@ -27587,54 +27543,122 @@ function formatParts(ctx, ast) {
     return formatMessageParts(ctx, body);
   }
 }
+const PROPS_BODY = ["b", "body"];
+function resolveBody(node) {
+  return resolveProps(node, PROPS_BODY);
+}
+const PROPS_CASES = ["c", "cases"];
+function resolveCases(node) {
+  return resolveProps(node, PROPS_CASES, []);
+}
 function formatMessageParts(ctx, node) {
-  const _static = node.s || node.static;
-  if (_static != null) {
-    return ctx.type === "text" ? _static : ctx.normalize([_static]);
+  const static_ = resolveStatic(node);
+  if (static_ != null) {
+    return ctx.type === "text" ? static_ : ctx.normalize([static_]);
   } else {
-    const messages2 = (node.i || node.items).reduce((acm, c) => [...acm, formatMessagePart(ctx, c)], []);
+    const messages2 = resolveItems(node).reduce((acm, c) => [...acm, formatMessagePart(ctx, c)], []);
     return ctx.normalize(messages2);
   }
 }
+const PROPS_STATIC = ["s", "static"];
+function resolveStatic(node) {
+  return resolveProps(node, PROPS_STATIC);
+}
+const PROPS_ITEMS = ["i", "items"];
+function resolveItems(node) {
+  return resolveProps(node, PROPS_ITEMS, []);
+}
 function formatMessagePart(ctx, node) {
-  const type = node.t || node.type;
+  const type = resolveType(node);
   switch (type) {
     case 3: {
-      const text = node;
-      return text.v || text.value;
+      return resolveValue$1(node, type);
     }
     case 9: {
-      const literal = node;
-      return literal.v || literal.value;
+      return resolveValue$1(node, type);
     }
     case 4: {
       const named = node;
-      return ctx.interpolate(ctx.named(named.k || named.key));
+      if (hasOwn$1(named, "k") && named.k) {
+        return ctx.interpolate(ctx.named(named.k));
+      }
+      if (hasOwn$1(named, "key") && named.key) {
+        return ctx.interpolate(ctx.named(named.key));
+      }
+      throw createUnhandleNodeError(type);
     }
     case 5: {
       const list = node;
-      return ctx.interpolate(ctx.list(list.i != null ? list.i : list.index));
+      if (hasOwn$1(list, "i") && isNumber$1(list.i)) {
+        return ctx.interpolate(ctx.list(list.i));
+      }
+      if (hasOwn$1(list, "index") && isNumber$1(list.index)) {
+        return ctx.interpolate(ctx.list(list.index));
+      }
+      throw createUnhandleNodeError(type);
     }
     case 6: {
       const linked = node;
-      const modifier = linked.m || linked.modifier;
-      return ctx.linked(formatMessagePart(ctx, linked.k || linked.key), modifier ? formatMessagePart(ctx, modifier) : void 0, ctx.type);
+      const modifier = resolveLinkedModifier(linked);
+      const key = resolveLinkedKey(linked);
+      return ctx.linked(formatMessagePart(ctx, key), modifier ? formatMessagePart(ctx, modifier) : void 0, ctx.type);
     }
     case 7: {
-      const linkedKey = node;
-      return linkedKey.v || linkedKey.value;
+      return resolveValue$1(node, type);
     }
     case 8: {
-      const linkedModifier = node;
-      return linkedModifier.v || linkedModifier.value;
+      return resolveValue$1(node, type);
     }
     default:
-      throw new Error(`unhandled node type on format message part: ${type}`);
+      throw new Error(`unhandled node on format message part: ${type}`);
   }
 }
+const PROPS_TYPE = ["t", "type"];
+function resolveType(node) {
+  return resolveProps(node, PROPS_TYPE);
+}
+const PROPS_VALUE = ["v", "value"];
+function resolveValue$1(node, type) {
+  const resolved = resolveProps(node, PROPS_VALUE);
+  if (resolved) {
+    return resolved;
+  } else {
+    throw createUnhandleNodeError(type);
+  }
+}
+const PROPS_MODIFIER = ["m", "modifier"];
+function resolveLinkedModifier(node) {
+  return resolveProps(node, PROPS_MODIFIER);
+}
+const PROPS_KEY = ["k", "key"];
+function resolveLinkedKey(node) {
+  const resolved = resolveProps(node, PROPS_KEY);
+  if (resolved) {
+    return resolved;
+  } else {
+    throw createUnhandleNodeError(
+      6
+      /* NodeTypes.Linked */
+    );
+  }
+}
+function resolveProps(node, props, defaultValue) {
+  for (let i = 0; i < props.length; i++) {
+    const prop = props[i];
+    if (hasOwn$1(node, prop) && node[prop] != null) {
+      return node[prop];
+    }
+  }
+  return defaultValue;
+}
+function createUnhandleNodeError(type) {
+  return new Error(`unhandled node type: ${type}`);
+}
 const defaultOnCacheKey = (message) => message;
-let compileCache = /* @__PURE__ */ Object.create(null);
-const isMessageAST = (val) => isObject$1(val) && (val.t === 0 || val.type === 0) && ("b" in val || "body" in val);
+let compileCache = create$1();
+function isMessageAST(val) {
+  return isObject$2(val) && resolveType(val) === 0 && (hasOwn$1(val, "b") || hasOwn$1(val, "body"));
+}
 function baseCompile(message, options = {}) {
   let detectError = false;
   const onError = options.onError || defaultOnError;
@@ -27647,7 +27671,7 @@ function baseCompile(message, options = {}) {
 // @__NO_SIDE_EFFECTS__
 function compile(message, context) {
   if (isString$1(message)) {
-    isBoolean(context.warnHtmlMessage) ? context.warnHtmlMessage : true;
+    isBoolean$1(context.warnHtmlMessage) ? context.warnHtmlMessage : true;
     const onCacheKey = context.onCacheKey || defaultOnCacheKey;
     const cacheKey = onCacheKey(message);
     const cached = compileCache[cacheKey];
@@ -27711,7 +27735,7 @@ function resolveLocale(locale) {
   if (isString$1(locale)) {
     return locale;
   } else {
-    if (isFunction(locale)) {
+    if (isFunction$1(locale)) {
       if (locale.resolvedOnce && _resolveLocale != null) {
         return _resolveLocale;
       } else if (locale.constructor.name === "Function") {
@@ -27731,7 +27755,7 @@ function resolveLocale(locale) {
 function fallbackWithSimple(ctx, fallback, start) {
   return [.../* @__PURE__ */ new Set([
     start,
-    ...isArray$1(fallback) ? fallback : isObject$1(fallback) ? Object.keys(fallback) : isString$1(fallback) ? [fallback] : [start]
+    ...isArray$2(fallback) ? fallback : isObject$2(fallback) ? Object.keys(fallback) : isString$1(fallback) ? [fallback] : [start]
   ])];
 }
 function fallbackWithLocaleChain(ctx, fallback, start) {
@@ -27744,12 +27768,12 @@ function fallbackWithLocaleChain(ctx, fallback, start) {
   if (!chain) {
     chain = [];
     let block2 = [start];
-    while (isArray$1(block2)) {
+    while (isArray$2(block2)) {
       block2 = appendBlockToChain(chain, block2, fallback);
     }
-    const defaults = isArray$1(fallback) || !isPlainObject(fallback) ? fallback : fallback["default"] ? fallback["default"] : null;
+    const defaults = isArray$2(fallback) || !isPlainObject$1(fallback) ? fallback : fallback["default"] ? fallback["default"] : null;
     block2 = isString$1(defaults) ? [defaults] : defaults;
-    if (isArray$1(block2)) {
+    if (isArray$2(block2)) {
       appendBlockToChain(chain, block2, false);
     }
     context.__localeChainCache.set(startLocale, chain);
@@ -27758,7 +27782,7 @@ function fallbackWithLocaleChain(ctx, fallback, start) {
 }
 function appendBlockToChain(chain, block2, blocks) {
   let follow = true;
-  for (let i = 0; i < block2.length && isBoolean(follow); i++) {
+  for (let i = 0; i < block2.length && isBoolean$1(follow); i++) {
     const locale = block2[i];
     if (isString$1(locale)) {
       follow = appendLocaleToChain(chain, block2[i], blocks);
@@ -27784,7 +27808,7 @@ function appendItemToChain(chain, target, blocks) {
       follow = target[target.length - 1] !== "!";
       const locale = target.replace(/!/g, "");
       chain.push(locale);
-      if ((isArray$1(blocks) || isPlainObject(blocks)) && blocks[locale]) {
+      if ((isArray$2(blocks) || isPlainObject$1(blocks)) && blocks[locale]) {
         follow = blocks[locale];
       }
     }
@@ -28195,10 +28219,10 @@ function parse(path) {
 }
 const cache = /* @__PURE__ */ new Map();
 function resolveWithKeyValue(obj, path) {
-  return isObject$1(obj) ? obj[path] : null;
+  return isObject$2(obj) ? obj[path] : null;
 }
 function resolveValue(obj, path) {
-  if (!isObject$1(obj)) {
+  if (!isObject$2(obj)) {
     return null;
   }
   let hit = cache.get(path);
@@ -28219,7 +28243,7 @@ function resolveValue(obj, path) {
     if (val === void 0) {
       return null;
     }
-    if (isFunction(last)) {
+    if (isFunction$1(last)) {
       return null;
     }
     last = val;
@@ -28227,7 +28251,7 @@ function resolveValue(obj, path) {
   }
   return last;
 }
-const VERSION$1 = "10.0.4";
+const VERSION$1 = "11.1.1";
 const NOT_REOSLVED = -1;
 const DEFAULT_LOCALE = "en-US";
 const MISSING_RESOLVE_VALUE = "";
@@ -28235,13 +28259,13 @@ const capitalize = (str) => `${str.charAt(0).toLocaleUpperCase()}${str.substr(1)
 function getDefaultLinkedModifiers() {
   return {
     upper: (val, type) => {
-      return type === "text" && isString$1(val) ? val.toUpperCase() : type === "vnode" && isObject$1(val) && "__v_isVNode" in val ? val.children.toUpperCase() : val;
+      return type === "text" && isString$1(val) ? val.toUpperCase() : type === "vnode" && isObject$2(val) && "__v_isVNode" in val ? val.children.toUpperCase() : val;
     },
     lower: (val, type) => {
-      return type === "text" && isString$1(val) ? val.toLowerCase() : type === "vnode" && isObject$1(val) && "__v_isVNode" in val ? val.children.toLowerCase() : val;
+      return type === "text" && isString$1(val) ? val.toLowerCase() : type === "vnode" && isObject$2(val) && "__v_isVNode" in val ? val.children.toLowerCase() : val;
     },
     capitalize: (val, type) => {
-      return type === "text" && isString$1(val) ? capitalize(val) : type === "vnode" && isObject$1(val) && "__v_isVNode" in val ? capitalize(val.children) : val;
+      return type === "text" && isString$1(val) ? capitalize(val) : type === "vnode" && isObject$2(val) && "__v_isVNode" in val ? capitalize(val.children) : val;
     }
   };
 }
@@ -28269,33 +28293,33 @@ const setFallbackContext = (context) => {
 const getFallbackContext = () => _fallbackContext;
 let _cid = 0;
 function createCoreContext(options = {}) {
-  const onWarn = isFunction(options.onWarn) ? options.onWarn : warn;
+  const onWarn = isFunction$1(options.onWarn) ? options.onWarn : warn;
   const version2 = isString$1(options.version) ? options.version : VERSION$1;
-  const locale = isString$1(options.locale) || isFunction(options.locale) ? options.locale : DEFAULT_LOCALE;
-  const _locale = isFunction(locale) ? DEFAULT_LOCALE : locale;
-  const fallbackLocale = isArray$1(options.fallbackLocale) || isPlainObject(options.fallbackLocale) || isString$1(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale;
-  const messages2 = isPlainObject(options.messages) ? options.messages : { [_locale]: {} };
-  const datetimeFormats = isPlainObject(options.datetimeFormats) ? options.datetimeFormats : { [_locale]: {} };
-  const numberFormats = isPlainObject(options.numberFormats) ? options.numberFormats : { [_locale]: {} };
-  const modifiers = assign$2({}, options.modifiers || {}, getDefaultLinkedModifiers());
-  const pluralRules = options.pluralRules || {};
-  const missing = isFunction(options.missing) ? options.missing : null;
-  const missingWarn = isBoolean(options.missingWarn) || isRegExp(options.missingWarn) ? options.missingWarn : true;
-  const fallbackWarn = isBoolean(options.fallbackWarn) || isRegExp(options.fallbackWarn) ? options.fallbackWarn : true;
+  const locale = isString$1(options.locale) || isFunction$1(options.locale) ? options.locale : DEFAULT_LOCALE;
+  const _locale = isFunction$1(locale) ? DEFAULT_LOCALE : locale;
+  const fallbackLocale = isArray$2(options.fallbackLocale) || isPlainObject$1(options.fallbackLocale) || isString$1(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale;
+  const messages2 = isPlainObject$1(options.messages) ? options.messages : createResources(_locale);
+  const datetimeFormats = isPlainObject$1(options.datetimeFormats) ? options.datetimeFormats : createResources(_locale);
+  const numberFormats = isPlainObject$1(options.numberFormats) ? options.numberFormats : createResources(_locale);
+  const modifiers = assign$2(create$1(), options.modifiers, getDefaultLinkedModifiers());
+  const pluralRules = options.pluralRules || create$1();
+  const missing = isFunction$1(options.missing) ? options.missing : null;
+  const missingWarn = isBoolean$1(options.missingWarn) || isRegExp$1(options.missingWarn) ? options.missingWarn : true;
+  const fallbackWarn = isBoolean$1(options.fallbackWarn) || isRegExp$1(options.fallbackWarn) ? options.fallbackWarn : true;
   const fallbackFormat = !!options.fallbackFormat;
   const unresolving = !!options.unresolving;
-  const postTranslation = isFunction(options.postTranslation) ? options.postTranslation : null;
-  const processor = isPlainObject(options.processor) ? options.processor : null;
-  const warnHtmlMessage = isBoolean(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
+  const postTranslation = isFunction$1(options.postTranslation) ? options.postTranslation : null;
+  const processor = isPlainObject$1(options.processor) ? options.processor : null;
+  const warnHtmlMessage = isBoolean$1(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
   const escapeParameter = !!options.escapeParameter;
-  const messageCompiler = isFunction(options.messageCompiler) ? options.messageCompiler : _compiler;
-  const messageResolver = isFunction(options.messageResolver) ? options.messageResolver : _resolver || resolveWithKeyValue;
-  const localeFallbacker = isFunction(options.localeFallbacker) ? options.localeFallbacker : _fallbacker || fallbackWithSimple;
-  const fallbackContext = isObject$1(options.fallbackContext) ? options.fallbackContext : void 0;
+  const messageCompiler = isFunction$1(options.messageCompiler) ? options.messageCompiler : _compiler;
+  const messageResolver = isFunction$1(options.messageResolver) ? options.messageResolver : _resolver || resolveWithKeyValue;
+  const localeFallbacker = isFunction$1(options.localeFallbacker) ? options.localeFallbacker : _fallbacker || fallbackWithSimple;
+  const fallbackContext = isObject$2(options.fallbackContext) ? options.fallbackContext : void 0;
   const internalOptions = options;
-  const __datetimeFormatters = isObject$1(internalOptions.__datetimeFormatters) ? internalOptions.__datetimeFormatters : /* @__PURE__ */ new Map();
-  const __numberFormatters = isObject$1(internalOptions.__numberFormatters) ? internalOptions.__numberFormatters : /* @__PURE__ */ new Map();
-  const __meta = isObject$1(internalOptions.__meta) ? internalOptions.__meta : {};
+  const __datetimeFormatters = isObject$2(internalOptions.__datetimeFormatters) ? internalOptions.__datetimeFormatters : /* @__PURE__ */ new Map();
+  const __numberFormatters = isObject$2(internalOptions.__numberFormatters) ? internalOptions.__numberFormatters : /* @__PURE__ */ new Map();
+  const __meta = isObject$2(internalOptions.__meta) ? internalOptions.__meta : {};
   _cid++;
   const context = {
     version: version2,
@@ -28332,6 +28356,7 @@ function createCoreContext(options = {}) {
   }
   return context;
 }
+const createResources = (locale) => ({ [locale]: create$1() });
 function handleMissing(context, key, locale, missingWarn, type) {
   const { missing, onWarn } = context;
   if (missing !== null) {
@@ -28367,8 +28392,8 @@ function datetime(context, ...args) {
   const { datetimeFormats, unresolving, fallbackLocale, onWarn, localeFallbacker } = context;
   const { __datetimeFormatters } = context;
   const [key, value, options, overrides] = parseDateTimeArgs(...args);
-  const missingWarn = isBoolean(options.missingWarn) ? options.missingWarn : context.missingWarn;
-  isBoolean(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
+  const missingWarn = isBoolean$1(options.missingWarn) ? options.missingWarn : context.missingWarn;
+  isBoolean$1(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
   const part = !!options.part;
   const locale = getLocale(context, options);
   const locales = localeFallbacker(
@@ -28388,15 +28413,15 @@ function datetime(context, ...args) {
     targetLocale = locales[i];
     datetimeFormat = datetimeFormats[targetLocale] || {};
     format2 = datetimeFormat[key];
-    if (isPlainObject(format2))
+    if (isPlainObject$1(format2))
       break;
     handleMissing(context, key, targetLocale, missingWarn, type);
   }
-  if (!isPlainObject(format2) || !isString$1(targetLocale)) {
+  if (!isPlainObject$1(format2) || !isString$1(targetLocale)) {
     return unresolving ? NOT_REOSLVED : key;
   }
   let id = `${targetLocale}__${key}`;
-  if (!isEmptyObject(overrides)) {
+  if (!isEmptyObject$1(overrides)) {
     id = `${id}__${JSON.stringify(overrides)}`;
   }
   let formatter = __datetimeFormatters.get(id);
@@ -28430,8 +28455,8 @@ const DATETIME_FORMAT_OPTIONS_KEYS = [
 ];
 function parseDateTimeArgs(...args) {
   const [arg1, arg2, arg3, arg4] = args;
-  const options = {};
-  let overrides = {};
+  const options = create$1();
+  let overrides = create$1();
   let value;
   if (isString$1(arg1)) {
     const matches = arg1.match(/(\d{4}-\d{2}-\d{2})(T|\s)?(.*)/);
@@ -28450,14 +28475,14 @@ function parseDateTimeArgs(...args) {
       throw createCoreError(CoreErrorCodes.INVALID_DATE_ARGUMENT);
     }
     value = arg1;
-  } else if (isNumber(arg1)) {
+  } else if (isNumber$1(arg1)) {
     value = arg1;
   } else {
     throw createCoreError(CoreErrorCodes.INVALID_ARGUMENT);
   }
   if (isString$1(arg2)) {
     options.key = arg2;
-  } else if (isPlainObject(arg2)) {
+  } else if (isPlainObject$1(arg2)) {
     Object.keys(arg2).forEach((key) => {
       if (DATETIME_FORMAT_OPTIONS_KEYS.includes(key)) {
         overrides[key] = arg2[key];
@@ -28468,10 +28493,10 @@ function parseDateTimeArgs(...args) {
   }
   if (isString$1(arg3)) {
     options.locale = arg3;
-  } else if (isPlainObject(arg3)) {
+  } else if (isPlainObject$1(arg3)) {
     overrides = arg3;
   }
-  if (isPlainObject(arg4)) {
+  if (isPlainObject$1(arg4)) {
     overrides = arg4;
   }
   return [options.key || "", value, options, overrides];
@@ -28490,8 +28515,8 @@ function number(context, ...args) {
   const { numberFormats, unresolving, fallbackLocale, onWarn, localeFallbacker } = context;
   const { __numberFormatters } = context;
   const [key, value, options, overrides] = parseNumberArgs(...args);
-  const missingWarn = isBoolean(options.missingWarn) ? options.missingWarn : context.missingWarn;
-  isBoolean(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
+  const missingWarn = isBoolean$1(options.missingWarn) ? options.missingWarn : context.missingWarn;
+  isBoolean$1(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
   const part = !!options.part;
   const locale = getLocale(context, options);
   const locales = localeFallbacker(
@@ -28511,15 +28536,15 @@ function number(context, ...args) {
     targetLocale = locales[i];
     numberFormat = numberFormats[targetLocale] || {};
     format2 = numberFormat[key];
-    if (isPlainObject(format2))
+    if (isPlainObject$1(format2))
       break;
     handleMissing(context, key, targetLocale, missingWarn, type);
   }
-  if (!isPlainObject(format2) || !isString$1(targetLocale)) {
+  if (!isPlainObject$1(format2) || !isString$1(targetLocale)) {
     return unresolving ? NOT_REOSLVED : key;
   }
   let id = `${targetLocale}__${key}`;
-  if (!isEmptyObject(overrides)) {
+  if (!isEmptyObject$1(overrides)) {
     id = `${id}__${JSON.stringify(overrides)}`;
   }
   let formatter = __numberFormatters.get(id);
@@ -28553,15 +28578,15 @@ const NUMBER_FORMAT_OPTIONS_KEYS = [
 ];
 function parseNumberArgs(...args) {
   const [arg1, arg2, arg3, arg4] = args;
-  const options = {};
-  let overrides = {};
-  if (!isNumber(arg1)) {
+  const options = create$1();
+  let overrides = create$1();
+  if (!isNumber$1(arg1)) {
     throw createCoreError(CoreErrorCodes.INVALID_ARGUMENT);
   }
   const value = arg1;
   if (isString$1(arg2)) {
     options.key = arg2;
-  } else if (isPlainObject(arg2)) {
+  } else if (isPlainObject$1(arg2)) {
     Object.keys(arg2).forEach((key) => {
       if (NUMBER_FORMAT_OPTIONS_KEYS.includes(key)) {
         overrides[key] = arg2[key];
@@ -28572,10 +28597,10 @@ function parseNumberArgs(...args) {
   }
   if (isString$1(arg3)) {
     options.locale = arg3;
-  } else if (isPlainObject(arg3)) {
+  } else if (isPlainObject$1(arg3)) {
     overrides = arg3;
   }
-  if (isPlainObject(arg4)) {
+  if (isPlainObject$1(arg4)) {
     overrides = arg4;
   }
   return [options.key || "", value, options, overrides];
@@ -28593,7 +28618,7 @@ function clearNumberFormat(ctx, locale, format2) {
 const DEFAULT_MODIFIER = (str) => str;
 const DEFAULT_MESSAGE = (ctx) => "";
 const DEFAULT_MESSAGE_DATA_TYPE = "text";
-const DEFAULT_NORMALIZE = (values) => values.length === 0 ? "" : join$1(values);
+const DEFAULT_NORMALIZE = (values) => values.length === 0 ? "" : join(values);
 const DEFAULT_INTERPOLATE = toDisplayString;
 function pluralDefault(choice, choicesLength) {
   choice = Math.abs(choice);
@@ -28603,8 +28628,8 @@ function pluralDefault(choice, choicesLength) {
   return choice ? Math.min(choice, 2) : 0;
 }
 function getPluralIndex(options) {
-  const index = isNumber(options.pluralIndex) ? options.pluralIndex : -1;
-  return options.named && (isNumber(options.named.count) || isNumber(options.named.n)) ? isNumber(options.named.count) ? options.named.count : isNumber(options.named.n) ? options.named.n : index : index;
+  const index = isNumber$1(options.pluralIndex) ? options.pluralIndex : -1;
+  return options.named && (isNumber$1(options.named.count) || isNumber$1(options.named.n)) ? isNumber$1(options.named.count) ? options.named.count : isNumber$1(options.named.n) ? options.named.n : index : index;
 }
 function normalizeNamed(pluralIndex, props) {
   if (!props.count) {
@@ -28617,30 +28642,30 @@ function normalizeNamed(pluralIndex, props) {
 function createMessageContext(options = {}) {
   const locale = options.locale;
   const pluralIndex = getPluralIndex(options);
-  const pluralRule = isObject$1(options.pluralRules) && isString$1(locale) && isFunction(options.pluralRules[locale]) ? options.pluralRules[locale] : pluralDefault;
-  const orgPluralRule = isObject$1(options.pluralRules) && isString$1(locale) && isFunction(options.pluralRules[locale]) ? pluralDefault : void 0;
+  const pluralRule = isObject$2(options.pluralRules) && isString$1(locale) && isFunction$1(options.pluralRules[locale]) ? options.pluralRules[locale] : pluralDefault;
+  const orgPluralRule = isObject$2(options.pluralRules) && isString$1(locale) && isFunction$1(options.pluralRules[locale]) ? pluralDefault : void 0;
   const plural = (messages2) => {
     return messages2[pluralRule(pluralIndex, messages2.length, orgPluralRule)];
   };
   const _list = options.list || [];
   const list = (index) => _list[index];
-  const _named = options.named || {};
-  isNumber(options.pluralIndex) && normalizeNamed(pluralIndex, _named);
+  const _named = options.named || create$1();
+  isNumber$1(options.pluralIndex) && normalizeNamed(pluralIndex, _named);
   const named = (key) => _named[key];
   function message(key, useLinked) {
-    const msg = isFunction(options.messages) ? options.messages(key, !!useLinked) : isObject$1(options.messages) ? options.messages[key] : false;
+    const msg = isFunction$1(options.messages) ? options.messages(key, !!useLinked) : isObject$2(options.messages) ? options.messages[key] : false;
     return !msg ? options.parent ? options.parent.message(key) : DEFAULT_MESSAGE : msg;
   }
   const _modifier = (name) => options.modifiers ? options.modifiers[name] : DEFAULT_MODIFIER;
-  const normalize = isPlainObject(options.processor) && isFunction(options.processor.normalize) ? options.processor.normalize : DEFAULT_NORMALIZE;
-  const interpolate = isPlainObject(options.processor) && isFunction(options.processor.interpolate) ? options.processor.interpolate : DEFAULT_INTERPOLATE;
-  const type = isPlainObject(options.processor) && isString$1(options.processor.type) ? options.processor.type : DEFAULT_MESSAGE_DATA_TYPE;
+  const normalize = isPlainObject$1(options.processor) && isFunction$1(options.processor.normalize) ? options.processor.normalize : DEFAULT_NORMALIZE;
+  const interpolate = isPlainObject$1(options.processor) && isFunction$1(options.processor.interpolate) ? options.processor.interpolate : DEFAULT_INTERPOLATE;
+  const type = isPlainObject$1(options.processor) && isString$1(options.processor.type) ? options.processor.type : DEFAULT_MESSAGE_DATA_TYPE;
   const linked = (key, ...args) => {
     const [arg1, arg2] = args;
     let type2 = "text";
     let modifier = "";
     if (args.length === 1) {
-      if (isObject$1(arg1)) {
+      if (isObject$2(arg1)) {
         modifier = arg1.modifier || modifier;
         type2 = arg1.type || type2;
       } else if (isString$1(arg1)) {
@@ -28657,7 +28682,7 @@ function createMessageContext(options = {}) {
     const ret = message(key, true)(ctx);
     const msg = (
       // The message in vnode resolved with linked are returned as an array by processor.nomalize
-      type2 === "vnode" && isArray$1(ret) && modifier ? ret[0] : ret
+      type2 === "vnode" && isArray$2(ret) && modifier ? ret[0] : ret
     );
     return modifier ? _modifier(modifier)(msg, type2) : msg;
   };
@@ -28697,27 +28722,27 @@ function createMessageContext(options = {}) {
     [
       "values"
       /* HelperNameMap.VALUES */
-    ]: assign$2({}, _list, _named)
+    ]: assign$2(create$1(), _list, _named)
   };
   return ctx;
 }
 const NOOP_MESSAGE_FUNCTION = () => "";
-const isMessageFunction = (val) => isFunction(val);
+const isMessageFunction = (val) => isFunction$1(val);
 function translate(context, ...args) {
   const { fallbackFormat, postTranslation, unresolving, messageCompiler, fallbackLocale, messages: messages2 } = context;
   const [key, options] = parseTranslateArgs(...args);
-  const missingWarn = isBoolean(options.missingWarn) ? options.missingWarn : context.missingWarn;
-  const fallbackWarn = isBoolean(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
-  const escapeParameter = isBoolean(options.escapeParameter) ? options.escapeParameter : context.escapeParameter;
+  const missingWarn = isBoolean$1(options.missingWarn) ? options.missingWarn : context.missingWarn;
+  const fallbackWarn = isBoolean$1(options.fallbackWarn) ? options.fallbackWarn : context.fallbackWarn;
+  const escapeParameter = isBoolean$1(options.escapeParameter) ? options.escapeParameter : context.escapeParameter;
   const resolvedMessage = !!options.resolvedMessage;
-  const defaultMsgOrKey = isString$1(options.default) || isBoolean(options.default) ? !isBoolean(options.default) ? options.default : !messageCompiler ? () => key : key : fallbackFormat ? !messageCompiler ? () => key : key : null;
-  const enableDefaultMsg = fallbackFormat || defaultMsgOrKey != null && (isString$1(defaultMsgOrKey) || isFunction(defaultMsgOrKey));
+  const defaultMsgOrKey = isString$1(options.default) || isBoolean$1(options.default) ? !isBoolean$1(options.default) ? options.default : !messageCompiler ? () => key : key : fallbackFormat ? !messageCompiler ? () => key : key : null;
+  const enableDefaultMsg = fallbackFormat || defaultMsgOrKey != null && (isString$1(defaultMsgOrKey) || isFunction$1(defaultMsgOrKey));
   const locale = getLocale(context, options);
   escapeParameter && escapeParams(options);
   let [formatScope, targetLocale, message] = !resolvedMessage ? resolveMessageFormat(context, key, locale, fallbackLocale, fallbackWarn, missingWarn) : [
     key,
     locale,
-    messages2[locale] || {}
+    messages2[locale] || create$1()
   ];
   let format2 = formatScope;
   let cacheBaseKey = key;
@@ -28756,9 +28781,9 @@ function translate(context, ...args) {
   return ret;
 }
 function escapeParams(options) {
-  if (isArray$1(options.list)) {
+  if (isArray$2(options.list)) {
     options.list = options.list.map((item) => isString$1(item) ? escapeHtml(item) : item);
-  } else if (isObject$1(options.named)) {
+  } else if (isObject$2(options.named)) {
     Object.keys(options.named).forEach((key) => {
       if (isString$1(options.named[key])) {
         options.named[key] = escapeHtml(options.named[key]);
@@ -28769,13 +28794,13 @@ function escapeParams(options) {
 function resolveMessageFormat(context, key, locale, fallbackLocale, fallbackWarn, missingWarn) {
   const { messages: messages2, onWarn, messageResolver: resolveValue2, localeFallbacker } = context;
   const locales = localeFallbacker(context, fallbackLocale, locale);
-  let message = {};
+  let message = create$1();
   let targetLocale;
   let format2 = null;
   const type = "translate";
   for (let i = 0; i < locales.length; i++) {
     targetLocale = locales[i];
-    message = messages2[targetLocale] || {};
+    message = messages2[targetLocale] || create$1();
     if ((format2 = resolveValue2(message, key)) === null) {
       format2 = message[key];
     }
@@ -28824,25 +28849,25 @@ function evaluateMessage(context, msg, msgCtx) {
 }
 function parseTranslateArgs(...args) {
   const [arg1, arg2, arg3] = args;
-  const options = {};
-  if (!isString$1(arg1) && !isNumber(arg1) && !isMessageFunction(arg1) && !isMessageAST(arg1)) {
+  const options = create$1();
+  if (!isString$1(arg1) && !isNumber$1(arg1) && !isMessageFunction(arg1) && !isMessageAST(arg1)) {
     throw createCoreError(CoreErrorCodes.INVALID_ARGUMENT);
   }
-  const key = isNumber(arg1) ? String(arg1) : isMessageFunction(arg1) ? arg1 : arg1;
-  if (isNumber(arg2)) {
+  const key = isNumber$1(arg1) ? String(arg1) : isMessageFunction(arg1) ? arg1 : arg1;
+  if (isNumber$1(arg2)) {
     options.plural = arg2;
   } else if (isString$1(arg2)) {
     options.default = arg2;
-  } else if (isPlainObject(arg2) && !isEmptyObject(arg2)) {
+  } else if (isPlainObject$1(arg2) && !isEmptyObject$1(arg2)) {
     options.named = arg2;
-  } else if (isArray$1(arg2)) {
+  } else if (isArray$2(arg2)) {
     options.list = arg2;
   }
-  if (isNumber(arg3)) {
+  if (isNumber$1(arg3)) {
     options.plural = arg3;
   } else if (isString$1(arg3)) {
     options.default = arg3;
-  } else if (isPlainObject(arg3)) {
+  } else if (isPlainObject$1(arg3)) {
     assign$2(options, arg3);
   }
   return [key, options];
@@ -28905,7 +28930,7 @@ function getMessageContextOptions(context, locale, message, options) {
   if (options.named) {
     ctxOptions.named = options.named;
   }
-  if (isNumber(options.plural)) {
+  if (isNumber$1(options.plural)) {
     ctxOptions.pluralIndex = options.plural;
   }
   return ctxOptions;
@@ -28914,14 +28939,66 @@ function getMessageContextOptions(context, locale, message, options) {
   initFeatureFlags$1();
 }
 /*!
-  * vue-i18n v10.0.4
-  * (c) 2024 kazuya kawaguchi
+  * shared v11.1.1
+  * (c) 2025 kazuya kawaguchi
   * Released under the MIT License.
   */
-const VERSION = "10.0.4";
+const inBrowser = typeof window !== "undefined";
+const makeSymbol = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
+const isNumber = (val) => typeof val === "number" && isFinite(val);
+const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
+const isEmptyObject = (val) => isPlainObject(val) && Object.keys(val).length === 0;
+const assign$1 = Object.assign;
+const _create = Object.create;
+const create = (obj = null) => _create(obj);
+let _globalThis;
+const getGlobalThis = () => {
+  return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : create());
+};
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwn(obj, key) {
+  return hasOwnProperty.call(obj, key);
+}
+const isArray$1 = Array.isArray;
+const isFunction = (val) => typeof val === "function";
+const isString = (val) => typeof val === "string";
+const isBoolean = (val) => typeof val === "boolean";
+const isObject$1 = (val) => val !== null && typeof val === "object";
+const objectToString = Object.prototype.toString;
+const toTypeString = (value) => objectToString.call(value);
+const isPlainObject = (val) => toTypeString(val) === "[object Object]";
+const isNotObjectOrIsArray = (val) => !isObject$1(val) || isArray$1(val);
+function deepCopy(src, des) {
+  if (isNotObjectOrIsArray(src) || isNotObjectOrIsArray(des)) {
+    throw new Error("Invalid value");
+  }
+  const stack2 = [{ src, des }];
+  while (stack2.length) {
+    const { src: src2, des: des2 } = stack2.pop();
+    Object.keys(src2).forEach((key) => {
+      if (key === "__proto__") {
+        return;
+      }
+      if (isObject$1(src2[key]) && !isObject$1(des2[key])) {
+        des2[key] = Array.isArray(src2[key]) ? [] : create();
+      }
+      if (isNotObjectOrIsArray(des2[key]) || isNotObjectOrIsArray(src2[key])) {
+        des2[key] = src2[key];
+      } else {
+        stack2.push({ src: src2[key], des: des2[key] });
+      }
+    });
+  }
+}
+/*!
+  * vue-i18n v11.1.1
+  * (c) 2025 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+const VERSION = "11.1.1";
 function initFeatureFlags() {
   if (typeof __INTLIFY_PROD_DEVTOOLS__ !== "boolean") {
-    getGlobalThis$1().__INTLIFY_PROD_DEVTOOLS__ = false;
+    getGlobalThis().__INTLIFY_PROD_DEVTOOLS__ = false;
   }
 }
 const I18nErrorCodes = {
@@ -28950,7 +29027,7 @@ const SetPluralRulesSymbol = makeSymbol("__setPluralRules");
 const InejctWithOptionSymbol = /* @__PURE__ */ makeSymbol("__injectWithOption");
 const DisposeSymbol = /* @__PURE__ */ makeSymbol("__dispose");
 function handleFlatJson(obj) {
-  if (!isObject$2(obj)) {
+  if (!isObject$1(obj)) {
     return obj;
   }
   for (const key in obj) {
@@ -28958,7 +29035,7 @@ function handleFlatJson(obj) {
       continue;
     }
     if (!key.includes(".")) {
-      if (isObject$2(obj[key])) {
+      if (isObject$1(obj[key])) {
         handleFlatJson(obj[key]);
       }
     } else {
@@ -28968,9 +29045,9 @@ function handleFlatJson(obj) {
       let hasStringValue = false;
       for (let i = 0; i < lastIndex; i++) {
         if (!(subKeys[i] in currentObj)) {
-          currentObj[subKeys[i]] = {};
+          currentObj[subKeys[i]] = create();
         }
-        if (!isObject$2(currentObj[subKeys[i]])) {
+        if (!isObject$1(currentObj[subKeys[i]])) {
           hasStringValue = true;
           break;
         }
@@ -28980,7 +29057,7 @@ function handleFlatJson(obj) {
         currentObj[subKeys[lastIndex]] = obj[key];
         delete obj[key];
       }
-      if (isObject$2(currentObj[subKeys[lastIndex]])) {
+      if (isObject$1(currentObj[subKeys[lastIndex]])) {
         handleFlatJson(currentObj[subKeys[lastIndex]]);
       }
     }
@@ -28989,19 +29066,19 @@ function handleFlatJson(obj) {
 }
 function getLocaleMessages(locale, options) {
   const { messages: messages2, __i18n, messageResolver, flatJson } = options;
-  const ret = isPlainObject$1(messages2) ? messages2 : isArray$2(__i18n) ? {} : { [locale]: {} };
-  if (isArray$2(__i18n)) {
+  const ret = isPlainObject(messages2) ? messages2 : isArray$1(__i18n) ? create() : { [locale]: create() };
+  if (isArray$1(__i18n)) {
     __i18n.forEach((custom) => {
       if ("locale" in custom && "resource" in custom) {
         const { locale: locale2, resource } = custom;
         if (locale2) {
-          ret[locale2] = ret[locale2] || {};
+          ret[locale2] = ret[locale2] || create();
           deepCopy(resource, ret[locale2]);
         } else {
           deepCopy(resource, ret);
         }
       } else {
-        isString$2(custom) && deepCopy(JSON.parse(custom), ret);
+        isString(custom) && deepCopy(JSON.parse(custom), ret);
       }
     });
   }
@@ -29018,7 +29095,7 @@ function getComponentOptions(instance) {
   return instance.type;
 }
 function adjustI18nResources(gl, options, componentOptions) {
-  let messages2 = isObject$2(options.messages) ? options.messages : {};
+  let messages2 = isObject$1(options.messages) ? options.messages : create();
   if ("__i18nGlobal" in componentOptions) {
     messages2 = getLocaleMessages(gl.locale.value, {
       messages: messages2,
@@ -29032,7 +29109,7 @@ function adjustI18nResources(gl, options, componentOptions) {
     });
   }
   {
-    if (isObject$2(options.datetimeFormats)) {
+    if (isObject$1(options.datetimeFormats)) {
       const locales2 = Object.keys(options.datetimeFormats);
       if (locales2.length) {
         locales2.forEach((locale) => {
@@ -29040,7 +29117,7 @@ function adjustI18nResources(gl, options, componentOptions) {
         });
       }
     }
-    if (isObject$2(options.numberFormats)) {
+    if (isObject$1(options.numberFormats)) {
       const locales2 = Object.keys(options.numberFormats);
       if (locales2.length) {
         locales2.forEach((locale) => {
@@ -29072,28 +29149,28 @@ function createComposer(options = {}) {
   const _isGlobal = __root === void 0;
   const flatJson = options.flatJson;
   const _ref = inBrowser ? ref : shallowRef;
-  let _inheritLocale = isBoolean$1(options.inheritLocale) ? options.inheritLocale : true;
+  let _inheritLocale = isBoolean(options.inheritLocale) ? options.inheritLocale : true;
   const _locale = _ref(
     // prettier-ignore
-    __root && _inheritLocale ? __root.locale.value : isString$2(options.locale) ? options.locale : DEFAULT_LOCALE
+    __root && _inheritLocale ? __root.locale.value : isString(options.locale) ? options.locale : DEFAULT_LOCALE
   );
   const _fallbackLocale = _ref(
     // prettier-ignore
-    __root && _inheritLocale ? __root.fallbackLocale.value : isString$2(options.fallbackLocale) || isArray$2(options.fallbackLocale) || isPlainObject$1(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale.value
+    __root && _inheritLocale ? __root.fallbackLocale.value : isString(options.fallbackLocale) || isArray$1(options.fallbackLocale) || isPlainObject(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale.value
   );
   const _messages = _ref(getLocaleMessages(_locale.value, options));
-  const _datetimeFormats = _ref(isPlainObject$1(options.datetimeFormats) ? options.datetimeFormats : { [_locale.value]: {} });
-  const _numberFormats = _ref(isPlainObject$1(options.numberFormats) ? options.numberFormats : { [_locale.value]: {} });
-  let _missingWarn = __root ? __root.missingWarn : isBoolean$1(options.missingWarn) || isRegExp$1(options.missingWarn) ? options.missingWarn : true;
-  let _fallbackWarn = __root ? __root.fallbackWarn : isBoolean$1(options.fallbackWarn) || isRegExp$1(options.fallbackWarn) ? options.fallbackWarn : true;
-  let _fallbackRoot = __root ? __root.fallbackRoot : isBoolean$1(options.fallbackRoot) ? options.fallbackRoot : true;
+  const _datetimeFormats = _ref(isPlainObject(options.datetimeFormats) ? options.datetimeFormats : { [_locale.value]: {} });
+  const _numberFormats = _ref(isPlainObject(options.numberFormats) ? options.numberFormats : { [_locale.value]: {} });
+  let _missingWarn = __root ? __root.missingWarn : isBoolean(options.missingWarn) || isRegExp(options.missingWarn) ? options.missingWarn : true;
+  let _fallbackWarn = __root ? __root.fallbackWarn : isBoolean(options.fallbackWarn) || isRegExp(options.fallbackWarn) ? options.fallbackWarn : true;
+  let _fallbackRoot = __root ? __root.fallbackRoot : isBoolean(options.fallbackRoot) ? options.fallbackRoot : true;
   let _fallbackFormat = !!options.fallbackFormat;
-  let _missing = isFunction$1(options.missing) ? options.missing : null;
-  let _runtimeMissing = isFunction$1(options.missing) ? defineCoreMissingHandler(options.missing) : null;
-  let _postTranslation = isFunction$1(options.postTranslation) ? options.postTranslation : null;
-  let _warnHtmlMessage = __root ? __root.warnHtmlMessage : isBoolean$1(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
+  let _missing = isFunction(options.missing) ? options.missing : null;
+  let _runtimeMissing = isFunction(options.missing) ? defineCoreMissingHandler(options.missing) : null;
+  let _postTranslation = isFunction(options.postTranslation) ? options.postTranslation : null;
+  let _warnHtmlMessage = __root ? __root.warnHtmlMessage : isBoolean(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
   let _escapeParameter = !!options.escapeParameter;
-  const _modifiers = __root ? __root.modifiers : isPlainObject$1(options.modifiers) ? options.modifiers : {};
+  const _modifiers = __root ? __root.modifiers : isPlainObject(options.modifiers) ? options.modifiers : {};
   let _pluralRules = options.pluralRules || __root && __root.pluralRules;
   let _context;
   const getCoreContext = () => {
@@ -29120,8 +29197,8 @@ function createComposer(options = {}) {
     {
       ctxOptions.datetimeFormats = _datetimeFormats.value;
       ctxOptions.numberFormats = _numberFormats.value;
-      ctxOptions.__datetimeFormatters = isPlainObject$1(_context) ? _context.__datetimeFormatters : void 0;
-      ctxOptions.__numberFormatters = isPlainObject$1(_context) ? _context.__numberFormatters : void 0;
+      ctxOptions.__datetimeFormatters = isPlainObject(_context) ? _context.__datetimeFormatters : void 0;
+      ctxOptions.__numberFormatters = isPlainObject(_context) ? _context.__numberFormatters : void 0;
     }
     const ctx = createCoreContext(ctxOptions);
     _isGlobal && setFallbackContext(ctx);
@@ -29141,15 +29218,15 @@ function createComposer(options = {}) {
   const locale = computed({
     get: () => _locale.value,
     set: (val) => {
+      _context.locale = val;
       _locale.value = val;
-      _context.locale = _locale.value;
     }
   });
   const fallbackLocale = computed({
     get: () => _fallbackLocale.value,
     set: (val) => {
+      _context.fallbackLocale = val;
       _fallbackLocale.value = val;
-      _context.fallbackLocale = _fallbackLocale.value;
       updateFallbackLocale(_context, _locale.value, val);
     }
   });
@@ -29157,7 +29234,7 @@ function createComposer(options = {}) {
   const datetimeFormats = /* @__PURE__ */ computed(() => _datetimeFormats.value);
   const numberFormats = /* @__PURE__ */ computed(() => _numberFormats.value);
   function getPostTranslationHandler() {
-    return isFunction$1(_postTranslation) ? _postTranslation : null;
+    return isFunction(_postTranslation) ? _postTranslation : null;
   }
   function setPostTranslationHandler(handler) {
     _postTranslation = handler;
@@ -29191,7 +29268,7 @@ function createComposer(options = {}) {
       }
     }
     if (warnType !== "translate exists" && // for not `te` (e.g `t`)
-    isNumber$1(ret) && ret === NOT_REOSLVED || warnType === "translate exists" && !ret) {
+    isNumber(ret) && ret === NOT_REOSLVED || warnType === "translate exists" && !ret) {
       const [key, arg2] = argumentParser();
       return __root && _fallbackRoot ? fallbackSuccess(__root) : fallbackFail(key);
     } else if (successCondition(ret)) {
@@ -29201,23 +29278,23 @@ function createComposer(options = {}) {
     }
   };
   function t(...args) {
-    return wrapWithDeps((context) => Reflect.apply(translate, null, [context, ...args]), () => parseTranslateArgs(...args), "translate", (root) => Reflect.apply(root.t, root, [...args]), (key) => key, (val) => isString$2(val));
+    return wrapWithDeps((context) => Reflect.apply(translate, null, [context, ...args]), () => parseTranslateArgs(...args), "translate", (root) => Reflect.apply(root.t, root, [...args]), (key) => key, (val) => isString(val));
   }
   function rt(...args) {
     const [arg1, arg2, arg3] = args;
-    if (arg3 && !isObject$2(arg3)) {
+    if (arg3 && !isObject$1(arg3)) {
       throw createI18nError(I18nErrorCodes.INVALID_ARGUMENT);
     }
-    return t(...[arg1, arg2, assign$3({ resolvedMessage: true }, arg3 || {})]);
+    return t(...[arg1, arg2, assign$1({ resolvedMessage: true }, arg3 || {})]);
   }
   function d(...args) {
-    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => Reflect.apply(root.d, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString$2(val));
+    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => Reflect.apply(root.d, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString(val));
   }
   function n(...args) {
-    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => Reflect.apply(root.n, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString$2(val));
+    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => Reflect.apply(root.n, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString(val));
   }
   function normalize(values) {
-    return values.map((val) => isString$2(val) || isNumber$1(val) || isBoolean$1(val) ? createTextNode(String(val)) : val);
+    return values.map((val) => isString(val) || isNumber(val) || isBoolean(val) ? createTextNode(String(val)) : val);
   }
   const interpolate = (val) => val;
   const processor = {
@@ -29236,13 +29313,13 @@ function createComposer(options = {}) {
         _context2.processor = null;
       }
       return ret;
-    }, () => parseTranslateArgs(...args), "translate", (root) => root[TranslateVNodeSymbol](...args), (key) => [createTextNode(key)], (val) => isArray$2(val));
+    }, () => parseTranslateArgs(...args), "translate", (root) => root[TranslateVNodeSymbol](...args), (key) => [createTextNode(key)], (val) => isArray$1(val));
   }
   function numberParts(...args) {
-    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => root[NumberPartsSymbol](...args), NOOP_RETURN_ARRAY, (val) => isString$2(val) || isArray$2(val));
+    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => root[NumberPartsSymbol](...args), NOOP_RETURN_ARRAY, (val) => isString(val) || isArray$1(val));
   }
   function datetimeParts(...args) {
-    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => root[DatetimePartsSymbol](...args), NOOP_RETURN_ARRAY, (val) => isString$2(val) || isArray$2(val));
+    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => root[DatetimePartsSymbol](...args), NOOP_RETURN_ARRAY, (val) => isString(val) || isArray$1(val));
   }
   function setPluralRules(rules) {
     _pluralRules = rules;
@@ -29253,13 +29330,13 @@ function createComposer(options = {}) {
       if (!key) {
         return false;
       }
-      const targetLocale = isString$2(locale2) ? locale2 : _locale.value;
+      const targetLocale = isString(locale2) ? locale2 : _locale.value;
       const message = getLocaleMessage(targetLocale);
       const resolved = _context.messageResolver(message, key);
-      return isMessageAST(resolved) || isMessageFunction(resolved) || isString$2(resolved);
+      return isMessageAST(resolved) || isMessageFunction(resolved) || isString(resolved);
     }, () => [key], "translate exists", (root) => {
       return Reflect.apply(root.te, root, [key, locale2]);
-    }, NOOP_RETURN_FALSE, (val) => isBoolean$1(val));
+    }, NOOP_RETURN_FALSE, (val) => isBoolean(val));
   }
   function resolveMessages(key) {
     let messages22 = null;
@@ -29317,7 +29394,7 @@ function createComposer(options = {}) {
     clearDateTimeFormat(_context, locale2, format2);
   }
   function mergeDateTimeFormat(locale2, format2) {
-    _datetimeFormats.value[locale2] = assign$3(_datetimeFormats.value[locale2] || {}, format2);
+    _datetimeFormats.value[locale2] = assign$1(_datetimeFormats.value[locale2] || {}, format2);
     _context.datetimeFormats = _datetimeFormats.value;
     clearDateTimeFormat(_context, locale2, format2);
   }
@@ -29330,7 +29407,7 @@ function createComposer(options = {}) {
     clearNumberFormat(_context, locale2, format2);
   }
   function mergeNumberFormat(locale2, format2) {
-    _numberFormats.value[locale2] = assign$3(_numberFormats.value[locale2] || {}, format2);
+    _numberFormats.value[locale2] = assign$1(_numberFormats.value[locale2] || {}, format2);
     _context.numberFormats = _numberFormats.value;
     clearNumberFormat(_context, locale2, format2);
   }
@@ -29486,7 +29563,7 @@ function getInterpolateArg({ slots }, keys2) {
         arg[key] = slot();
       }
       return arg;
-    }, {});
+    }, create());
   }
 }
 function getFragmentableTag() {
@@ -29495,14 +29572,14 @@ function getFragmentableTag() {
 const TranslationImpl = /* @__PURE__ */ defineComponent$1({
   /* eslint-disable */
   name: "i18n-t",
-  props: assign$3({
+  props: assign$1({
     keypath: {
       type: String,
       required: true
     },
     plural: {
       type: [Number, String],
-      validator: (val) => isNumber$1(val) || !isNaN(val)
+      validator: (val) => isNumber(val) || !isNaN(val)
     }
   }, baseFormatProps),
   /* eslint-enable */
@@ -29515,46 +29592,46 @@ const TranslationImpl = /* @__PURE__ */ defineComponent$1({
     });
     return () => {
       const keys2 = Object.keys(slots).filter((key) => key !== "_");
-      const options = {};
+      const options = create();
       if (props.locale) {
         options.locale = props.locale;
       }
       if (props.plural !== void 0) {
-        options.plural = isString$2(props.plural) ? +props.plural : props.plural;
+        options.plural = isString(props.plural) ? +props.plural : props.plural;
       }
       const arg = getInterpolateArg(context, keys2);
       const children = i18n2[TranslateVNodeSymbol](props.keypath, arg, options);
-      const assignedAttrs = assign$3({}, attrs);
-      const tag = isString$2(props.tag) || isObject$2(props.tag) ? props.tag : getFragmentableTag();
+      const assignedAttrs = assign$1(create(), attrs);
+      const tag = isString(props.tag) || isObject$1(props.tag) ? props.tag : getFragmentableTag();
       return h(tag, assignedAttrs, children);
     };
   }
 });
 const Translation = TranslationImpl;
 function isVNode(target) {
-  return isArray$2(target) && !isString$2(target[0]);
+  return isArray$1(target) && !isString(target[0]);
 }
 function renderFormatter(props, context, slotKeys, partFormatter) {
   const { slots, attrs } = context;
   return () => {
     const options = { part: true };
-    let overrides = {};
+    let overrides = create();
     if (props.locale) {
       options.locale = props.locale;
     }
-    if (isString$2(props.format)) {
+    if (isString(props.format)) {
       options.key = props.format;
-    } else if (isObject$2(props.format)) {
-      if (isString$2(props.format.key)) {
+    } else if (isObject$1(props.format)) {
+      if (isString(props.format.key)) {
         options.key = props.format.key;
       }
       overrides = Object.keys(props.format).reduce((options2, prop) => {
-        return slotKeys.includes(prop) ? assign$3({}, options2, { [prop]: props.format[prop] }) : options2;
-      }, {});
+        return slotKeys.includes(prop) ? assign$1(create(), options2, { [prop]: props.format[prop] }) : options2;
+      }, create());
     }
     const parts = partFormatter(...[props.value, options, overrides]);
     let children = [options.key];
-    if (isArray$2(parts)) {
+    if (isArray$1(parts)) {
       children = parts.map((part, index) => {
         const slot = slots[part.type];
         const node = slot ? slot({ [part.type]: part.value, index, parts }) : [part.value];
@@ -29563,18 +29640,18 @@ function renderFormatter(props, context, slotKeys, partFormatter) {
         }
         return node;
       });
-    } else if (isString$2(parts)) {
+    } else if (isString(parts)) {
       children = [parts];
     }
-    const assignedAttrs = assign$3({}, attrs);
-    const tag = isString$2(props.tag) || isObject$2(props.tag) ? props.tag : getFragmentableTag();
+    const assignedAttrs = assign$1(create(), attrs);
+    const tag = isString(props.tag) || isObject$1(props.tag) ? props.tag : getFragmentableTag();
     return h(tag, assignedAttrs, children);
   };
 }
 const NumberFormatImpl = /* @__PURE__ */ defineComponent$1({
   /* eslint-disable */
   name: "i18n-n",
-  props: assign$3({
+  props: assign$1({
     value: {
       type: Number,
       required: true
@@ -29597,32 +29674,6 @@ const NumberFormatImpl = /* @__PURE__ */ defineComponent$1({
   }
 });
 const NumberFormat = NumberFormatImpl;
-const DatetimeFormatImpl = /* @__PURE__ */ defineComponent$1({
-  /* eslint-disable */
-  name: "i18n-d",
-  props: assign$3({
-    value: {
-      type: [Number, Date],
-      required: true
-    },
-    format: {
-      type: [String, Object]
-    }
-  }, baseFormatProps),
-  /* eslint-enable */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setup(props, context) {
-    const i18n2 = props.i18n || useI18n({
-      useScope: props.scope,
-      __useComponent: true
-    });
-    return renderFormatter(props, context, DATETIME_FORMAT_OPTIONS_KEYS, (...args) => (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      i18n2[DatetimePartsSymbol](...args)
-    ));
-  }
-});
-const DatetimeFormat = DatetimeFormatImpl;
 function getComposer$1(i18n2, instance) {
   const i18nInternal = i18n2;
   if (i18n2.mode === "composition") {
@@ -29687,9 +29738,9 @@ function vTDirective(i18n2) {
   };
 }
 function parseValue(value) {
-  if (isString$2(value)) {
+  if (isString(value)) {
     return { path: value };
-  } else if (isPlainObject$1(value)) {
+  } else if (isPlainObject(value)) {
     if (!("path" in value)) {
       throw createI18nError(I18nErrorCodes.REQUIRED_VALUE, "path");
     }
@@ -29702,20 +29753,20 @@ function makeParams(value) {
   const { path, locale, args, choice, plural } = value;
   const options = {};
   const named = args || {};
-  if (isString$2(locale)) {
+  if (isString(locale)) {
     options.locale = locale;
   }
-  if (isNumber$1(choice)) {
+  if (isNumber(choice)) {
     options.plural = choice;
   }
-  if (isNumber$1(plural)) {
+  if (isNumber(plural)) {
     options.plural = plural;
   }
   return [path, named, options];
 }
 function apply(app2, i18n2, ...options) {
-  const pluginOptions = isPlainObject$1(options[0]) ? options[0] : {};
-  const globalInstall = isBoolean$1(pluginOptions.globalInstall) ? pluginOptions.globalInstall : true;
+  const pluginOptions = isPlainObject(options[0]) ? options[0] : {};
+  const globalInstall = isBoolean(pluginOptions.globalInstall) ? pluginOptions.globalInstall : true;
   if (globalInstall) {
     [Translation.name, "I18nT"].forEach((name) => app2.component(name, Translation));
     [NumberFormat.name, "I18nN"].forEach((name) => app2.component(name, NumberFormat));
@@ -29726,8 +29777,8 @@ function apply(app2, i18n2, ...options) {
   }
 }
 const I18nInjectionKey = /* @__PURE__ */ makeSymbol("global-vue-i18n");
-function createI18n(options = {}, VueI18nLegacy) {
-  const __globalInjection = isBoolean$1(options.globalInjection) ? options.globalInjection : true;
+function createI18n(options = {}) {
+  const __globalInjection = isBoolean(options.globalInjection) ? options.globalInjection : true;
   const __instances = /* @__PURE__ */ new Map();
   const [globalScope, __global] = createGlobal(options);
   const symbol = /* @__PURE__ */ makeSymbol("");
@@ -29749,7 +29800,7 @@ function createI18n(options = {}, VueI18nLegacy) {
     async install(app2, ...options2) {
       app2.__VUE_I18N_SYMBOL__ = symbol;
       app2.provide(app2.__VUE_I18N_SYMBOL__, i18n2);
-      if (isPlainObject$1(options2[0])) {
+      if (isPlainObject(options2[0])) {
         const opts = options2[0];
         i18n2.__composerExtend = opts.__composerExtend;
         i18n2.__vueI18nExtend = opts.__vueI18nExtend;
@@ -29812,7 +29863,7 @@ function useI18n(options = {}) {
   const i18nInternal = i18n2;
   let composer = i18nInternal.__getInstance(instance);
   if (composer == null) {
-    const composerOptions = assign$3({}, options);
+    const composerOptions = assign$1({}, options);
     if ("__i18n" in componentOptions) {
       composerOptions.__i18n = componentOptions.__i18n;
     }
@@ -29828,7 +29879,7 @@ function useI18n(options = {}) {
   }
   return composer;
 }
-function createGlobal(options, legacyMode, VueI18nLegacy) {
+function createGlobal(options, legacyMode) {
   const scope = effectScope();
   const obj = scope.run(() => createComposer(options));
   if (obj == null) {
@@ -29844,7 +29895,7 @@ function getI18nInstance(instance) {
   return i18n2;
 }
 function getScope(options, componentOptions) {
-  return isEmptyObject$1(options) ? "__i18n" in componentOptions ? "local" : "global" : !options.useScope ? "local" : options.useScope;
+  return isEmptyObject(options) ? "__i18n" in componentOptions ? "local" : "global" : !options.useScope ? "local" : options.useScope;
 }
 function getGlobalComposer(i18n2) {
   return i18n2.mode === "composition" ? i18n2.global : i18n2.global.__composer;
@@ -29931,6 +29982,32 @@ function injectGlobalFields(app2, composer) {
   };
   return dispose;
 }
+const DatetimeFormatImpl = /* @__PURE__ */ defineComponent$1({
+  /* eslint-disable */
+  name: "i18n-d",
+  props: assign$1({
+    value: {
+      type: [Number, Date],
+      required: true
+    },
+    format: {
+      type: [String, Object]
+    }
+  }, baseFormatProps),
+  /* eslint-enable */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setup(props, context) {
+    const i18n2 = props.i18n || useI18n({
+      useScope: props.scope,
+      __useComponent: true
+    });
+    return renderFormatter(props, context, DATETIME_FORMAT_OPTIONS_KEYS, (...args) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      i18n2[DatetimePartsSymbol](...args)
+    ));
+  }
+});
+const DatetimeFormat = DatetimeFormatImpl;
 {
   initFeatureFlags();
 }
@@ -29938,7 +30015,7 @@ registerMessageCompiler(compile);
 registerMessageResolver(resolveValue);
 registerLocaleFallbacker(fallbackWithLocaleChain);
 if (__INTLIFY_PROD_DEVTOOLS__) {
-  const target = getGlobalThis$1();
+  const target = getGlobalThis();
   target.__INTLIFY__ = true;
   setDevToolsHook(target.__INTLIFY_DEVTOOLS_GLOBAL_HOOK__);
 }
@@ -30266,7 +30343,7 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const HeaderBar = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["__scopeId", "data-v-a688a0b3"]]);
+const HeaderBar = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["__scopeId", "data-v-bdbc8c26"]]);
 const _sfc_main$A = /* @__PURE__ */ defineComponent$1({
   __name: "InfoBar",
   setup(__props) {
@@ -30461,7 +30538,7 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const InfoBar = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-0d064159"]]);
+const InfoBar = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-8fbbfa9c"]]);
 const _sfc_main$z = {};
 const _hoisted_1$a = {
   height: "32",
@@ -30706,7 +30783,7 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const TitleBar = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["__scopeId", "data-v-d99fc21c"]]);
+const TitleBar = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["__scopeId", "data-v-df94414a"]]);
 const _hoisted_1$2 = { class: "nowrap" };
 const _sfc_main$q = /* @__PURE__ */ defineComponent$1({
   __name: "FooterBar",
@@ -30740,7 +30817,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent$1({
           }),
           createVNode(VBtn, {
             color: "white",
-            href: "mailto:stockmanager@gmx.de"
+            href: "mailto:meingirokonto@gmx.de"
           }, {
             default: withCtx(() => [
               createVNode(VIcon, { icon: "$mail" }),
@@ -30764,7 +30841,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const FooterBar = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-aeafc508"]]);
+const FooterBar = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-c9af5de9"]]);
 const _sfc_main$p = /* @__PURE__ */ defineComponent$1({
   __name: "ExportDatabase",
   setup(__props, { expose: __expose }) {
@@ -31956,7 +32033,7 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const DailyChanges = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["__scopeId", "data-v-33494c95"]]);
+const DailyChanges = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["__scopeId", "data-v-df8d47c0"]]);
 const _sfc_main$j = /* @__PURE__ */ defineComponent$1({
   __name: "AddCompany",
   setup(__props, { expose: __expose }) {
@@ -33982,7 +34059,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-b099bcb1"]]);
+const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-a83455e9"]]);
 const _sfc_main$7 = /* @__PURE__ */ defineComponent$1({
   __name: "DefaultLayout",
   setup(__props) {
@@ -36598,16 +36675,16 @@ const messages = mergeDeep(
       }
     },
     "helpPage": {
-      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Stockmanager Hilfe" } },
+      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto Hilfe" } },
       "requestsTitle": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Anforderungen" } },
       "requests": [
         {
           "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Einstellungen - Datenschutz - Chronik" } },
-          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt." } },
+          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt." } },
           "icon": { "t": 0, "b": { "static": "", "t": 2, "i": [] } }
         },
         {
-          "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Stockmanager starten" } },
+          "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto starten" } },
           "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden." } },
           "icon": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "$sm" } }
         }
@@ -36686,7 +36763,7 @@ const messages = mergeDeep(
         },
         {
           "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Einstellungen" } },
-          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Klicken um das Stockmanager Einstellungen-Tab anzuzeigen." } },
+          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Klicken um das MeinGiroKonto Einstellungen-Tab anzuzeigen." } },
           "icon": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "$settings" } }
         }
       ],
@@ -36758,14 +36835,14 @@ const messages = mergeDeep(
       ]
     },
     "privacyPage": {
-      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Stockmanager Datenschutz Richtlinien" } },
+      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto Datenschutz Richtlinien" } },
       "local": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Lokale Daten" } },
-        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager speichert alle Daten lokal im Browser. Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. StockManager personalisiert keine Daten." } }
+        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto speichert alle Daten lokal im Browser. Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. MeinGiroKonto personalisiert keine Daten." } }
       },
       "public": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Öffentliche Daten" } },
-        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager verwendet Kursdaten von öffentlichen Kursanbietern. Diese Daten werden über das Internet abgerufen. Die Kursanbieter können die Daten jederzeit ändern oder abschalten. StockManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden Aktien-Kürzel, ISIN bzw. WKN über das Internet versendet. Andere Daten werden nicht weitergegeben." } }
+        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto verwendet Kursdaten von öffentlichen Kursanbietern. Diese Daten werden über das Internet abgerufen. Die Kursanbieter können die Daten jederzeit ändern oder abschalten. MeinGiroKonto übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden Aktien-Kürzel, ISIN bzw. WKN über das Internet versendet. Andere Daten werden nicht weitergegeben." } }
       },
       "connections": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Internetverbindungen" } },
@@ -36781,7 +36858,7 @@ const messages = mergeDeep(
       }
     },
     "partnerPage": {
-      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Stockmanager Partner" } },
+      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto Partner" } },
       "buttonText": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Öffnen" } },
       "linkData": [
         {
@@ -37385,11 +37462,11 @@ const messages = mergeDeep(
       "requests": [
         {
           "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Settings - Privacy - History" } },
-          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager does not work in private mode. " } },
+          "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto does not work in private mode. " } },
           "icon": { "t": 0, "b": { "static": "", "t": 2, "i": [] } }
         },
         {
-          "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Start stock manager" } },
+          "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Start MeinGiroKonto" } },
           "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "The symbol shown appears in the Firefox toolbar after installation. " } },
           "icon": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "$sm" } }
         }
@@ -37540,14 +37617,14 @@ const messages = mergeDeep(
       ]
     },
     "privacyPage": {
-      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Stockmanager data protection guidelines" } },
+      "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto data protection guidelines" } },
       "local": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Local data" } },
-        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager saves all data locally in the browser. " } }
+        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto saves all data locally in the browser. " } }
       },
       "public": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Public data" } },
-        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "StockManager uses price data from public price providers. " } }
+        "content": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "MeinGiroKonto uses price data from public price providers. " } }
       },
       "connections": {
         "title": { "t": 0, "b": { "t": 2, "i": [{ "t": 3 }], "s": "Internet connections" } },
@@ -37860,7 +37937,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent$1({
     };
   }
 });
-const HelpPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-9a0b6edb"]]);
+const HelpPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-12b9229d"]]);
 const _sfc_main$3 = /* @__PURE__ */ defineComponent$1({
   __name: "PrivacyPage",
   setup(__props) {

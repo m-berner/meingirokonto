@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserve
+ * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserve
  */
 import {useApp} from '@/composables/useApp'
 
@@ -1021,7 +1021,7 @@ const useListener = (): IUseListener => {
           console.error('BACKGROUND: missing fetchApi event type')
       }
     } else {
-      console.info('BACKGROUND: No stockmanager tab found!')
+      console.info('BACKGROUND: No meingirokonto tab found!')
     }
   }
   const onConnect = (aPort: browser.runtime.Port) => {

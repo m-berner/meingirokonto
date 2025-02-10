@@ -3,7 +3,7 @@
   -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
   -- you could obtain one at https://mozilla.org/MPL/2.0/.
   --
-  -- Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
+  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
   <v-bottom-navigation color="primary">
@@ -15,7 +15,7 @@
       <v-icon icon="$privacy"></v-icon>
       <span>{{ t('footer.privacy') }}</span>
     </v-btn>
-    <v-btn color="white" href="mailto:stockmanager@gmx.de">
+    <v-btn color="white" href="mailto:meingirokonto@gmx.de">
       <v-icon icon="$mail"></v-icon>
       <span>{{ t('footer.mail') }}</span>
     </v-btn>

@@ -87,8 +87,8 @@ const useApp = () => {
       MILLIPERMIN: 6e4
     },
     DB: {
-      BKFN: "stockmanager.json",
-      NAME: "stockmanager.db",
+      BKFN: "meingirokonto.json",
+      NAME: "meingirokonto.db",
       RECORD_TYPES: {
         BUY: 1,
         CUR: 8,
@@ -509,7 +509,7 @@ const useApp = () => {
       COPYRIGHT: "2013-2025 Martin Berner",
       FETCHTO: 20,
       DELAY: 600,
-      EMAIL: "mailto:stockmanager@gmx.de",
+      EMAIL: "mailto:meingirokonto@gmx.de",
       GET: "GET",
       HTMLENTITY: "(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)",
       ISINLENGTH: 12,
@@ -767,7 +767,7 @@ const useApp = () => {
       const notificationOption = {
         type: "basic",
         iconUrl: "_assets/icon16.png",
-        title: "Stockmanager",
+        title: "MeinGiroKonto",
         message: msg
       };
       await browser.notifications.create(notificationOption);
