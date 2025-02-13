@@ -128,7 +128,7 @@ interface IConfigStock {
 const {t} = useI18n()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
-const {dateToISO, notice, toNumber, validators} = useApp()
+const {dateToISO, validators} = useApp()
 const formRef = useTemplateRef('form-ref')
 const state: IConfigStock = reactive({
   _company: '',
@@ -144,42 +144,42 @@ const state: IConfigStock = reactive({
 
 const ok = async (): Promise<void> => {
   console.log('CONFIGSTOCK: ok')
-  const records = useRecordsStore()
-  const stock: IStock = records.stocks.active[records.stocks.active_index]
-  if ((stock.mPortfolio ?? 0) > 0.9 && state._fade_out !== '0') {
-    state._fade_out = '0'
-  }
-  if (
-    validators.isin(state._isin) === true &&
-    validators.wkn(state._wkn) === true &&
-    validators.url(state._url) === true
-  ) {
-    const indexOfActiveStock = records._stocks.active.findIndex((activeStock: IStock) => {
-      return stock.cID === activeStock.cID
-    })
-    if (indexOfActiveStock > -1 && toNumber(state._fade_out) === 1) {
-      records._stocks.active.splice(indexOfActiveStock, 1)
-      records._stocks.passive.push(stock)
-    }
-
-    stock.cCompany = state._company
-    stock.cISIN = state._isin
-    stock.cWKN = state._wkn
-    stock.cSym = state._sym
-    stock.cFirstPage = toNumber(state._first_page)
-    stock.cFadeOut = toNumber(state._fade_out)
-    stock.cMeetingDay = new Date(state._meeting_day).getTime()
-    stock.cQuarterDay = new Date(state._quarter_day).getTime()
-    stock.cURL = state._url
-
-    records._sortActiveStocks()
-    await records.updateStock(stock)
-    records.evaluateTransfers()
-    records.setDrawerDepot()
-    runtime.toggleVisibility()
-  } else {
-    notice(['CONFIGSTOCK: validation failed!'])
-  }
+  // const records = useRecordsStore()
+  // const stock: IStock = records.stocks.active[records.stocks.active_index]
+  // if ((stock.mPortfolio ?? 0) > 0.9 && state._fade_out !== '0') {
+  //   state._fade_out = '0'
+  // }
+  // if (
+  //   validators.isin(state._isin) === true &&
+  //   validators.wkn(state._wkn) === true &&
+  //   validators.url(state._url) === true
+  // ) {
+  //   const indexOfActiveStock = records._stocks.active.findIndex((activeStock: IStock) => {
+  //     return stock.cID === activeStock.cID
+  //   })
+  //   if (indexOfActiveStock > -1 && toNumber(state._fade_out) === 1) {
+  //     records._stocks.active.splice(indexOfActiveStock, 1)
+  //     records._stocks.passive.push(stock)
+  //   }
+  //
+  //   stock.cCompany = state._company
+  //   stock.cISIN = state._isin
+  //   stock.cWKN = state._wkn
+  //   stock.cSym = state._sym
+  //   stock.cFirstPage = toNumber(state._first_page)
+  //   stock.cFadeOut = toNumber(state._fade_out)
+  //   stock.cMeetingDay = new Date(state._meeting_day).getTime()
+  //   stock.cQuarterDay = new Date(state._quarter_day).getTime()
+  //   stock.cURL = state._url
+  //
+  //   records._sortActiveStocks()
+  //   await records.updateAccount(stock)
+  //   records.evaluateTransfers()
+  //   records.setDrawerDepot()
+  //   runtime.toggleVisibility()
+  // } else {
+  //   notice(['CONFIGSTOCK: validation failed!'])
+  // }
 }
 const title = () => {
   return t('dialogs.configStock.title', {

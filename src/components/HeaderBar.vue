@@ -46,7 +46,7 @@
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addStock')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADDCOMPANY"
@@ -55,7 +55,7 @@
           variant="tonal"
           v-on:click="runtime.toggleVisibility"
         >
-          <v-icon class="put-into-background" icon="$addStock"></v-icon
+          <v-icon class="put-into-background" icon="$addAccount"></v-icon
           >
         </v-app-bar-nav-icon>
       </template>

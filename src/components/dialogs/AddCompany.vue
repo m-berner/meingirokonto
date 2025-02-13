@@ -15,7 +15,7 @@
         autofocus
         required
         v-bind:counter="12"
-        v-bind:label="t('dialogs.addStock.isin')"
+        v-bind:label="t('dialogs.addAccount.isin')"
         v-bind:rules="[validators.isin]"
         variant="outlined"
         v-on:focus="formRef?.resetValidation"
@@ -25,21 +25,21 @@
         v-model="state._company"
         required
         v-bind:disabled="state._auto"
-        v-bind:label="t('dialogs.addStock.company')"
+        v-bind:label="t('dialogs.addAccount.company')"
         variant="outlined"
       ></v-text-field>
       <v-text-field
         v-model="state._wkn"
         required
         v-bind:disabled="state._auto"
-        v-bind:label="t('dialogs.addStock.wkn')"
+        v-bind:label="t('dialogs.addAccount.wkn')"
         variant="outlined"
       ></v-text-field>
       <v-text-field
         v-model="state._sym"
         required
         v-bind:disabled="state._auto"
-        v-bind:label="t('dialogs.addStock.symbol')"
+        v-bind:label="t('dialogs.addAccount.symbol')"
         variant="outlined"
       ></v-text-field>
     </v-card-text>
@@ -53,19 +53,20 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
-interface IAddStock {
+interface IAccount {
   _isin: string
   _company: string
   _wkn: string
   _sym: string
   _auto: boolean
+  cName?:string
 }
 
 const {t} = useI18n()
-const {appPort, CONS, notice, validators} = useApp()
+const {CONS, notice, validators} = useApp()
 const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
-const state: IAddStock = reactive({
+const state: IAccount = reactive({
   _isin: '',
   _company: '',
   _wkn: '',
@@ -74,7 +75,7 @@ const state: IAddStock = reactive({
 })
 
 const onMessageAddCompany = async (ev: MessageEvent): Promise<void> => {
-  console.info('ADDSTOCK: onMessageAddCompany', ev)
+  console.info('addAccount: onMessageAddCompany', ev)
   if (ev.data === undefined) {
     notice(['Sorry, no data arrived'])
   } else {
@@ -88,17 +89,17 @@ const onMessageAddCompany = async (ev: MessageEvent): Promise<void> => {
   }
 }
 const onIsin = async (): Promise<void> => {
-  console.log('ADDSTOCK: onIsin')
-  if (state._isin !== '' && state._isin?.length === 12) {
-    appPort().postMessage({
-      type: CONS.FETCH_API.ASK__COMPANY_DATA,
-      data: state._isin
-    })
-  }
+  console.log('addAccount: onIsin')
+  // if (state._isin !== '' && state._isin?.length === 12) {
+  //   appPort().postMessage({
+  //     type: CONS.FETCH_API.ASK__COMPANY_DATA,
+  //     data: state._isin
+  //   })
+  // }
 }
 
 const ok = async (): Promise<void> => {
-  console.log('ADDSTOCK: ok')
+  console.log('addAccount: ok')
   const records = useRecordsStore()
   const stock: IAddedStock = {
     cCompany: state._company,
@@ -111,25 +112,25 @@ const ok = async (): Promise<void> => {
     cFirstPage: 0,
     cURL: ''
   }
-  const verify = records.stocks.all.filter((rec: IStock) => {
-    return state._isin.toUpperCase() === rec.cISIN.toUpperCase()
+  const verify = records.account.all.filter(() => {
+    return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
   })
   if (verify.length > 0) {
-    notice(['ADDSTOCK ERROR: stock exists already'])
+    notice(['addAccount ERROR: stock exists already'])
   } else {
-    await records.addStock(stock)
+    await records.addAccount(stock)
     runtime.toggleVisibility(CONS.DIALOGS.ADDCOMPANY)
   }
 }
 const title = () => {
-  return t('dialogs.addStock.title')
+  return t('dialogs.addAccount.title')
 }
 const classes = () => {
   return ''
 }
 
 onMounted(() => {
-  console.log('ADDSTOCK: onMounted', formRef)
+  console.log('addAccount: onMounted', formRef)
   formRef.value?.reset()
   state._auto = true
   runtime.setIsOk(true)
@@ -141,5 +142,5 @@ onMounted(() => {
 
 defineExpose({ok, title, classes})
 
-console.log('--- AddStock.vue setup ---')
+console.log('--- addAccount.vue setup ---')
 </script>

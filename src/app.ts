@@ -68,7 +68,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomePage,
+      component: HomePage
     },
     {
       path: '/options',
@@ -176,7 +176,7 @@ const vuetify = createVuetify({
       home: mdiHome,
       euro: mdiCurrencyEur,
       reload: mdiReload,
-      addStock: mdiDomainPlus,
+      addAccount: mdiDomainPlus,
       deleteStock: mdiDomainRemove,
       fadeinStock: mdiDomain,
       cashPlus: mdiCashPlus,

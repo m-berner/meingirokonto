@@ -17,7 +17,7 @@
         v-bind:label="t('dialogs.fadeinStock.title')"
         v-bind:return-object="true"
         variant="outlined"
-        v-on:update:modelValue="() => state._selected.cFadeOut = 0"
+        v-on:update:modelValue="() => state._selected.cName"
       ></v-select>
     </v-card-text>
   </v-form>
@@ -30,29 +30,25 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
-interface IFadeinStock {
-  _selected: IStock
-}
-
 const {t} = useI18n()
 const {CONS, toNumber} = useApp()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
-const state: IFadeinStock = reactive({
-  _selected: CONS.RECORDS.TEMPLATES.STOCK
+const state = reactive({
+  _selected: CONS.RECORDS.TEMPLATES.MSTOCK
 })
 
 const ok = async (): Promise<void> => {
   console.log('FADEINSTOCK: ok')
   const records = useRecordsStore()
-  const indexOfPassiveStock = records._stocks.passive.findIndex((passiveStock: IStock) => {
+  const indexOfPassiveStock = records._stocks.passive.findIndex((passiveStock: IAccount) => {
     return state._selected.cID === passiveStock.cID
   })
-  if (indexOfPassiveStock > -1 && toNumber(state._selected.cFadeOut) === 0) {
+  if (indexOfPassiveStock > -1 && toNumber(state._selected.cName) === 0) {
     records._stocks.passive.splice(indexOfPassiveStock, 1)
     records._stocks.active.push(state._selected)
   }
-  await records.updateStock(state._selected)
+  await records.updateAccount(state._selected)
   runtime.toggleVisibility()
 }
 const title = () => {
@@ -65,7 +61,7 @@ defineExpose({ok, title, classes})
 
 onMounted(() => {
   console.log('FADEINSTOCK: onMounted')
-  state._selected = CONS.RECORDS.TEMPLATES.STOCK
+  // state._selected = CONS.RECORDS.TEMPLATES.STOCK
   runtime.setIsOk(true)
 })
 

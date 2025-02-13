@@ -12,7 +12,7 @@
     v-bind:headers="tableHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="(records.stocks.active as IStock[])"
+    v-bind:items="(records.account.all as IAccount[])"
     v-bind:items-per-page="settings.itemsPerPageStocks"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
@@ -30,26 +30,7 @@
         <td>
           <OptionMenu menuType="stocks" v-bind:menuItems="options" v-bind:recordID="item.cID"></OptionMenu>
         </td>
-        <td>{{ item.cCompany }}</td>
-        <td>{{ item.cISIN }}</td>
-        <td v-if="item.cQuarterDay > 0">{{ d(new Date(item.cQuarterDay), 'short', 'de-DE') }}</td>
-        <td v-else></td>
-        <td v-if="item.cMeetingDay > 0">{{ d(new Date(item.cMeetingDay), 'short', 'de-DE') }}</td>
-        <td v-else></td>
-        <td>{{ item.mPortfolio }}</td>
-        <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
-        <v-tooltip location="left" v-bind:text="n((item.mChange ?? 0) / 100, 'percent')">
-          <template v-slot:activator="{ props }">
-            <td v-bind:ref="setDynamicStyleWinLoss" v-bind="props">
-              {{ n(item.mEuroChange ?? 0, 'currency') }}
-            </td>
-          </template>
-        </v-tooltip>
-        <td>{{ n(item.mMin ?? 0, 'currency') }}</td>
-        <td class="font-weight-bold color-black">
-          {{ n(item.mValue ?? 0, 'currency3') }}
-        </td>
-        <td>{{ n(item.mMax ?? 0, 'currency') }}</td>
+        <td>{{ item.cName }}</td>
       </tr>
     </template>
   </v-data-table>
@@ -64,8 +45,8 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
-const {d, n, rt, t, tm} = useI18n()
-const {CONS, notice, toNumber} = useApp()
+const {rt, t, tm} = useI18n()
+const {CONS} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -80,43 +61,43 @@ const tableHeaders = headers.map((item: { title: string, align: string, sortable
   }
 })
 const options: Record<string, string>[] = tm('stocksTable.menuItems')
-const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
-  if (el !== null) {
-    if (toNumber(el.textContent) < 0) {
-      el.classList.add('color-red')
-    } else if (toNumber(el.textContent) > 0) {
-      el.classList.add('color-black')
-    }
-    el.classList.add('font-weight-bold')
-  }
-}
+// const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
+//   if (el !== null) {
+//     if (toNumber(el.textContent) < 0) {
+//       el.classList.add('color-red')
+//     } else if (toNumber(el.textContent) > 0) {
+//       el.classList.add('color-black')
+//     }
+//     el.classList.add('font-weight-bold')
+//   }
+// }
 const onUpdatePageHandler = async (p: number): Promise<void> => {
   console.info('STOCKSTABLE: onUpdatePageHandler', p)
   records.setActiveStocksPage(p)
   await records.updateWrapper()
 }
-const onMessageStocksTable = async (ev: MessageEvent): Promise<void> => {
-  console.info('STOCKSTABLE: onMessageStocksTable', ev)
-  if (ev.data === undefined) {
-    notice(['Sorry, no data arrived'])
-  } else {
-    if (ev.type === CONS.FETCH_API.ANSWER__MIN_RATE_MAX) {
-      runtime.setIsStocksLoading(false)
-      records.updatePage(ev.data)
-      records.setDrawerDepot()
-    } else if (ev.type === CONS.FETCH_API.ANSWER__DATES_DATA && ev.data.length > 0 && !runtime.isImportDb) {
-      for (let i = 0; i < ev.data.length; i++) {
-        const index = records._getActiveStocksIndexById(ev.data[i].key)
-        records.setDates(index, ev.data[i].value)
-      }
-      await records.storeIntoDatabase('update')
-    }
-  }
-}
-if (!browser.runtime.onMessage.hasListener(onMessageStocksTable)) {
-  // noinspection JSDeprecatedSymbols
-  browser.runtime.onMessage.addListener(onMessageStocksTable)
-}
+// const onMessageStocksTable = async (ev: MessageEvent): Promise<void> => {
+//   console.info('STOCKSTABLE: onMessageStocksTable', ev)
+//   if (ev.data === undefined) {
+//     notice(['Sorry, no data arrived'])
+//   } else {
+//     if (ev.type === CONS.FETCH_API.ANSWER__MIN_RATE_MAX) {
+//       runtime.setIsStocksLoading(false)
+//       records.updatePage(ev.data)
+//       records.setDrawerDepot()
+//     } else if (ev.type === CONS.FETCH_API.ANSWER__DATES_DATA && ev.data.length > 0 && !runtime.isImportDb) {
+//       for (let i = 0; i < ev.data.length; i++) {
+//         const index = records._getAccountIndexById(ev.data[i].key)
+//         records.setDates(index, ev.data[i].value)
+//       }
+//       await records.storeIntoDatabase('update')
+//     }
+//   }
+// }
+// if (!browser.runtime.onMessage.hasListener(onMessageStocksTable)) {
+//   // noinspection JSDeprecatedSymbols
+//   browser.runtime.onMessage.addListener(onMessageStocksTable)
+// }
 
 console.log('--- StocksTable.vue setup ---')
 </script>

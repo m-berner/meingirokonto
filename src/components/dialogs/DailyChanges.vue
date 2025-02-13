@@ -59,7 +59,7 @@ interface IDailyChanges {
 }
 
 const {t} = useI18n()
-const {appPort, CONS, notice} = useApp()
+const {CONS, notice} = useApp()
 const runtime = useRuntimeStore()
 const state: IDailyChanges = reactive({
   _progress: true,
@@ -113,23 +113,23 @@ const getDailyChanges = async (): Promise<void> => {
   state._tmpChanges = []
   state._tmpChangesWithNoDuplicates = []
   state._progress = true
-  if (runtime.changesMode === CONS.DIALOGS.DAILYCHANGES) {
-    for (let i = 0; i < CONS.SERVICES.tgate.CHS.length; i++) {
-      appPort().postMessage({
-        type: CONS.FETCH_API.ASK__DAILY_CHANGES,
-        data: CONS.SERVICES.tgate.CHS[i],
-        lastEventId: i.toString()
-      })
-    }
-  } else {
-    for (let i = 0; i < CONS.SERVICES.tgate.CHB.length; i++) {
-      appPort().postMessage({
-        type: CONS.FETCH_API.ASK__DAILY_CHANGES_ALL,
-        data: CONS.SERVICES.tgate.CHB[i],
-        lastEventId: i.toString()
-      })
-    }
-  }
+  // if (runtime.changesMode === CONS.DIALOGS.DAILYCHANGES) {
+  //   for (let i = 0; i < CONS.SERVICES.tgate.CHS.length; i++) {
+  //     appPort().postMessage({
+  //       type: CONS.FETCH_API.ASK__DAILY_CHANGES,
+  //       data: CONS.SERVICES.tgate.CHS[i],
+  //       lastEventId: i.toString()
+  //     })
+  //   }
+  // } else {
+  //   for (let i = 0; i < CONS.SERVICES.tgate.CHB.length; i++) {
+  //     appPort().postMessage({
+  //       type: CONS.FETCH_API.ASK__DAILY_CHANGES_ALL,
+  //       data: CONS.SERVICES.tgate.CHB[i],
+  //       lastEventId: i.toString()
+  //     })
+  //   }
+  // }
   state._progress = false
 }
 const title = () => {

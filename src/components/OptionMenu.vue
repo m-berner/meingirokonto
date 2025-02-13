@@ -51,7 +51,7 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 interface PropsOptionMenu {
-  recordID: number
+  recordID: number|undefined
   menuItems: Record<string, string>[]
   menuType: string
 }

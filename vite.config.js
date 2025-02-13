@@ -21,7 +21,7 @@ export default defineConfig({
       targets: [
         {
           src: 'manifest.json',
-          dest: '.',
+          dest: '../meingirokonto@gmx.de/',
           overwrite: true
         },
         {

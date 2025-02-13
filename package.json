@@ -17,6 +17,7 @@
     "@typescript-eslint/eslint-plugin": "8.11.0",
     "@typescript-eslint/parser": "8.11.0",
     "@vitejs/plugin-vue": "5.1.4",
+    "@vue/language-server": "^2.2.0",
     "@web-types/vue": "3.0.0-1",
     "@web-types/vuetify": "2.0.15-1",
     "addons-linter": "7.3.0",

@@ -86,33 +86,25 @@ declare global {
     depotBuyValue: number
   }
 
-  interface IStock {
+  interface IAccount {
     cID: number
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSym: string
-    cQuarterDay: number
-    cMeetingDay: number
-    cFadeOut: number
-    cFirstPage: number
-    cNotFirstPage?: number
-    cURL: string
-    mPortfolio?: number
-    mBuyValue?: number
-    mValue?: number
-    mMin?: number
-    mMax?: number
-    mChange?: number
-    mEuroChange?: number
-    mDividendYielda?: number
-    mDividendYeara?: number
-    mDividendYieldb?: number
-    mDividendYearb?: number
-    mRealDividend?: number
-    mRealBuyValue?: number
-    mDeleteable?: boolean
-    mAskDates?: boolean
+    cName: string
+    cCurrency: string
+  }
+
+  interface IAccountType {
+    cID: number
+    cName: string
+  }
+
+  interface IBooking {
+    cID: number
+    cDate: number
+    cDebit: number
+    cCredit: number
+    cDescription: string
+    cAccountID: number
+    cAccountTypeID: number
   }
 
   interface IDrawerControls {
@@ -131,9 +123,9 @@ declare global {
 
   interface IBackup {
     sm: IBackupSm
-    stocks: IStock[]
-    transfers: ITransfer[]
-    orders?: unknown[]
+    account: IAccount[]
+    booking: IBooking[]
+    account_type: IAccountType[]
   }
 
   interface IStorageLocal {
@@ -177,12 +169,12 @@ declare global {
         // do not change! (part of database records)
       }
       STORES: {
-        // do not change! (part of database records)
-        S: string
-        SC: string[]
-        T: string
-        TC: string[]
-        // do not change! (part of database records)
+        ACCOUNT: string
+        ACCOUNT_COLS: string[]
+        ACCOUNT_TYPE: string
+        ACCOUNT_TYPE_COLS: string[]
+        BOOKING: string
+        BOOKING_COLS: string[]
       }
       VERSION: number
       MINVERSION: number
@@ -305,7 +297,7 @@ declare global {
     }
     RECORDS: {
       TEMPLATES: {
-        STOCK: IStock
+        //STOCK: IStock
         MSTOCK: Record<string, number | boolean>
         TRANSFER: ITransfer
       }
@@ -319,9 +311,9 @@ declare global {
   interface IUseApp {
     CONS: IConstants,
     validators: Record<string, (v: string | number) => boolean | string>,
-    appPort: () => browser.runtime.Port,
-    migrateStock: (stock: IStock) => IStock
-    migrateTransfer: (transfer: ITransfer) => ITransfer
+    //appPort: () => browser.runtime.Port,
+    //migrateStock: (stock: IStock) => IStock
+    //migrateTransfer: (transfer: ITransfer) => ITransfer
     notice: (messages: string[]) => void
     getUI: () => Record<string, string>
     group: (count: number, size?: number) => number[]
@@ -441,41 +433,16 @@ export const useApp = (): IUseApp => {
       },
       STORES: {
         // do not change! (part of database records)
-        S: 'stocks',
-        SC: [
-          'cID',
-          'cCompany',
-          'cISIN',
-          'cWKN',
-          'cSym',
-          'cQuarterDay',
-          'cMeetingDay',
-          'cFadeOut',
-          'cFirstPage',
-          'cURL'
-        ],
-        T: 'transfers',
-        TC: [
-          'cID',
-          'cStockID',
-          'cDate',
-          'cUnitQuotation',
-          'cAmount',
-          'cCount',
-          'cFees',
-          'cTax',
-          'cSTax',
-          'cFTax',
-          'cSoli',
-          'cMarketPlace',
-          'cType',
-          'cExDay',
-          'cDescription'
-        ]
+        ACCOUNT: 'account',
+        ACCOUNT_COLS: ['cID', 'cName'],
+        BOOKING: 'booking',
+        BOOKING_COLS: ['cID', 'cDate', 'cDebit', 'cReturn', 'cDescription', 'cAccountID', 'cAccountTypeID'],
+        ACCOUNT_TYPE: 'account_type',
+        ACCOUNT_TYPE_COLS: ['cID', 'cName']
         // do not change! (part of database records)
       },
-      VERSION: 24,
-      MINVERSION: 21
+      VERSION: 1,
+      MINVERSION: 1
     },
     DEFAULTS: {
       CURRENCY: 'EUR',
@@ -708,7 +675,7 @@ export const useApp = (): IUseApp => {
       LAST: 'last.png',
       CB: 'home.png',
       UP: 'update.png',
-      NS: 'addStock.png',
+      NS: 'addAccount.png',
       DS: 'deletestock.png',
       FI: 'fadein.png',
       IT: 'intransfer.png',
@@ -1074,57 +1041,57 @@ export const useApp = (): IUseApp => {
           return found < 0 ? true : 'Input is required.'
         }
     },
-    appPort: (): browser.runtime.Port => {
-      return browser.runtime.connect()
-    },
-    migrateStock: (stock: IStock): IStock => {
-      delete stock.mPortfolio
-      delete stock.mBuyValue
-      delete stock.mValue
-      delete stock.mMin
-      delete stock.mMax
-      delete stock.mChange
-      delete stock.mEuroChange
-      delete stock.mDividendYielda
-      delete stock.mDividendYeara
-      delete stock.mDividendYieldb
-      delete stock.mDividendYearb
-      delete stock.mRealDividend
-      delete stock.mRealBuyValue
-      delete stock.mDeleteable
-      delete stock.mAskDates
-      stock.cFadeOut = stock.cFadeOut ?? 0
-      stock.cNotFirstPage = stock.cNotFirstPage ?? 1
-      stock.cFirstPage = stock.cFirstPage ?? (stock.cNotFirstPage + 1) % 2
-      stock.cQuarterDay = stock.cQuarterDay > 0 ? stock.cQuarterDay - offset() : 0
-      stock.cMeetingDay = stock.cMeetingDay > 0 ? stock.cMeetingDay - offset() : 0
-      const props: string[] = Object.keys(stock)
-      for (let i = 0; i < props.length; i++) {
-        if (!CONS.DB.STORES.SC.includes(props[i])) {
-          delete stock[props[i]]
-        }
-      }
-      return stock
-    },
-    migrateTransfer: (transfer: ITransfer): ITransfer => {
-      delete transfer.mCompany
-      delete transfer.mSortDate
-      transfer.cCount = transfer.cNumber ?? transfer.cCount ?? 0
-      transfer.cAmount = transfer.cDeposit ?? transfer.cAmount ?? 0
-      transfer.cTax = transfer.cTaxes ?? transfer.cTax ?? 0
-      transfer.cFTax = transfer.cFTax ?? 0
-      transfer.cSTax = transfer.cSTax ?? 0
-      transfer.cSoli = transfer.cSoli ?? 0
-      transfer.cDate = transfer.cDate > 0 ? transfer.cDate - offset() : 0
-      transfer.cExDay = transfer.cExDay > 0 ? transfer.cExDay - offset() : 0
-      const props = Object.keys(transfer)
-      for (let i = 0; i < props.length; i++) {
-        if (!CONS.DB.STORES.TC.includes(props[i])) {
-          delete transfer[props[i]]
-        }
-      }
-      return transfer
-    },
+    // appPort: (): browser.runtime.Port => {
+    //   return browser.runtime.connect()
+    // },
+    // migrateStock: (stock: IStock): IStock => {
+    //   delete stock.mPortfolio
+    //   delete stock.mBuyValue
+    //   delete stock.mValue
+    //   delete stock.mMin
+    //   delete stock.mMax
+    //   delete stock.mChange
+    //   delete stock.mEuroChange
+    //   delete stock.mDividendYielda
+    //   delete stock.mDividendYeara
+    //   delete stock.mDividendYieldb
+    //   delete stock.mDividendYearb
+    //   delete stock.mRealDividend
+    //   delete stock.mRealBuyValue
+    //   delete stock.mDeleteable
+    //   delete stock.mAskDates
+    //   stock.cFadeOut = stock.cFadeOut ?? 0
+    //   stock.cNotFirstPage = stock.cNotFirstPage ?? 1
+    //   stock.cFirstPage = stock.cFirstPage ?? (stock.cNotFirstPage + 1) % 2
+    //   stock.cQuarterDay = stock.cQuarterDay > 0 ? stock.cQuarterDay - offset() : 0
+    //   stock.cMeetingDay = stock.cMeetingDay > 0 ? stock.cMeetingDay - offset() : 0
+    //   const props: string[] = Object.keys(stock)
+    //   for (let i = 0; i < props.length; i++) {
+    //     if (!CONS.DB.STORES.ACCOUNT_COLS.includes(props[i])) {
+    //       delete stock[props[i]]
+    //     }
+    //   }
+    //   return stock
+    // },
+    // migrateTransfer: (transfer: ITransfer): ITransfer => {
+    //   delete transfer.mCompany
+    //   delete transfer.mSortDate
+    //   transfer.cCount = transfer.cNumber ?? transfer.cCount ?? 0
+    //   transfer.cAmount = transfer.cDeposit ?? transfer.cAmount ?? 0
+    //   transfer.cTax = transfer.cTaxes ?? transfer.cTax ?? 0
+    //   transfer.cFTax = transfer.cFTax ?? 0
+    //   transfer.cSTax = transfer.cSTax ?? 0
+    //   transfer.cSoli = transfer.cSoli ?? 0
+    //   transfer.cDate = transfer.cDate > 0 ? transfer.cDate - offset() : 0
+    //   transfer.cExDay = transfer.cExDay > 0 ? transfer.cExDay - offset() : 0
+    //   const props = Object.keys(transfer)
+    //   for (let i = 0; i < props.length; i++) {
+    //     if (!CONS.DB.STORES.TC.includes(props[i])) {
+    //       delete transfer[props[i]]
+    //     }
+    //   }
+    //   return transfer
+    // },
     notice: async (messages: string[]): Promise<void> => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =

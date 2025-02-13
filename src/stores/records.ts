@@ -6,32 +6,32 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
 import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
 
 interface IRecordsStore {
   _dbi: IDBDatabase | null
-  _stocks: IRecordStoreStocks
-  _transfers: IRecordStoreTransfers
+  _account: IRecordStoreAccount
+  _booking: IRecordStoreBooking
+  _account_type: IRecordStoreAccountType
   _bkup_object: IBackup
 }
 
-interface IRecordStoreTransfers {
-  all: ITransfer[]
+interface IRecordStoreBooking {
+  all_per_account: IBooking[]
   dividend_transfers_per_stock: Map<number, ITransfer[]>
   total_controller: ITotalController
   selected_index: number
 }
 
-interface IRecordStoreStocks {
-  all: IStock[]
-  active: IStock[]
-  passive: IStock[]
-  active_page: number
-  active_index: number
-  active_page_count: number
+interface IRecordStoreAccount {
+  all: IAccount[]
+  selected_index: number
+}
+
+interface IRecordStoreAccountType {
+  all: IAccountType[]
+  selected_index: number
 }
 
 interface IOnlineStockValues {
@@ -43,24 +43,24 @@ interface IOnlineStockValues {
   pchange: number
 }
 
-const {appPort, CONS, notice, offset, migrateStock, migrateTransfer} = useApp()
+const {CONS, notice, offset} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
     return {
       _dbi: null,
-      _stocks: {
+      _account: {
         all: [],
-        active: [],
-        passive: [],
-        active_page: 1,
-        active_page_count: 0,
-        active_index: -1
+        selected_index: -1
       },
-      _transfers: {
-        all: [],
+      _booking: {
+        all_per_account: [],
         dividend_transfers_per_stock: new Map<number, ITransfer[]>(),
         total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
+        selected_index: -1
+      },
+      _account_type: {
+        all: [],
         selected_index: -1
       },
       _bkup_object: {
@@ -70,70 +70,80 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           cDBCurrency: '',
           cEngine: ''
         },
-        stocks: [],
-        transfers: [],
+        account: [],
+        booking: [],
+        account_type: []
       }
     }
   },
   getters: {
-    stocks(state: IRecordsStore): IRecordStoreStocks {
-      return state._stocks
+    account(state: IRecordsStore): IRecordStoreAccount {
+      return state._account
     },
-    transfers(state: IRecordsStore): IRecordStoreTransfers {
-      return state._transfers
+    account_type(state: IRecordsStore): IRecordStoreAccountType {
+      return state._account_type
+    },
+    booking(state: IRecordsStore): IRecordStoreBooking {
+      return state._booking
     },
     dbi(state: IRecordsStore): IDBDatabase | null {
       return state._dbi
     },
-    dividendsPerStock(state: IRecordsStore): Map<number, ITransfer[]> {
-      return state._transfers.dividend_transfers_per_stock
-    }
+    // dividendsPerStock(state: IRecordsStore): Map<number, ITransfer[]> {
+    //   return state._transfers.dividend_transfers_per_stock
+    // }
   },
   actions: {
-    _loadStockIntoStore(stock: IStock): void {
-      const memRecord = {
-        ...stock,
-        ...CONS.RECORDS.TEMPLATES.MSTOCK
-      }
-      this._stocks.all.push(memRecord)
-      if (memRecord.cFadeOut === 1) {
-        this._stocks.passive.push(memRecord)
-      } else if (memRecord.cFadeOut === 0) {
-        this._stocks.active.push(memRecord)
-      }
+    _loadAccountIntoStore(account: IAccount): void {
+      // const memRecord = { ...account }
+      this._account.all.push(account)
+      // if (memRecord.cFadeOut === 1) {
+      //   this._stocks.passive.push(memRecord)
+      // } else if (memRecord.cFadeOut === 0) {
+      //   this._stocks.active.push(memRecord)
+      // }
     },
-    _loadTransferIntoStore(stock: IStock[], transfer: ITransfer): void {
-      if (transfer.cType === CONS.DB.RECORD_TYPES.DIV) {
-        transfer.mSortDate = transfer.cExDay
-      } else {
-        transfer.mSortDate = transfer.cDate
-      }
-      if (stock.length > 0) {
-        transfer.mCompany = toRaw(stock[0]).cCompany
-      } else {
-        transfer.mCompany = ''
-      }
-      this._transfers.all.push(transfer)
+    _loadAccountTypeIntoStore(accountType: IAccountType): void {
+      // const memRecord = { ...account }
+      this._account_type.all.push(accountType)
+      // if (memRecord.cFadeOut === 1) {
+      //   this._stocks.passive.push(memRecord)
+      // } else if (memRecord.cFadeOut === 0) {
+      //   this._stocks.active.push(memRecord)
+      // }
+    },
+    _loadBookingIntoStore(booking: IBooking): void {
+      // if (transfer.cType === CONS.DB.RECORD_TYPES.DIV) {
+      //   transfer.mSortDate = transfer.cExDay
+      // } else {
+      //   transfer.mSortDate = transfer.cDate
+      // }
+      // if (stock.length > 0) {
+      //   transfer.mCompany = toRaw(stock[0]).cCompany
+      // } else {
+      //   transfer.mCompany = ''
+      // }
+      this._booking.all_per_account.push(booking)
     },
     _sortTransfers(): ITransfer[] {
       return this._transfers.all.sort((a: ITransfer, b: ITransfer): number => {
         return (b.mSortDate ?? 0) - (a.mSortDate ?? 0)
       })
     },
-    _sortActiveStocks(): void {
-      this._stocks.active.sort((a: IStock, b: IStock): number => {
-        return (a.cID ?? 0) - (b.cID ?? 0)
-      })
-      this._stocks.active.sort((a: IStock, b: IStock): number => {
-        return (b.cFirstPage ?? 0) - (a.cFirstPage ?? 0)
-      })
-      this._stocks.active.sort((a: IStock, b: IStock): number => {
-        return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
-      })
-    },
-    _getActiveStocksIndexById(ident: number): number {
-      return this._stocks.active.findIndex((stock: IStock) => {
-        return stock.cID === ident
+    // _sortActiveStocks(): void {
+    //   this._stocks.active.sort((a: IStock, b: IStock): number => {
+    //     return (a.cID ?? 0) - (b.cID ?? 0)
+    //   })
+    //   this._stocks.active.sort((a: IStock, b: IStock): number => {
+    //     return (b.cFirstPage ?? 0) - (a.cFirstPage ?? 0)
+    //   })
+    //   this._stocks.active.sort((a: IStock, b: IStock): number => {
+    //     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
+    //   })
+    // },
+    _getAccountIndexById(ident: number): number {
+      return this._account.findIndex((account: IAccount) => {
+        return account.cID === ident
       })
     },
     _setActiveStocksValues(val: IOnlineStockValues): void {
@@ -163,44 +173,43 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._stocks.active[i].cMeetingDay = d.gm
       this._stocks.active[i].cQuarterDay = d.qf
     },
-    setDrawerDepot(): void {
-      console.log('RECORDS: setDrawerDepot')
-      const portfolio = this._stocks.active.filter((stock: IStock) => {
-        return (stock.mPortfolio ?? 0) > 0
-      })
-      const total = this._transfers.total_controller
-      let depot = 0
-      let buyvalue = 0
-      portfolio.forEach((stock: IStock) => {
-        depot += (stock.mPortfolio ?? 0) * (stock.mValue ?? 0)
-        buyvalue += (stock.mPortfolio ?? 0) * (stock.mBuyValue ?? 0)
-      })
-      total.depot = depot
-      total.winloss = depot - buyvalue + total.fees + total.taxes + total.dividends + total.earnings
-      total.winlossPercent =
-        total.withdrawals + total.deposits - total.account !== 0
-          ? total.winloss / (total.withdrawals + total.deposits - total.account)
-          : 0
-    },
-    resetActiveStocksValues(): void {
-      const records = useRecordsStore()
-      const settings = useSettingsStore()
-      if (this._stocks.active.length > 0) {
-        for (
-          let i = (records.stocks.active_page - 1) * settings.itemsPerPageStocks;
-          i < (records.stocks.active_page - 1) * settings.itemsPerPageStocks + records.stocks.active_page_count;
-          i++
-        ) {
-          this._stocks.active[i].mValue = 0
-          this._stocks.active[i].mMin = 0
-          this._stocks.active[i].mMax = 0
-          this._stocks.active[i].mChange = 0
-          this._stocks.active[i].mEuroChange = 0
-        }
-      }
-    },
+    // setDrawerDepot(): void {
+    //   console.log('RECORDS: setDrawerDepot')
+    //   const portfolio = this._stocks.active.filter((stock: IStock) => {
+    //     return (stock.mPortfolio ?? 0) > 0
+    //   })
+    //   const total = this._transfers.total_controller
+    //   let depot = 0
+    //   let buyvalue = 0
+    //   portfolio.forEach((stock: IStock) => {
+    //     depot += (stock.mPortfolio ?? 0) * (stock.mValue ?? 0)
+    //     buyvalue += (stock.mPortfolio ?? 0) * (stock.mBuyValue ?? 0)
+    //   })
+    //   total.depot = depot
+    //   total.winloss = depot - buyvalue + total.fees + total.taxes + total.dividends + total.earnings
+    //   total.winlossPercent =
+    //     total.withdrawals + total.deposits - total.account !== 0
+    //       ? total.winloss / (total.withdrawals + total.deposits - total.account)
+    //       : 0
+    // },
+    // resetActiveStocksValues(): void {
+    //   const records = useRecordsStore()
+    //   const settings = useSettingsStore()
+    //   if (this._stocks.active.length > 0) {
+    //     for (
+    //       let i = (records.stocks.active_page - 1) * settings.itemsPerPageStocks;
+    //       i < (records.stocks.active_page - 1) * settings.itemsPerPageStocks + records.stocks.active_page_count;
+    //       i++
+    //     ) {
+    //       this._stocks.active[i].mValue = 0
+    //       this._stocks.active[i].mMin = 0
+    //       this._stocks.active[i].mMax = 0
+    //       this._stocks.active[i].mChange = 0
+    //       this._stocks.active[i].mEuroChange = 0
+    //     }
+    //   }
+    // },
     setBkupObject(value: IBackup) {
-      delete value?.orders // NOTE: before version 23
       this._bkup_object = {
         sm: {
           cVersion: 0,
@@ -208,258 +217,261 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           cDBCurrency: '',
           cEngine: ''
         },
-        stocks: [],
-        transfers: []
+        account: [],
+        account_type: [],
+        booking: []
       }
       this._bkup_object = value
     },
-    setActiveStocksPage(value: number): void {
-      this._stocks.active_page = value
-    },
-    setActiveStockIndexForGivenId(value: number): void {
-      this._stocks.active_index = this._stocks.active.findIndex((rec: IStock) => {
-        return rec.cID === value
-      })
-    },
-    setTransferIndexForGivenId(value: number): void {
-      this._transfers.selected_index = this._transfers.all.findIndex((rec: ITransfer) => {
-        return rec.cID === value
-      })
-    },
-    evaluateTransfers(year = CONS.DEFAULTS.YEAR): ITotalController {
-      console.info('RECORDS: evaluateTransfers', year)
-      const oldestTransferFirst = [...this._transfers.all]
-      oldestTransferFirst.sort((a: ITransfer, b: ITransfer): number => {
-        return (a.mSortDate ?? 0) - (b.mSortDate ?? 0)
-      })
-      const allStocksPlusZero = [{cID: 0}, ...this._stocks.all]
-      const totalController: ITotalController = {...CONS.RECORDS.CONTROLLER.TOTAL}
-      //
-      allStocksPlusZero.forEach((stock: IStock) => {
-        const transfersPerStock = oldestTransferFirst.filter((transfer: ITransfer) => {
-          const currentYear = new Date(transfer.mSortDate ?? 0).getFullYear()
-          return transfer.cStockID === stock.cID && currentYear <= year
-        })
-        const dividendTransfersPerStock: ITransfer[] = []
-        const activeStockIndex = this._getActiveStocksIndexById(stock.cID)
-        let portfolio = 0
-        let buyCount = 0
-        let invest = 0
-        transfersPerStock.forEach((transfer: ITransfer) => {
-          totalController.fees += transfer.cFees ?? 0
-          totalController.taxes +=
-            (transfer.cTax ?? 0) + (transfer.cFTax ?? 0) + (transfer.cSTax ?? 0) + (transfer.cSoli ?? 0)
-          switch (transfer.cType) {
-            case CONS.DB.RECORD_TYPES.BUY:
-              totalController.buy += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
-              portfolio += transfer.cCount ?? 0
-              buyCount += transfer.cCount ?? 0
-              invest += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
-              break
-            case CONS.DB.RECORD_TYPES.SELL:
-              totalController.sell += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
-              portfolio += transfer.cCount ?? 0
-              invest = (portfolio * invest) / buyCount
-              buyCount = portfolio
-              if (portfolio < 0.9 && portfolio > -0.9) {
-                portfolio = 0
-                buyCount = 0
-                invest = 0
-              }
-              break
-            case CONS.DB.RECORD_TYPES.DIV:
-              totalController.dividends += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
-              dividendTransfersPerStock.push(transfer)
-              break
-            case CONS.DB.RECORD_TYPES.DEPOSIT:
-              totalController.deposits += transfer.cAmount ?? 0
-              break
-            case CONS.DB.RECORD_TYPES.WITHDRAWAL:
-              totalController.withdrawals += transfer.cAmount ?? 0
-              break
-            default:
-              console.error('RECORDS: evaluateTransfers:unknown type', transfer.cType)
-          }
-        })
-        if (activeStockIndex > -1) {
-          this._stocks.active[activeStockIndex].mPortfolio = portfolio
-          this._stocks.active[activeStockIndex].mBuyValue = buyCount > 0.9 ? invest / buyCount : 0
-          this._transfers.dividend_transfers_per_stock.set(stock.cID, dividendTransfersPerStock)
-        }
-        totalController.depotBuyValue += buyCount > 0.9 ? (portfolio * invest) / buyCount : 0
-      })
-      totalController.account =
-        totalController.dividends +
-        totalController.deposits -
-        totalController.sell +
-        totalController.withdrawals -
-        totalController.buy +
-        totalController.fees +
-        totalController.taxes
-      totalController.earnings = totalController.depotBuyValue - totalController.sell - totalController.buy
-      totalController.winloss = totalController.winloss === undefined ? 0 : totalController.winloss
-      totalController.depot = totalController.depot === undefined ? 0 : totalController.depot
-      if (year === CONS.DEFAULTS.YEAR) {
-        this._transfers.total_controller = totalController
-      }
-      return {...totalController}
-    },
-    updatePage(data: TFetch[]): void {
-      console.info('RECORDS: updatePage', data)
-      const {toNumber} = useApp()
-      const settings = useSettingsStore()
-      const runtime = useRuntimeStore()
-      let factor = 1
-      let top = settings.itemsPerPageStocks
-      const rest = this._stocks.active.length % settings.itemsPerPageStocks
-      const lastPage = Math.ceil(this._stocks.active.length / settings.itemsPerPageStocks)
-      const dataPageCount = Math.ceil(data.length / settings.itemsPerPageStocks)
-      if (lastPage === this._stocks.active_page) {
-        top = (this._stocks.active_page - 1) * settings.itemsPerPageStocks + rest
-      } else {
-        top = (this._stocks.active_page - 1) * settings.itemsPerPageStocks + dataPageCount * this._stocks.active_page_count
-      }
-      for (let i = (this._stocks.active_page - 1) * settings.itemsPerPageStocks; i < top; i++) {
-        const id = this._stocks.active[i].cID as number
-        const idValues: TFetch[] = data.filter((obj: TFetch) => {
-          return obj.id === id
-        })
-        const buyValue = this._stocks.active[i].mBuyValue ?? 0
-        const portfolio = this._stocks.active[i].mPortfolio ?? 0
-        const euroChange = (toNumber(idValues[0].rate) - buyValue) * portfolio
-        const percentChange = buyValue * portfolio !== 0 ? (euroChange * 100) / (buyValue * portfolio) : 0
-        if (idValues.length > 0) {
-          if (idValues[0].cur?.includes('USD')) {
-            factor = runtime.exchangesCurUsd
-          } else if (idValues[0].cur?.includes('EUR')) {
-            factor = runtime.exchangesCurEur
-          }
-          const stockValues: IOnlineStockValues = {
-            index: i,
-            value: toNumber(idValues[0].rate) / factor,
-            min: toNumber(idValues[0].min) / factor,
-            max: toNumber(idValues[0].max) / factor,
-            echange: euroChange,
-            pchange: percentChange
-          }
-          this._setActiveStocksValues(stockValues)
-        }
-      }
-    },
+    // setActiveStocksPage(value: number): void {
+    //   this._stocks.active_page = value
+    // },
+    // setActiveStockIndexForGivenId(value: number): void {
+    //   this._stocks.active_index = this._stocks.active.findIndex((rec: IStock) => {
+    //     return rec.cID === value
+    //   })
+    // },
+    // setTransferIndexForGivenId(value: number): void {
+    //   this._transfers.selected_index = this._transfers.all.findIndex((rec: ITransfer) => {
+    //     return rec.cID === value
+    //   })
+    // },
+    // evaluateTransfers(year = CONS.DEFAULTS.YEAR): ITotalController {
+    //   console.info('RECORDS: evaluateTransfers', year)
+    //   const oldestTransferFirst = [...this._transfers.all]
+    //   oldestTransferFirst.sort((a: ITransfer, b: ITransfer): number => {
+    //     return (a.mSortDate ?? 0) - (b.mSortDate ?? 0)
+    //   })
+    //   const allStocksPlusZero = [{cID: 0}, ...this._stocks.all]
+    //   const totalController: ITotalController = {...CONS.RECORDS.CONTROLLER.TOTAL}
+    //   //
+    //   allStocksPlusZero.forEach((stock: IStock) => {
+    //     const transfersPerStock = oldestTransferFirst.filter((transfer: ITransfer) => {
+    //       const currentYear = new Date(transfer.mSortDate ?? 0).getFullYear()
+    //       return transfer.cStockID === stock.cID && currentYear <= year
+    //     })
+    //     const dividendTransfersPerStock: ITransfer[] = []
+    //     const activeStockIndex = this._getAccountIndexById(stock.cID)
+    //     let portfolio = 0
+    //     let buyCount = 0
+    //     let invest = 0
+    //     transfersPerStock.forEach((transfer: ITransfer) => {
+    //       totalController.fees += transfer.cFees ?? 0
+    //       totalController.taxes +=
+    //         (transfer.cTax ?? 0) + (transfer.cFTax ?? 0) + (transfer.cSTax ?? 0) + (transfer.cSoli ?? 0)
+    //       switch (transfer.cType) {
+    //         case CONS.DB.RECORD_TYPES.BUY:
+    //           totalController.buy += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
+    //           portfolio += transfer.cCount ?? 0
+    //           buyCount += transfer.cCount ?? 0
+    //           invest += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
+    //           break
+    //         case CONS.DB.RECORD_TYPES.SELL:
+    //           totalController.sell += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
+    //           portfolio += transfer.cCount ?? 0
+    //           invest = (portfolio * invest) / buyCount
+    //           buyCount = portfolio
+    //           if (portfolio < 0.9 && portfolio > -0.9) {
+    //             portfolio = 0
+    //             buyCount = 0
+    //             invest = 0
+    //           }
+    //           break
+    //         case CONS.DB.RECORD_TYPES.DIV:
+    //           totalController.dividends += (transfer.cUnitQuotation ?? 0) * (transfer.cCount ?? 0)
+    //           dividendTransfersPerStock.push(transfer)
+    //           break
+    //         case CONS.DB.RECORD_TYPES.DEPOSIT:
+    //           totalController.deposits += transfer.cAmount ?? 0
+    //           break
+    //         case CONS.DB.RECORD_TYPES.WITHDRAWAL:
+    //           totalController.withdrawals += transfer.cAmount ?? 0
+    //           break
+    //         default:
+    //           console.error('RECORDS: evaluateTransfers:unknown type', transfer.cType)
+    //       }
+    //     })
+    //     if (activeStockIndex > -1) {
+    //       this._stocks.active[activeStockIndex].mPortfolio = portfolio
+    //       this._stocks.active[activeStockIndex].mBuyValue = buyCount > 0.9 ? invest / buyCount : 0
+    //       this._transfers.dividend_transfers_per_stock.set(stock.cID, dividendTransfersPerStock)
+    //     }
+    //     totalController.depotBuyValue += buyCount > 0.9 ? (portfolio * invest) / buyCount : 0
+    //   })
+    //   totalController.account =
+    //     totalController.dividends +
+    //     totalController.deposits -
+    //     totalController.sell +
+    //     totalController.withdrawals -
+    //     totalController.buy +
+    //     totalController.fees +
+    //     totalController.taxes
+    //   totalController.earnings = totalController.depotBuyValue - totalController.sell - totalController.buy
+    //   totalController.winloss = totalController.winloss === undefined ? 0 : totalController.winloss
+    //   totalController.depot = totalController.depot === undefined ? 0 : totalController.depot
+    //   if (year === CONS.DEFAULTS.YEAR) {
+    //     this._transfers.total_controller = totalController
+    //   }
+    //   return {...totalController}
+    // },
+    // updatePage(data: TFetch[]): void {
+    //   console.info('RECORDS: updatePage', data)
+    //   const {toNumber} = useApp()
+    //   const settings = useSettingsStore()
+    //   const runtime = useRuntimeStore()
+    //   let factor = 1
+    //   let top = settings.itemsPerPageStocks
+    //   const rest = this._stocks.active.length % settings.itemsPerPageStocks
+    //   const lastPage = Math.ceil(this._stocks.active.length / settings.itemsPerPageStocks)
+    //   const dataPageCount = Math.ceil(data.length / settings.itemsPerPageStocks)
+    //   if (lastPage === this._stocks.active_page) {
+    //     top = (this._stocks.active_page - 1) * settings.itemsPerPageStocks + rest
+    //   } else {
+    //     top = (this._stocks.active_page - 1) * settings.itemsPerPageStocks + dataPageCount * this._stocks.active_page_count
+    //   }
+    //   for (let i = (this._stocks.active_page - 1) * settings.itemsPerPageStocks; i < top; i++) {
+    //     const id = this._stocks.active[i].cID as number
+    //     const idValues: TFetch[] = data.filter((obj: TFetch) => {
+    //       return obj.id === id
+    //     })
+    //     const buyValue = this._stocks.active[i].mBuyValue ?? 0
+    //     const portfolio = this._stocks.active[i].mPortfolio ?? 0
+    //     const euroChange = (toNumber(idValues[0].rate) - buyValue) * portfolio
+    //     const percentChange = buyValue * portfolio !== 0 ? (euroChange * 100) / (buyValue * portfolio) : 0
+    //     if (idValues.length > 0) {
+    //       if (idValues[0].cur?.includes('USD')) {
+    //         factor = runtime.exchangesCurUsd
+    //       } else if (idValues[0].cur?.includes('EUR')) {
+    //         factor = runtime.exchangesCurEur
+    //       }
+    //       const stockValues: IOnlineStockValues = {
+    //         index: i,
+    //         value: toNumber(idValues[0].rate) / factor,
+    //         min: toNumber(idValues[0].min) / factor,
+    //         max: toNumber(idValues[0].max) / factor,
+    //         echange: euroChange,
+    //         pchange: percentChange
+    //       }
+    //       this._setActiveStocksValues(stockValues)
+    //     }
+    //   }
+    // },
     loadBkupObjectIntoStore(): void {
       console.log('RECORDS: loadBkupObjectIntoStore')
-      let stock: IStock
-      let transfer: ITransfer
-      let addStock: IStock
-      let newTransfer: ITransfer
-      let currentStock: IStock[]
-      for (stock of this._bkup_object.stocks) {
-        addStock = migrateStock({...stock})
-        this._loadStockIntoStore(addStock)
+      let account: IAccount
+      let booking: IBooking
+      let accountType: IAccountType
+      for (account of this._bkup_object.account) {
+        // addAccount = migrateStock({...stock})
+        this._loadAccountIntoStore(account)
       }
-      for (transfer of this._bkup_object.transfers) {
-        newTransfer = migrateTransfer({...transfer})
-        currentStock = this._stocks.all.filter((stock: IStock) => {
-          return stock.cID === newTransfer.cStockID
-        })
-        this._loadTransferIntoStore(currentStock, newTransfer)
+      for (accountType of this._bkup_object.account_type) {
+        this._loadAccounTypeIntoStore(accountType)
       }
-      this.evaluateTransfers()
-      this._sortActiveStocks()
-      this.setActiveStocksPage(1)
-      this.resetActiveStocksValues()
+      for (booking of this._bkup_object.booking) {
+        this._loadBookingIntoStore(booking)
+      }
+      // this.evaluateTransfers()
+      // this._sortActiveStocks()
+      // this.setActiveStocksPage(1)
+      // this.resetActiveStocksValues()
     },
-    async updateWrapper(): Promise<void> {
-      console.log('RECORDS: updateWrapper')
-      const readIsin = () => {
-        console.log('RECORDS: readIsin')
-        const settings = useSettingsStore()
-        const isin: TFetch[] = []
-        const isinDates: TFetch[] = []
-        const rest = this._stocks.active.length % settings.itemsPerPageStocks
-        const lastPage = Math.ceil(this._stocks.active.length / settings.itemsPerPageStocks)
-        const activePortfolioCount = this._stocks.active.filter((stock: IStock) => {
-          let portfolio = 0
-          if (stock.mPortfolio !== undefined) {
-            portfolio = stock.mPortfolio
-          }
-          return portfolio > 0
-        }).length
-        const portfolioCount = Math.ceil(activePortfolioCount / settings.itemsPerPageStocks)
-        let pageStocks: IStock[] = []
-        this._stocks.active_page_count = this._stocks.active_page < lastPage ? settings.itemsPerPageStocks : rest
-        if (this._stocks.active.length > 0) {
-          if (portfolioCount > 1 && this._stocks.active_page <= portfolioCount) {
-            if (this._stocks.active_page === 1) {
-              pageStocks = this._stocks.active.slice(
-                (this._stocks.active_page - 1) * settings.itemsPerPageStocks,
-                (this._stocks.active_page - 1) * settings.itemsPerPageStocks + portfolioCount * this._stocks.active_page_count
-              )
-            }
-          } else {
-            pageStocks = this._stocks.active.slice(
-              (this._stocks.active_page - 1) * settings.itemsPerPageStocks,
-              (this._stocks.active_page - 1) * settings.itemsPerPageStocks + this._stocks.active_page_count
-            )
-          }
-          for (let i = 0; i < pageStocks.length; i++) {
-            if (pageStocks[i].mValue === 0) {
-              isin.push({id: pageStocks[i].cID, isin: pageStocks[i].cISIN, min: '0', rate: '0', max: '0', cur: ''})
-            }
-            if ((pageStocks[i].cMeetingDay === 0 || pageStocks[i].cQuarterDay === 0) && pageStocks[i].mAskDates) {
-              isinDates.push({
-                id: pageStocks[i].cID,
-                isin: pageStocks[i].cISIN,
-                gm: pageStocks[i].cMeetingDay,
-                qf: pageStocks[i].cQuarterDay
-              })
-              pageStocks[i].mAskDates = false
-            }
-          }
-        }
-        return {isin, isinDates}
-      }
-      const runtime = useRuntimeStore()
-      const readISIN = readIsin()
-      if (readISIN.isin.length > 0) {
-        runtime.setIsStocksLoading(true)
-        appPort().postMessage({type: CONS.FETCH_API.ASK__MIN_RATE_MAX, data: readISIN.isin})
-      }
-      if (readISIN.isinDates.length > 0) {
-        appPort().postMessage({type: CONS.FETCH_API.ASK__DATES_DATA, data: readISIN.isinDates})
-      }
-    },
+    // async updateWrapper(): Promise<void> {
+    //   console.log('RECORDS: updateWrapper')
+    //   const readIsin = () => {
+    //     console.log('RECORDS: readIsin')
+    //     const settings = useSettingsStore()
+    //     const isin: TFetch[] = []
+    //     const isinDates: TFetch[] = []
+    //     const rest = this._stocks.active.length % settings.itemsPerPageStocks
+    //     const lastPage = Math.ceil(this._stocks.active.length / settings.itemsPerPageStocks)
+    //     const activePortfolioCount = this._stocks.active.filter((stock: IStock) => {
+    //       let portfolio = 0
+    //       if (stock.mPortfolio !== undefined) {
+    //         portfolio = stock.mPortfolio
+    //       }
+    //       return portfolio > 0
+    //     }).length
+    //     const portfolioCount = Math.ceil(activePortfolioCount / settings.itemsPerPageStocks)
+    //     let pageStocks: IStock[] = []
+    //     this._stocks.active_page_count = this._stocks.active_page < lastPage ? settings.itemsPerPageStocks : rest
+    //     if (this._stocks.active.length > 0) {
+    //       if (portfolioCount > 1 && this._stocks.active_page <= portfolioCount) {
+    //         if (this._stocks.active_page === 1) {
+    //           pageStocks = this._stocks.active.slice(
+    //             (this._stocks.active_page - 1) * settings.itemsPerPageStocks,
+    //             (this._stocks.active_page - 1) * settings.itemsPerPageStocks + portfolioCount * this._stocks.active_page_count
+    //           )
+    //         }
+    //       } else {
+    //         pageStocks = this._stocks.active.slice(
+    //           (this._stocks.active_page - 1) * settings.itemsPerPageStocks,
+    //           (this._stocks.active_page - 1) * settings.itemsPerPageStocks + this._stocks.active_page_count
+    //         )
+    //       }
+    //       for (let i = 0; i < pageStocks.length; i++) {
+    //         if (pageStocks[i].mValue === 0) {
+    //           isin.push({id: pageStocks[i].cID, isin: pageStocks[i].cISIN, min: '0', rate: '0', max: '0', cur: ''})
+    //         }
+    //         if ((pageStocks[i].cMeetingDay === 0 || pageStocks[i].cQuarterDay === 0) && pageStocks[i].mAskDates) {
+    //           isinDates.push({
+    //             id: pageStocks[i].cID,
+    //             isin: pageStocks[i].cISIN,
+    //             gm: pageStocks[i].cMeetingDay,
+    //             qf: pageStocks[i].cQuarterDay
+    //           })
+    //           pageStocks[i].mAskDates = false
+    //         }
+    //       }
+    //     }
+    //     return {isin, isinDates}
+    //   }
+    //   const runtime = useRuntimeStore()
+    //   const readISIN = readIsin()
+    //   if (readISIN.isin.length > 0) {
+    //     runtime.setIsStocksLoading(true)
+    //     appPort().postMessage({type: CONS.FETCH_API.ASK__MIN_RATE_MAX, data: readISIN.isin})
+    //   }
+    //   if (readISIN.isinDates.length > 0) {
+    //     appPort().postMessage({type: CONS.FETCH_API.ASK__DATES_DATA, data: readISIN.isinDates})
+    //   }
+    // },
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
-      this._stocks.active.splice(0, this._stocks.active.length)
-      this._stocks.passive.splice(0, this._stocks.passive.length)
-      this._stocks.all.splice(0, this._stocks.all.length)
-      this._transfers.total_controller = CONS.RECORDS.CONTROLLER.TOTAL
-      this._transfers.all.splice(0, this._transfers.all.length)
+      this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
+      this._account_type.all.splice(0, this._account_type.all.length)
+      this._account.all.splice(0, this._account.all.length)
+      this._booking.selected_index = 0
+      this._account_type.selected_index = 0
+      this._account_type.selected_index = 0
       return new Promise((resolve, reject) => {
         const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
         const onComplete = (): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.COMP, onComplete, false)
-          resolve('Cleared database and records store!')
+          resolve('RECORDS: all stores (databases and memory) are clean!')
         }
-        const onSuccessClearStocks = (): void => {
-          requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, false)
-          console.info('RECORDS: dropped stocks')
+        const onSuccessClearBooking = (): void => {
+          requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
+          console.info('RECORDS: bookings dropped')
         }
-        const onSuccessClearTransfers = (): void => {
-          requestClearTransfers.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, false)
-          console.info('RECORDS: dropped transfers')
+        const onSuccessClearAccount = (): void => {
+          requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
+          console.info('RECORDS: accounts dropped')
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S, CONS.DB.STORES.T], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, false)
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.S).clear()
-        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, false)
-        const requestClearTransfers = requestTransaction.objectStore(CONS.DB.STORES.T).clear()
-        requestClearTransfers.addEventListener(CONS.EVENTS.SUC, onSuccessClearTransfers, false)
+        const onSuccessClearAccountType = (): void => {
+          requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
+          console.info('RECORDS: account types dropped')
+        }
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+        const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).clear()
+        requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
+        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).clear()
+        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
+        const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).clear()
+        requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
       })
     },
     async openDatabase(): Promise<string> {
@@ -476,78 +488,88 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
       })
     },
-    async loadDatabaseIntoStore(): Promise<string> {
-      console.info('RECORDS: loadDatabaseIntoStore')
-      const runtime = useRuntimeStore()
-      this._stocks.all.splice(0, this._stocks.all.length)
-      this._stocks.active.splice(0, this._stocks.active.length)
-      this._stocks.passive.splice(0, this._stocks.passive.length)
-      this._transfers.all.splice(0, this._transfers.all.length)
+    async databaseIntoStore(): Promise<string> {
+      console.info('RECORDS: databaseIntoStore')
+      // const runtime = useRuntimeStore()
+      this._account.all.splice(0, this._account.all.length)
+      this._account_type.all.splice(0, this._account_type.all.length)
+      this._booking.all_per_account.splice(0, this._booking.all.length)
+      this._booking.selected_index = 0
+      this._account_type.selected_index = 0
+      this._account_type.selected_index = 0
       return new Promise((resolve, reject) => {
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S, CONS.DB.STORES.T], 'readonly')
         const onComplete = async (): Promise<void> => {
-          console.info('RECORDS: loadDatabaseIntoStore: all records loaded!')
-          this.evaluateTransfers()
-          this._sortActiveStocks()
-          this.setActiveStocksPage(1)
-          this.resetActiveStocksValues()
-          runtime.setTable('StocksTable')
-          await this.updateWrapper()
-          resolve('RECORDS: loadDatabaseIntoStore: all records loaded!')
+          console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
+          // this.evaluateTransfers()
+          // this._sortActiveStocks()
+          // this.setActiveStocksPage(1)
+          // this.resetActiveStocksValues()
+          // runtime.setTable('StocksTable')
+          // await this.updateWrapper()
+          resolve('RECORDS: databaseIntoStore: all database records loaded into memory!')
         }
         const onAbort = (): void => {
-          notice(['Transaction aborted!', requestTransaction.error as string])
+          notice(['RECORDS: databaseIntoStore: transaction aborted!', requestTransaction.error as string])
           reject(requestTransaction.error)
         }
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE], 'readonly')
         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-        const onSuccessStocksOpenCursor = (ev: TIDBRequestEvent): void => {
+        const onSuccessAccountOpenCursor = (ev: TIDBRequestEvent): void => {
           const cursor = ev.target.result
           if (cursor !== null) {
-            this._loadStockIntoStore(cursor.value)
+            this._loadAccountIntoStore(cursor.value)
             cursor.continue()
-          } else {
-            requestStocksOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessStocksOpenCursor, false)
-            console.info('RECORDS: stocks loaded into memory')
-            const onSuccessTransfersOpenCursor = (ev: TIDBRequestEvent): void => {
-              const cursor: IDBCursorWithValue | null = ev.target.result
-              if (cursor !== null) {
-                const transfer: ITransfer = {...cursor.value}
-                const newTransfer = migrateTransfer({...transfer})
-                const currentStock: IStock[] = this._stocks.all.filter((stock: IStock) => {
-                  return stock.cID === newTransfer.cStockID
-                })
-                this._loadTransferIntoStore(currentStock, newTransfer)
-                cursor.continue()
-              } else {
-                requestTransfersOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessTransfersOpenCursor, false)
-                console.info('RECORDS: transfers loaded into memory')
-                this._sortTransfers()
-              }
-            }
-            const requestTransfersOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.T).openCursor()
-            requestTransfersOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessTransfersOpenCursor, false)
+          }
+          // else {
+          //   requestStocksOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessStocksOpenCursor, false)
+          //   console.info('RECORDS: stocks loaded into memory')
+          //   const onSuccessTransfersOpenCursor = (ev: TIDBRequestEvent): void => {
+          //     const cursor: IDBCursorWithValue | null = ev.target.result
+          //     if (cursor !== null) {
+          //       const transfer: ITransfer = {...cursor.value}
+          //       const newTransfer = migrateTransfer({...transfer})
+          //       const currentStock: IStock[] = this._stocks.all.filter((stock: IStock) => {
+          //         return stock.cID === newTransfer.cStockID
+          //       })
+          //       this._loadTransferIntoStore(currentStock, newTransfer)
+          //       cursor.continue()
+          //     } else {
+          //       requestTransfersOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessTransfersOpenCursor, false)
+          //       console.info('RECORDS: transfers loaded into memory')
+          //       this._sortTransfers()
+          //     }
+          //   }
+        }
+        const onSuccessAccountTypeOpenCursor = (ev: TIDBRequestEvent): void => {
+          const cursor = ev.target.result
+          if (cursor !== null) {
+            this._loadAccountTypeIntoStore(cursor.value)
+            cursor.continue()
           }
         }
-        const requestStocksOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.S).openCursor()
-        requestStocksOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStocksOpenCursor, false)
+        const onSuccessBookingOpenCursor = (ev: TIDBRequestEvent): void => {
+          const cursor = ev.target.result
+          if (cursor !== null) {
+            this._loadBookingIntoStore(cursor.value)
+            cursor.continue()
+          }
+        }
+        const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).openCursor()
+        requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
+        const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).openCursor()
+        requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false)
+        const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).openCursor()
+        requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
       })
     },
-    async storeIntoDatabase(store = 'load'): Promise<string> {
-      console.info('RECORDS: storeIntoDatabase', store)
+    async storeIntoDatabase(): Promise<string> {
+      console.log('RECORDS: storeIntoDatabase')
       return new Promise((resolve, reject) => {
-        let requestAddStock: IDBRequest
-        let requestAddTransfer: IDBRequest
         const onComplete = (): void => {
-          requestAddStock.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          if (store === 'load') {
-            requestAddTransfer.removeEventListener(CONS.EVENTS.ERR, onError, false)
-            notice(['All stocks and transfers are added to the database!'])
-            resolve('RECORDS: storeIntoDatabase: all stocks and transfers are added to the database!')
-          } else {
-            // notice(['Stocks updated in database!'])
-            resolve('RECORDS: storeIntoDatabase: stocks updated in database!')
-          }
+          // requestaddAccount.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          notice(['All memory records are added to the database!'])
+          resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
         }
         const onAbort = (): void => {
           notice(['Transaction aborted!', requestTransaction.error as string])
@@ -556,49 +578,28 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         const onError = (ev: ErrorEvent): void => {
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S, CONS.DB.STORES.T], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE, CONS.DB.STORES.BOOKING], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-        for (let i = 0; i < this._stocks.all.length; i++) {
-          const stock: IStock = {...this._stocks.all[i]}
-          delete stock.mBuyValue
-          delete stock.mRealBuyValue
-          delete stock.mPortfolio
-          delete stock.mDividendYielda
-          delete stock.mDividendYeara
-          delete stock.mDividendYieldb
-          delete stock.mDividendYearb
-          delete stock.mRealDividend
-          delete stock.mMin
-          delete stock.mMax
-          delete stock.mValue
-          delete stock.mChange
-          delete stock.mEuroChange
-          if (store === 'load') {
-            requestAddStock = requestTransaction.objectStore(CONS.DB.STORES.S).add({...stock})
-          } else {
-            requestAddStock = requestTransaction.objectStore(CONS.DB.STORES.S).put({...stock})
-          }
-          requestAddStock.addEventListener(CONS.EVENTS.ERR, onError, false)
+        for (let i = 0; i < this._account.all.length; i++) {
+          requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add({...this._account.all[i]})
         }
-        if (store === 'load') {
-          for (let i = 0; i < this._transfers.all.length; i++) {
-            const transfer: ITransfer = {...this._transfers.all[i]}
-            delete transfer.mCompany
-            delete transfer.mSortDate
-            requestAddTransfer = requestTransaction.objectStore(CONS.DB.STORES.T).add({...transfer})
-            requestAddTransfer.addEventListener(CONS.EVENTS.ERR, onError, false)
-          } 
+        for (let i = 0; i < this._account_type.all.length; i++) {
+          requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).add({...this._account_type.all[i]})
+        }
+        for (let i = 0; i < this._booking.all_per_account.length; i++) {
+          requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({...this._booking.all_per_account[i]})
         }
       })
     },
-    // async updateStocksStoreIntoDatabase(): Promise<string> {
-    //   console.log('RECORDS: updateStocksStoreIntoDatabase')
+    // async updateAccountsStoreIntoDatabase(): Promise<string> {
+    //   console.log('RECORDS: updateAccountsStoreIntoDatabase')
     //   return new Promise((resolve, reject) => {
-    //     let requestAddStock: IDBRequest
+    //     let requestaddAccount: IDBRequest
     //     const onComplete = (): void => {
-    //       requestAddStock.removeEventListener(CONS.EVENTS.ERR, onError, false)
-    //       resolve('RECORDS: updateStocksStoreIntoDatabase: stocks updated in database!')
+    //       requestaddAccount.removeEventListener(CONS.EVENTS.ERR, onError, false)
+    //       resolve('RECORDS: updateAccountsStoreIntoDatabase: stocks updated in database!')
     //     }
     //     const onAbort = (): void => {
     //       notice(['Transaction aborted!', requestTransaction.error as string])
@@ -625,23 +626,22 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //       delete stock.mValue
     //       delete stock.mChange
     //       delete stock.mEuroChange
-    //       requestAddStock = requestTransaction.objectStore(CONS.DB.STORES.S).put({...stock})
-    //       requestAddStock.addEventListener(CONS.EVENTS.ERR, onError, false)
+    //       requestaddAccount = requestTransaction.objectStore(CONS.DB.STORES.S).put({...stock})
+    //       requestaddAccount.addEventListener(CONS.EVENTS.ERR, onError, false)
     //     }
     //   })
     // },
-    async addStock(record: IAddedStock): Promise<string> {
+    async addAccount(record: IAccount): Promise<string> {
+      type TAccountAdd = Omit<IAccount, 'cID'>
       return new Promise((resolve, reject) => {
         const onSuccess = (ev: Event): void => {
-          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          const memRecord: IStock = {
+          requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          const memRecord: IAccount = {
             ...dbRecord,
-            cID: (ev.target as IDBRequest).result,
-            ...CONS.RECORDS.TEMPLATES.MSTOCK
+            cID: (ev.target as IDBRequest).result
           }
-          this._stocks.all.push(memRecord)
-          this._stocks.active.push(memRecord)
-          resolve('Stock added')
+          this._account.all.push(memRecord)
+          resolve('RECORDS: addAccount: account added')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
@@ -649,50 +649,26 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           reject(ev.message)
         }
         const rawRecordClone = {...toRaw(record)}
-        const dbRecord: IAddedStock = {
-          cCompany: rawRecordClone.cCompany,
-          cISIN: rawRecordClone.cISIN,
-          cWKN: rawRecordClone.cWKN,
-          cSym: rawRecordClone.cSym,
-          cMeetingDay: CONS.RECORDS.TEMPLATES.STOCK.cMeetingDay,
-          cQuarterDay: CONS.RECORDS.TEMPLATES.STOCK.cQuarterDay,
-          cFadeOut: CONS.RECORDS.TEMPLATES.STOCK.cFadeOut,
-          cFirstPage: CONS.RECORDS.TEMPLATES.STOCK.cFirstPage,
-          cURL: CONS.RECORDS.TEMPLATES.STOCK.cURL
+        const dbRecord: TAccountAdd = {
+          cName: rawRecordClone.cName,
+          cCurrency: rawRecordClone.cCurrency
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.S).add(dbRecord)
+        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add(dbRecord)
         requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false)
         requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async updateStock(data: IStock, msg: boolean = false): Promise<string> {
-      console.info('RECORDS: updateStock', data)
-      const dbRecord = {...data}
-      delete dbRecord.mPortfolio
-      delete dbRecord.mBuyValue
-      delete dbRecord.mRealBuyValue
-      delete dbRecord.mDividendYielda
-      delete dbRecord.mDividendYeara
-      delete dbRecord.mDividendYieldb
-      delete dbRecord.mDividendYearb
-      delete dbRecord.mRealDividend
-      delete dbRecord.mMin
-      delete dbRecord.mMax
-      delete dbRecord.mValue
-      delete dbRecord.mChange
-      delete dbRecord.mEuroChange
-      delete dbRecord.mDeleteable
-      delete dbRecord.mAskDates
-
+    async updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
+      console.info('RECORDS: updateAccount', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
           if (msg) {
             notice(['sm_msg_updaterecord'])
           }
-          resolve('Stock updated')
+          resolve('Account updated')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
@@ -700,95 +676,72 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           notice([ev.message])
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.S).put(dbRecord)
+        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).put({...data})
         requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
         requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
-    async deleteStock(ident: number): Promise<string> {
-      const indexOfStock = this._stocks.all.findIndex((stock: IStock) => {
-        return stock.cID === ident
+    async deleteAccount(ident: number): Promise<string> {
+      const indexOfAccount = this._account.all.findIndex((account: IAccount) => {
+        return account.cID === ident
       })
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._stocks.active.splice(this._stocks.active_index, 1)
-          this._stocks.all.splice(indexOfStock, 1)
-          resolve('Stock deleted')
+          this._account.all.splice(indexOfAccount, 1)
+          resolve('Account deleted')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
           requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.S).delete(ident)
+        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).delete(ident)
         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async addTransfer(record: IAddTransfer): Promise<string> {
+    async addAccountType(record: IAccountType): Promise<string> {
       return new Promise((resolve, reject) => {
-        const transfer = {...record}
-        transfer.cDate = record.cDate + offset()
-        transfer.cExDay = record.cExDay + offset()
+        type TAccountTypeAdd = Omit<IAccountType, 'cID'>
+        const onSuccess = (ev: Event): void => {
+          requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          const memRecord: IAccountType = {
+            ...dbRecord,
+            cID: (ev.target as IDBRequest).result
+          }
+          this._account_type.all.push(memRecord)
+          resolve('RECORDS: addAccountType: account type added')
+        }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
           requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
-        const onSuccess = (ev: Event): void => {
-          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          let sortDate: string | number | undefined = record.cDate
-          let cname: string = ''
-          if (record.cType === CONS.DB.RECORD_TYPES.DIV) {
-            sortDate = record.cExDay
-          }
-          if (
-            record.cType === CONS.DB.RECORD_TYPES.BUY ||
-            record.cType === CONS.DB.RECORD_TYPES.SELL ||
-            record.cType === CONS.DB.RECORD_TYPES.DIV
-          ) {
-            cname = this._stocks.active[this._stocks.active_index].cCompany
-          }
-          const memRecord = {
-            ...record,
-            cID: (ev.target as IDBRequest).result,
-            mCompany: cname,
-            mSortDate: sortDate
-          }
-          this._transfers.all.push(memRecord)
-          this._sortTransfers()
-          this.evaluateTransfers()
-          resolve('Transfer added')
+        const rawRecordClone = {...toRaw(record)}
+        const dbRecord: TAccountTypeAdd = {
+          cName: rawRecordClone.cName,
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.T], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.T).add(transfer)
+        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).add(dbRecord)
         requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false)
         requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async updateTransfer(data: ITransfer, msg: boolean = false): Promise<string> {
-      console.log('RECORD:updateTransfer')
-      const dbRecord = {...data}
-      delete dbRecord.mCompany
-      delete dbRecord.mSortDate
-      dbRecord.cDate = dbRecord.cDate > 0 ? data.cDate + offset() : 0
-      dbRecord.cExDay = dbRecord.cExDay > 0 ? data.cExDay + offset() : 0
+    async updateAccountType(data: IAccountType, msg: boolean = false): Promise<string> {
+      console.info('RECORDS: updateAccountType', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._transfers.all[this._transfers.selected_index] = {...data} // important to use sorted transfers
-          this._sortTransfers()
-          this.evaluateTransfers()
           if (msg) {
-            notice([browser.i18n.getMessage('sm_msg_updaterecord')])
+            notice(['sm_msg_updaterecord'])
           }
-          resolve('Transfer updated')
+          resolve('Account type updated')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
@@ -796,31 +749,109 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           notice([ev.message])
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction(['transfers'], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore('transfers').put(dbRecord)
+        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).put({...data})
         requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
         requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
-    async deleteTransfer(ident: number, msg: boolean = false): Promise<string> {
+    async deleteAccountType(ident: number): Promise<string> {
+      const indexOfAccountType = this._account.all.findIndex((accountType: IAccountType) => {
+        return accountType.cID === ident
+      })
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._transfers.all.splice(0, 1) // important to use sorted transfers
-          if (msg) {
-            notice(['sm_msg_removerecord'])
-          }
-          resolve('Transfer deleted')
+          this._account.all.splice(indexOfAccountType, 1)
+          resolve('Account type deleted')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
           requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.T], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.T).delete(ident)
+        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).delete(ident)
+        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
+        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+      })
+    },
+    async addBooking(record: IBooking): Promise<string> {
+      return new Promise((resolve, reject) => {
+        type TBookingAdd = Omit<IBooking, 'cID'>
+        const onSuccess = (ev: Event): void => {
+          requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          const memRecord: IBooking = {
+            ...dbRecord,
+            cID: (ev.target as IDBRequest).result
+          }
+          this._booking.all_per_account.push(memRecord)
+          resolve('RECORDS: addBooking: booking added')
+        }
+        const onError = (ev: ErrorEvent): void => {
+          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          reject(ev.message)
+        }
+        const rawRecordClone = {...toRaw(record)}
+        const dbRecord: TBookingAdd = {
+          cDate: rawRecordClone.cDate + offset(),
+          cDebit: rawRecordClone.cDebit,
+          cCredit: rawRecordClone.cCredit,
+          cDescription: rawRecordClone.cDescription,
+          cAccountID: rawRecordClone.cAccountID,
+          cAccountTypeID: rawRecordClone.cAccountTypeID
+        }
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(dbRecord)
+        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false)
+        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+      })
+    },
+    async updateBooking(data: IAccountType, msg: boolean = false): Promise<string> {
+      console.info('RECORDS: updateBooking', data)
+      return new Promise((resolve, reject) => {
+        const onSuccess = (): void => {
+          requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          if (msg) {
+            notice(['sm_msg_updaterecord'])
+          }
+          resolve('Booking updated')
+        }
+        const onError = (ev: ErrorEvent): void => {
+          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          notice([ev.message])
+          reject(ev.message)
+        }
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).put({...data})
+        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
+      })
+    },
+    async deleteBooking(ident: number): Promise<string> {
+      const indexOfBooking = this._account.all.findIndex((booking: IBooking) => {
+        return booking.cID === ident
+      })
+      return new Promise((resolve, reject) => {
+        const onSuccess = (): void => {
+          requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          this._booking.all_per_account.splice(indexOfBooking, 1)
+          resolve('Booking deleted')
+        }
+        const onError = (ev: ErrorEvent): void => {
+          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          reject(ev.message)
+        }
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).delete(ident)
         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })

@@ -50,7 +50,7 @@
     "home": "Home page",
     "transfersTable": "Bookings",
     "reload": "Update courses",
-    "addStock": "Add company",
+    "addAccount": "Add company",
     "deleteStock": "Remove company",
     "fadeinStock": "Show company",
     "cashPlus": "Deposit",
@@ -294,7 +294,7 @@
   "dialogs": {
     "cancel": "Cancel",
     "ok": "OK",
-    "addStock": {
+    "addAccount": {
       "title": "Add company",
       "isin": "ISIN",
       "company": "Pursue",
@@ -467,7 +467,7 @@
       "home": "Home page",
       "transfersTable": "Bookings",
       "reload": "Update courses",
-      "addStock": "Add company",
+      "addAccount": "Add company",
       "deleteStock": "Remove company",
       "fadeinStock": "Show company",
       "cashPlus": "Deposit",
@@ -526,7 +526,7 @@
       {
         "title": "Add company",
         "content": "Click to open the required dialog.",
-        "icon": "$addStock"
+        "icon": "$addAccount"
       },
       {
         "title": "Remove company",
@@ -590,7 +590,7 @@
       {
         "title": "Buy stocks",
         "subtitle": "",
-        "icon": "$addStock"
+        "icon": "$addAccount"
       },
       {
         "title": "Sell stocks",

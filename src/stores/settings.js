@@ -115,8 +115,8 @@ export const useSettingsStore = defineStore('settings', {
         setItemsPerPageStocksStoreOnly(value) {
             this._items_per_page_stocks = value;
         },
-        async loadStorageIntoStore(theme) {
-            console.log('SETTINGS: loadStorageIntoStore');
+        async storageIntoStore(theme) {
+            console.log('SETTINGS: storageIntoStore');
             const response = await browser.storage.local.get();
             this.setServiceStoreOnly(response.service);
             theme.global.name.value = response.skin ?? 'ocean';

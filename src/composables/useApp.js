@@ -100,40 +100,15 @@ export const useApp = () => {
                 UNDEFINED: -1
             },
             STORES: {
-                S: 'stocks',
-                SC: [
-                    'cID',
-                    'cCompany',
-                    'cISIN',
-                    'cWKN',
-                    'cSym',
-                    'cQuarterDay',
-                    'cMeetingDay',
-                    'cFadeOut',
-                    'cFirstPage',
-                    'cURL'
-                ],
-                T: 'transfers',
-                TC: [
-                    'cID',
-                    'cStockID',
-                    'cDate',
-                    'cUnitQuotation',
-                    'cAmount',
-                    'cCount',
-                    'cFees',
-                    'cTax',
-                    'cSTax',
-                    'cFTax',
-                    'cSoli',
-                    'cMarketPlace',
-                    'cType',
-                    'cExDay',
-                    'cDescription'
-                ]
+                ACCOUNT: 'account',
+                ACCOUNT_COLS: ['cID', 'cName'],
+                BOOKING: 'booking',
+                BOOKING_COLS: ['cID', 'cDate', 'cDebit', 'cReturn', 'cDescription', 'cAccountID', 'cAccountTypeID'],
+                ACCOUNT_TYPE: 'account_type',
+                ACCOUNT_TYPE_COLS: ['cID', 'cName']
             },
-            VERSION: 24,
-            MINVERSION: 21
+            VERSION: 1,
+            MINVERSION: 1
         },
         DEFAULTS: {
             CURRENCY: 'EUR',
@@ -362,7 +337,7 @@ export const useApp = () => {
             LAST: 'last.png',
             CB: 'home.png',
             UP: 'update.png',
-            NS: 'addStock.png',
+            NS: 'addAccount.png',
             DS: 'deletestock.png',
             FI: 'fadein.png',
             IT: 'intransfer.png',
@@ -714,57 +689,6 @@ export const useApp = () => {
                 const found = Number.parseFloat(v);
                 return found < 0 ? true : 'Input is required.';
             }
-        },
-        appPort: () => {
-            return browser.runtime.connect();
-        },
-        migrateStock: (stock) => {
-            delete stock.mPortfolio;
-            delete stock.mBuyValue;
-            delete stock.mValue;
-            delete stock.mMin;
-            delete stock.mMax;
-            delete stock.mChange;
-            delete stock.mEuroChange;
-            delete stock.mDividendYielda;
-            delete stock.mDividendYeara;
-            delete stock.mDividendYieldb;
-            delete stock.mDividendYearb;
-            delete stock.mRealDividend;
-            delete stock.mRealBuyValue;
-            delete stock.mDeleteable;
-            delete stock.mAskDates;
-            stock.cFadeOut = stock.cFadeOut ?? 0;
-            stock.cNotFirstPage = stock.cNotFirstPage ?? 1;
-            stock.cFirstPage = stock.cFirstPage ?? (stock.cNotFirstPage + 1) % 2;
-            stock.cQuarterDay = stock.cQuarterDay > 0 ? stock.cQuarterDay - offset() : 0;
-            stock.cMeetingDay = stock.cMeetingDay > 0 ? stock.cMeetingDay - offset() : 0;
-            const props = Object.keys(stock);
-            for (let i = 0; i < props.length; i++) {
-                if (!CONS.DB.STORES.SC.includes(props[i])) {
-                    delete stock[props[i]];
-                }
-            }
-            return stock;
-        },
-        migrateTransfer: (transfer) => {
-            delete transfer.mCompany;
-            delete transfer.mSortDate;
-            transfer.cCount = transfer.cNumber ?? transfer.cCount ?? 0;
-            transfer.cAmount = transfer.cDeposit ?? transfer.cAmount ?? 0;
-            transfer.cTax = transfer.cTaxes ?? transfer.cTax ?? 0;
-            transfer.cFTax = transfer.cFTax ?? 0;
-            transfer.cSTax = transfer.cSTax ?? 0;
-            transfer.cSoli = transfer.cSoli ?? 0;
-            transfer.cDate = transfer.cDate > 0 ? transfer.cDate - offset() : 0;
-            transfer.cExDay = transfer.cExDay > 0 ? transfer.cExDay - offset() : 0;
-            const props = Object.keys(transfer);
-            for (let i = 0; i < props.length; i++) {
-                if (!CONS.DB.STORES.TC.includes(props[i])) {
-                    delete transfer[props[i]];
-                }
-            }
-            return transfer;
         },
         notice: async (messages) => {
             const msg = messages.join('\n');

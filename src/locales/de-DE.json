@@ -50,7 +50,7 @@
     "home": "Startseite",
     "transfersTable": "Buchungen",
     "reload": "Kurse aktualisieren",
-    "addStock": "Unternehmen hinzufügen",
+    "addAccount": "Unternehmen hinzufügen",
     "deleteStock": "Unternehmen entfernen",
     "fadeinStock": "Unternehmen einblenden",
     "cashPlus": "Einzahlung",
@@ -294,7 +294,7 @@
   "dialogs": {
     "cancel": "Abbrechen",
     "ok": "OK",
-    "addStock": {
+    "addAccount": {
       "title": "Unternehmen hinzufügen",
       "isin": "ISIN",
       "company": "Unternehmen",
@@ -467,7 +467,7 @@
       "home": "Startseite",
       "transfersTable": "Buchungen",
       "reload": "Kurse aktualisieren",
-      "addStock": "Unternehmen hinzufügen",
+      "addAccount": "Unternehmen hinzufügen",
       "deleteStock": "Unternehmen entfernen",
       "fadeinStock": "Unternehmen einblenden",
       "cashPlus": "Einzahlung",
@@ -526,7 +526,7 @@
       {
         "title": "Unternehmen hinzufügen",
         "content": "Klicken um den erforderlichen Dialog zu öffnen.",
-        "icon": "$addStock"
+        "icon": "$addAccount"
       },
       {
         "title": "Unternehmen entfernen",
@@ -590,7 +590,7 @@
       {
         "title": "Aktien kaufen",
         "subtitle": "",
-        "icon": "$addStock"
+        "icon": "$addAccount"
       },
       {
         "title": "Aktien verkaufen",
