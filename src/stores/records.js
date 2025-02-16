@@ -179,7 +179,7 @@ export const useRecordsStore = defineStore('records', {
             console.info('RECORDS: databaseIntoStore');
             this._account.all.splice(0, this._account.all.length);
             this._account_type.all.splice(0, this._account_type.all.length);
-            this._booking.all_per_account.splice(0, this._booking.all.length);
+            this._booking.all_per_account.splice(0, this._booking.all_per_account.length);
             this._booking.selected_index = 0;
             this._account_type.selected_index = 0;
             this._account_type.selected_index = 0;

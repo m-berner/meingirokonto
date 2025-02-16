@@ -267,15 +267,12 @@ const useListener = (): IUseListener => {
 }
 const {onClick, onRemove, onInstall} = useListener()
 if (!browser.runtime.onInstalled.hasListener(onInstall)) {
-  // noinspection JSDeprecatedSymbols
   browser.runtime.onInstalled.addListener(onInstall)
 }
 if (!browser.action.onClicked.hasListener(onClick)) {
-  // noinspection JSDeprecatedSymbols
   browser.action.onClicked.addListener(onClick)
 }
 if (!browser.permissions.onRemoved.hasListener(onRemove)) {
-  // noinspection JSDeprecatedSymbols
   browser.permissions.onRemoved.addListener(onRemove)
 }
 await initStorageLocal()

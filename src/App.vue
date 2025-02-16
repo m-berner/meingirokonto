@@ -16,7 +16,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount, ref, watchEffect} from 'vue'
 import {useTheme} from 'vuetify'
-import {useApp} from '@/composables/useApp'
+// import {useApp} from '@/composables/useApp'
 import {useRoute} from 'vue-router'
 //import {useRuntimeStore} from '@/stores/runtime'
 
@@ -24,7 +24,7 @@ const settings = useSettingsStore()
 const records = useRecordsStore()
 //const runtime = useRuntimeStore()
 const theme = useTheme()
-const {getUI} = useApp()
+// const {getUI} = useApp()
 const layout = ref()
 const route = useRoute()
 
@@ -137,7 +137,6 @@ onBeforeMount(async (): Promise<void> => {
     await settings.storageIntoStore(theme)
     await records.openDatabase()
     await records.databaseIntoStore()
-  console.log('APP:',getUI())
     // appPort().postMessage({
     //   type: CONS.FETCH_API.ASK__EXCHANGES_DATA,
     //   data: toRaw(settings.exchanges),
