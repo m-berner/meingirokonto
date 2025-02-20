@@ -133,6 +133,7 @@ const useListener = (): IUseListener => {
         requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.ACCOUNT_TYPE}_k1`, 'cName', {unique: true})
         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k1`, 'cAccountID', {unique: false})
         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k2`, 'cAccountTypeID', {unique: false})
+        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k3`, 'cDate', {unique: false})
 
         // requestCreateSStore.createIndex('stocks_uk2', 'cSym', optTrue)
         // requestCreateSStore.createIndex('stocks_k1', 'cFirstPage', optFalse)

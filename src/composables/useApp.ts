@@ -90,6 +90,8 @@ declare global {
     cID: number
     cName: string
     cCurrency: string
+    cNumber: number
+    cLogo?: string
   }
 
   interface IAccountType {
@@ -102,7 +104,7 @@ declare global {
     cDate: number
     cDebit: number
     cCredit: number
-    cDescription: string
+    cDescription?: string
     cAccountID: number
     cAccountTypeID: number
   }

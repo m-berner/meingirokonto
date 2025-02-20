@@ -106,6 +106,7 @@ const useListener = () => {
                 requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.ACCOUNT_TYPE}_k1`, 'cName', { unique: true });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k1`, 'cAccountID', { unique: false });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k2`, 'cAccountTypeID', { unique: false });
+                requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k3`, 'cDate', { unique: false });
             };
             const updateDB = () => {
                 console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB');

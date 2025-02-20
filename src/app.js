@@ -1,6 +1,5 @@
-import BareLayout from '@/layouts/BareLayout.vue';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import HomePage from '@/views/HomePage.vue';
+import OptionsPage from '@/views/OptionsPage.vue';
 import IndexPage from '@/App.vue';
 import { createPinia } from 'pinia';
 import { createRouter, createWebHashHistory } from 'vue-router';
@@ -14,8 +13,10 @@ import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useApp } from '@/composables/useApp';
 import HelpPage from '@/components/HelpPage.vue';
 import PrivacyPage from '@/components/PrivacyPage.vue';
-import StocksTable from '@/components/StocksTable.vue';
-import TransfersTable from '@/components/TransfersTable.vue';
+import TitleBar from '@/components/TitleBar.vue';
+import HeaderBar from '@/components/HeaderBar.vue';
+import InfoBar from '@/components/InfoBar.vue';
+import FooterBar from '@/components/FooterBar.vue';
 const { getUI } = useApp();
 const router = createRouter({
     history: createWebHashHistory(),
@@ -23,15 +24,18 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: HomePage
+            components: {
+                default: HomePage,
+                title: TitleBar,
+                header: HeaderBar,
+                info: InfoBar,
+                footer: FooterBar
+            }
         },
         {
             path: '/options',
             name: 'options',
-            component: () => import('@/views/OptionsPage.vue'),
-            meta: {
-                layout: 'Bare',
-            }
+            component: OptionsPage
         }
     ]
 });
@@ -292,12 +296,9 @@ app.config.errorHandler = (err) => {
 app.config.warnHandler = (msg) => {
     console.warn(msg);
 };
-app.component('DefaultLayout', DefaultLayout);
-app.component('StocksTable', StocksTable);
-app.component('TransfersTable', TransfersTable);
+app.component('HomePage', HomePage);
 app.component('HelpPage', HelpPage);
 app.component('PrivacyPage', PrivacyPage);
-app.component('BareLayout', BareLayout);
 app.use(router);
 app.use(vuetify);
 app.use(i18n);

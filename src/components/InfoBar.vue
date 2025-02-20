@@ -6,7 +6,7 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-navigation-drawer v-model="state._show.value" app color="secondary" height="100%" v-bind:floating="true"
+  <v-navigation-drawer v-model="state._show" app color="secondary" height="100%" v-bind:floating="true"
                        width="180">
     <v-card color="secondary" height="100%">
       <v-list lines="two">
@@ -20,59 +20,28 @@
       </v-list>
     </v-card>
   </v-navigation-drawer>
-  <v-app-bar app color="secondary" v-bind:flat="true">
-    <v-app-bar-nav-icon variant="text" v-on:click="state._show.value = !state._show.value"></v-app-bar-nav-icon>
-    <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
-      <v-row>
-        <v-list-item v-for="item in _exchanges" v-bind:key="item">
-          <v-list-item-title>{{ item }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
-        </v-list-item>
-
-        <v-list-item v-for="item in _indexes" v-bind:key="item">
-          <v-list-item-title>{{ CONS.SETTINGS.INDEXES[item] }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
-        </v-list-item>
-
-        <v-list-item v-for="item in _materials" v-bind:key="item">
-          <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
-          <v-list-item-subtitle
-          >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}
-          </v-list-item-subtitle>
-        </v-list-item>
-      </v-row>
-    </v-list>
-  </v-app-bar>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref, watch} from 'vue'
+import {onMounted, reactive, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
+//import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
-import {storeToRefs} from 'pinia'
+//import {storeToRefs} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
 const {n, t} = useI18n()
 const {CONS, notice} = useApp()
 const runtime = useRuntimeStore()
-const settings = useSettingsStore()
+// const settings = useSettingsStore()
 const records = useRecordsStore()
-const {_exchanges, _indexes, _materials} = storeToRefs(settings)
-const state = {
-  _show: ref(true),
-  _drawer_controls: reactive(CONS.DEFAULTS.DRAWER_CONTROLS)
-}
+// const {_exchanges, _indexes, _materials} = storeToRefs(settings)
+const state = reactive({
+  _show: true,
+  _drawer_controls: CONS.DEFAULTS.DRAWER_CONTROLS
+})
 
-const usd = (mat: string, usd = true): number => {
-  // NOTE: material prices arrive in USD
-  if (usd) {
-    return runtime.materials.get(mat) ?? 0
-  } else {
-    return (runtime.materials.get(mat) ?? 0) / (runtime.exchangesCurUsd)
-  }
-}
 const updateDrawerControls = (): void => {
   console.log('INFOBAR: updateDrawerControls')
   for (let i = 0; i < CONS.DEFAULTS.DRAWER_KEYS.length; i++) {

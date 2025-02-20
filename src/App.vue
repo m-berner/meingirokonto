@@ -7,7 +7,11 @@
   -->
 <template>
   <v-app v-bind:flat="true">
-    <component v-bind:is="layout"></component>
+    <router-view name="title"></router-view>
+    <router-view name="header"></router-view>
+    <router-view name="info"></router-view>
+    <v-main><router-view></router-view></v-main>
+    <router-view name="footer"></router-view>
   </v-app>
 </template>
 
@@ -18,6 +22,7 @@ import {onBeforeMount, ref, watchEffect} from 'vue'
 import {useTheme} from 'vuetify'
 // import {useApp} from '@/composables/useApp'
 import {useRoute} from 'vue-router'
+// import TitleBar from '@/components/TitleBar.vue'
 //import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()

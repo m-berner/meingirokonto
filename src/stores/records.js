@@ -272,7 +272,9 @@ export const useRecordsStore = defineStore('records', {
                 const rawRecordClone = { ...toRaw(record) };
                 const dbRecord = {
                     cName: rawRecordClone.cName,
-                    cCurrency: rawRecordClone.cCurrency
+                    cCurrency: rawRecordClone.cCurrency,
+                    cNumber: rawRecordClone.cNumber,
+                    cLogo: rawRecordClone.cLogo
                 };
                 const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);

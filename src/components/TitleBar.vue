@@ -8,61 +8,55 @@
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <v-app-bar-title>
-      {{ t('titleBar.title') }}
-      <v-btn target="_blank" v-bind:href="settings.service.url">
-        <template v-slot:prepend>
-          <CustomIcon v-bind:name="settings.service.name"></CustomIcon>
-        </template>
-        {{ settings.service.name }}
-      </v-btn>
+        <v-btn target="_blank" v-bind:href="settings.service.url">
+          <template v-slot:prepend>
+            <CustomIcon v-bind:name="settings.service.name"></CustomIcon>
+          </template>
+          {{ settings.service.name }}
+        </v-btn>
+        {{ t('titleBar.title') }}
     </v-app-bar-title>
-    <v-spacer v-if="!settings.partner"></v-spacer>
-    <div v-if="settings.partner" class="cssPartnerLinks">
-      <v-btn
-        v-for="item in (tm('titleBar.linkData') as Record<string, VueMessageType>[])"
-        v-bind:key="rt(item.icon)"
-        target="_blank"
-        v-bind:href="rt(item.url)"
-      >
-        <CustomIcon v-bind:name="rt(item.icon)"></CustomIcon>
-      </v-btn>
-    </div>
-    <v-btn>
-      <v-switch
-        v-model="settings.partner"
-        color="primary"
-        hide-details
-        label="Partner"
-        v-on:click="settings.togglePartner()"
-      ></v-switch>
-    </v-btn>
+    <v-spacer></v-spacer>
+    <v-select
+      v-model="state._selected_account"
+      item-title="title"
+      item-value="id"
+      label="Konto"
+      max-width="300"
+      v-bind:items="state._items_accounts"
+    ></v-select>
   </v-app-bar>
 </template>
 
 <script lang="ts" setup>
 import CustomIcon from '@/components/CustomIcon.vue'
-import {useRecordsStore} from '@/stores/records'
+//import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useI18n, type VueMessageType} from 'vue-i18n'
-import {watch} from 'vue'
+import {useI18n} from 'vue-i18n'
+import {reactive} from 'vue'
+import {useApp} from '@/composables/useApp'
 
-const {rt, t, tm} = useI18n()
+const {t} = useI18n()
 const settings = useSettingsStore()
-const records = useRecordsStore()
+//const records = useRecordsStore()
+const {CONS} = useApp()
+// watch(
+//   () => settings.service,
+//   () => {
+//     console.log('TITLEBAR: watch')
+//     records.resetActiveStocksValues()
+//   }
+// )
 
-watch(
-  () => settings.service,
-  () => {
-    console.log('TITLEBAR: watch')
-    records.resetActiveStocksValues()
-  }
-)
+const state = reactive({
+  _show: true,
+  _drawer_controls: CONS.DEFAULTS.DRAWER_CONTROLS,
+  _selected_account: '€ ING 34242432424',
+  _items_accounts: [
+    {id: 1, title: '€ ING 34242432424', name: 'ING', cur: '€', number: '34242432424', logo: ''},
+    {id: 2, title: '€ DKB 34242432424', name: 'DKB', cur: '€', number: '34242432424', logo: ''}
+  ]
+})
 
 console.log('--- TitleBar.vue setup ---')
 </script>
-
-<style scoped>
-.cssPartnerLinks {
-  width: 525px;
-}
-</style>
