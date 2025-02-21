@@ -22,7 +22,7 @@
     v-bind:headers="tableHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="(records.transfers.all as ITransfer[])"
+    v-bind:items="records.booking.all as IBooking[]"
     v-bind:items-per-page="settings.itemsPerPageTransfers"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('transfersTable.itemsPerPageText')"
@@ -43,21 +43,12 @@
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>
-        <td>{{ item.mCompany }}</td>
-        <td v-if="item.cDate > 0">{{ d(new Date(item.cDate), 'short', 'de-DE') }}</td>
-        <td v-else></td>
-        <td v-if="item.cExDay > 0">{{ d(new Date(item.cExDay), 'short', 'de-DE') }}</td>
-        <td v-else></td>
-        <td>{{ n(item.cUnitQuotation, 'currency5') }}</td>
-        <td>{{ n(item.cAmount, 'currency') }}</td>
-        <td>{{ n(item.cCount, 'integer') }}</td>
-        <td>{{ n(item.cFees, 'currency') }}</td>
-        <td>{{ n(item.cSTax, 'currency') }}</td>
-        <td>{{ n(item.cFTax, 'currency') }}</td>
-        <td>{{ n(item.cTax, 'currency') }}</td>
-        <td>{{ n(item.cSoli, 'currency') }}</td>
-        <td>{{ item.cMarketPlace }}</td>
+        <td>{{ d(new Date(item.cDate), 'short', 'de-DE') }}</td>
+        <td>{{ n(item.cDebit, 'currency') }}</td>
+        <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
+        <td>{{ item.cAccountID }}</td>
+        <td>{{ item.cAccountTypeID }}</td>
       </tr>
     </template>
   </v-data-table>
@@ -98,18 +89,21 @@
 // }
 import OptionMenu from '@/components/OptionMenu.vue'
 import {useI18n} from 'vue-i18n'
-import {ref} from 'vue'
+import {ref, watchEffect} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+// import ModalDialog from '@/components/dialogs/ModalDialog.vue'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, rt, t, tm} = useI18n()
 const {CONS} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
 const search = ref('')
-const headers = tm('transfersTable.headers')
+const headers = tm('bookingTable.headers')
 const tableHeaders = headers.map((item: { title: string, align: string, sortable: boolean, key: string }) => {
   return {
     title: rt(item.title),
@@ -124,6 +118,15 @@ const options: Record<string, string>[] = tm('transfersTable.menuItems')
 //  records.setActiveStocksPage(p)
 //  await records.updateWrapper()
 //}
+
+watchEffect(
+  () => {
+    console.error("EW-----------WRWREWR")
+    if (runtime.isAddAccount === true) {
+      console.error("EWWRWREWR")
+    }
+  }
+)
 
 console.log('--- HomePage.vue setup ---')
 </script>

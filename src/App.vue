@@ -9,7 +9,6 @@
   <v-app v-bind:flat="true">
     <router-view name="title"></router-view>
     <router-view name="header"></router-view>
-    <router-view name="info"></router-view>
     <v-main><router-view></router-view></v-main>
     <router-view name="footer"></router-view>
   </v-app>

@@ -8,21 +8,6 @@
 
 declare global {
   type TIDBRequestEvent = Event & { target: IDBRequest }
-  type TFetch = Partial<{
-    id: number
-    isin: string
-    min: string
-    rate: string
-    max: string
-    cur: string
-    company: string
-    wkn: string
-    symbol: string
-    gm: number
-    qf: number
-    key: string | number
-    value: string | number | Record<string, string | number>
-  }>
 
   interface IUrlWithName {
     name: string
@@ -55,18 +40,6 @@ declare global {
     mSortDate?: number
   }
 
-  interface IAddedStock {
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSym: string
-    cQuarterDay: number
-    cMeetingDay: number
-    cFadeOut: number
-    cFirstPage: number
-    cURL: string
-  }
-
   interface IYearController {
     buy: number
     sell: number
@@ -90,11 +63,11 @@ declare global {
     cID: number
     cName: string
     cCurrency: string
-    cNumber: number
+    cNumber: string
     cLogo?: string
   }
 
-  interface IAccountType {
+  interface IBookingType {
     cID: number
     cName: string
   }
@@ -127,7 +100,7 @@ declare global {
     sm: IBackupSm
     account: IAccount[]
     booking: IBooking[]
-    account_type: IAccountType[]
+    account_type: IBookingType[]
   }
 
   interface IStorageLocal {
@@ -530,7 +503,9 @@ export const useApp = (): IUseApp => {
       ]
     },
     DIALOGS: {
-      ADDCOMPANY: 'addcompany',
+      ACCOUNT: 'account',
+      BOOKING_TYPE: 'booking_type',
+      BOOKING: 'booking',
       FADEINSTOCK: 'fadeinstock',
       ADDDEPOSIT: 'adddeposit',
       ADDWITHDRAWAL: 'addwithdrawal',
@@ -546,7 +521,8 @@ export const useApp = (): IUseApp => {
       SELLSTOCK: 'sellstock',
       ADDDIVIDEND: 'adddividend',
       SHOWDIVIDEND: 'showdividend',
-      CONFIGSTOCK: 'configstock'
+      CONFIGSTOCK: 'configstock',
+      SETTING: 'setting'
     },
     EVENTS: {
       ABORT: 'abort',

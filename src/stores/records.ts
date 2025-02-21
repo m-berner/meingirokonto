@@ -13,7 +13,7 @@ interface IRecordsStore {
   _dbi: IDBDatabase | null
   _account: IRecordStoreAccount
   _booking: IRecordStoreBooking
-  _account_type: IRecordStoreAccountType
+  _account_type: IRecordStoreBookingType
   _bkup_object: IBackup
 }
 
@@ -29,8 +29,8 @@ interface IRecordStoreAccount {
   selected_index: number
 }
 
-interface IRecordStoreAccountType {
-  all: IAccountType[]
+interface IRecordStoreBookingType {
+  all: IBookingType[]
   selected_index: number
 }
 
@@ -80,7 +80,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     account(state: IRecordsStore): IRecordStoreAccount {
       return state._account
     },
-    account_type(state: IRecordsStore): IRecordStoreAccountType {
+    bookingType(state: IRecordsStore): IRecordStoreBookingType {
       return state._account_type
     },
     booking(state: IRecordsStore): IRecordStoreBooking {
@@ -103,7 +103,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       //   this._stocks.active.push(memRecord)
       // }
     },
-    _loadAccountTypeIntoStore(accountType: IAccountType): void {
+    _loadAccountTypeIntoStore(accountType: IBookingType): void {
       // const memRecord = { ...account }
       this._account_type.all.push(accountType)
       // if (memRecord.cFadeOut === 1) {
@@ -360,7 +360,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       console.log('RECORDS: loadBkupObjectIntoStore')
       let account: IAccount
       let booking: IBooking
-      let accountType: IAccountType
+      let accountType: IBookingType
       for (account of this._bkup_object.account) {
         // addAccount = migrateStock({...stock})
         this._loadAccountIntoStore(account)
@@ -707,12 +707,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async addAccountType(record: IAccountType): Promise<string> {
+    async addAccountType(record: IBookingType): Promise<string> {
       return new Promise((resolve, reject) => {
-        type TAccountTypeAdd = Omit<IAccountType, 'cID'>
+        type TAccountTypeAdd = Omit<IBookingType, 'cID'>
         const onSuccess = (ev: Event): void => {
           requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          const memRecord: IAccountType = {
+          const memRecord: IBookingType = {
             ...dbRecord,
             cID: (ev.target as IDBRequest).result
           }
@@ -735,7 +735,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async updateAccountType(data: IAccountType, msg: boolean = false): Promise<string> {
+    async updateAccountType(data: IBookingType, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateAccountType', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
@@ -759,7 +759,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     async deleteAccountType(ident: number): Promise<string> {
-      const indexOfAccountType = this._account.all.findIndex((accountType: IAccountType) => {
+      const indexOfAccountType = this._account.all.findIndex((accountType: IBookingType) => {
         return accountType.cID === ident
       })
       return new Promise((resolve, reject) => {
@@ -780,7 +780,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async addBooking(record: IBooking): Promise<string> {
+    async booking(record: IBooking): Promise<string> {
       return new Promise((resolve, reject) => {
         type TBookingAdd = Omit<IBooking, 'cID'>
         const onSuccess = (ev: Event): void => {
@@ -790,7 +790,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
             cID: (ev.target as IDBRequest).result
           }
           this._booking.all_per_account.push(memRecord)
-          resolve('RECORDS: addBooking: booking added')
+          resolve('RECORDS: booking: booking added')
         }
         const onError = (ev: ErrorEvent): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
@@ -813,7 +813,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async updateBooking(data: IAccountType, msg: boolean = false): Promise<string> {
+    async updateBooking(data: IBookingType, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBooking', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {

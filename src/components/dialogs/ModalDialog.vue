@@ -11,10 +11,10 @@
       <v-card-title class="text-center">
         {{ dialogTitle }}
       </v-card-title>
-      <AddCompany
-        v-if="runtime.isAddCompany"
+      <AddAccount
+        v-if="runtime.isAddAccount"
         ref="dialogRef"
-      ></AddCompany>
+      ></AddAccount>
       <FadeinStock
         v-if="runtime.isFadeinStock"
         ref="dialogRef"
@@ -116,7 +116,7 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import FadeinStock from '@/components/dialogs/FadeinStock.vue'
 import DailyChanges from '@/components/dialogs/DailyChanges.vue'
-import AddCompany from '@/components/dialogs/AddAccount.vue'
+//import AddCompany from '@/components/dialogs/AddAccount.vue'
 import AddDeposit from '@/components/dialogs/AddDeposit.vue'
 import AddWithdrawal from '@/components/dialogs/AddWithdrawal.vue'
 import DeleteTransfer from '@/components/dialogs/DeleteTransfer.vue'
@@ -128,6 +128,7 @@ import ShowDividend from '@/components/dialogs/ShowDividend.vue'
 import DeleteStock from '@/components/dialogs/DeleteStock.vue'
 import ConfigCompany from '@/components/dialogs/ConfigCompany.vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import AddAccount from '@/components/dialogs/ComboBooking.vue'
 
 const dialogRef = ref()
 const {t} = useI18n()

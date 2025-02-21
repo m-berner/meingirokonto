@@ -18,7 +18,7 @@ export const useRuntimeStore = defineStore('runtime', {
                 _form: ref(),
                 _changes_mode: '',
                 _is_ok: true,
-                _is_add_company: false,
+                _is_add_account: false,
                 _is_fadein_stock: false,
                 _is_add_deposit: false,
                 _is_add_withdrawal: false,
@@ -154,11 +154,11 @@ export const useRuntimeStore = defineStore('runtime', {
                 dialogId = ev.target.parentElement.id;
             }
             this._dialogs._changes_mode = dialogId;
-            console.info('MODALDIALOG: toggleVisibility', dialogId);
+            console.info('MODALDIALOG: toggleVisibility', ev, dialogId);
             this._dialogs._is_visible = !this._dialogs._is_visible;
             switch (dialogId) {
-                case CONS.DIALOGS.ADDCOMPANY:
-                    this._dialogs._is_add_company = !this._dialogs._is_add_company;
+                case CONS.DIALOGS.ADDACCOUNT:
+                    this._dialogs._is_add_account = !this._dialogs._is_add_account;
                     break;
                 case CONS.DIALOGS.FADEINSTOCK:
                     this._dialogs._is_fadein_stock = !this._dialogs._is_fadein_stock;
@@ -209,7 +209,7 @@ export const useRuntimeStore = defineStore('runtime', {
                     this._dialogs._is_config_company = !this._dialogs._is_config_company;
                     break;
                 default:
-                    this._dialogs._is_add_company = false;
+                    this._dialogs._is_add_account = false;
                     this._dialogs._is_fadein_stock = false;
                     this._dialogs._is_add_deposit = false;
                     this._dialogs._is_add_withdrawal = false;

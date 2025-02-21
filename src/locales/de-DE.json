@@ -51,6 +51,7 @@
     "transfersTable": "Buchungen",
     "reload": "Kurse aktualisieren",
     "addAccount": "Unternehmen hinzufügen",
+    "booking": "Buchung hinzufügen",
     "deleteStock": "Unternehmen entfernen",
     "fadeinStock": "Unternehmen einblenden",
     "cashPlus": "Einzahlung",
@@ -184,7 +185,7 @@
     "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
     "itemsPerPageText": "Einträge pro Seite:"
   },
-  "transfersTable": {
+  "bookingTable": {
     "search": "Suchen",
     "headers": [
       {
@@ -200,82 +201,40 @@
         "key": "mAction"
       },
       {
-        "title": "Unternehmen",
-        "align": "start",
-        "sortable": false,
-        "key": "mCompany"
-      },
-      {
         "title": "Datum",
         "align": "start",
         "sortable": false,
         "key": "cDate"
       },
       {
-        "title": "Ex-Tag",
+        "title": "Soll",
         "align": "start",
         "sortable": false,
-        "key": "cExDay"
+        "key": "cDebit"
       },
       {
-        "title": "Preis",
+        "title": "Haben",
         "align": "start",
         "sortable": false,
-        "key": "cUnitQuotation"
-      },
-      {
-        "title": "Ein/Auszahlung",
-        "align": "start",
-        "sortable": false,
-        "key": "cAmount"
-      },
-      {
-        "title": "Anzahl",
-        "align": "start",
-        "sortable": false,
-        "key": "cCount"
-      },
-      {
-        "title": "Gebühr",
-        "align": "start",
-        "sortable": false,
-        "key": "cFees"
-      },
-      {
-        "title": "Q-Steuer",
-        "align": "start",
-        "sortable": false,
-        "key": "cSTax"
-      },
-      {
-        "title": "FT-Steuer",
-        "align": "start",
-        "sortable": false,
-        "key": "cFTax"
-      },
-      {
-        "title": "Steuer",
-        "align": "start",
-        "sortable": false,
-        "key": "cTax"
-      },
-      {
-        "title": "Soli",
-        "align": "start",
-        "sortable": false,
-        "key": "cSoli"
-      },
-      {
-        "title": "Handelsplatz",
-        "align": "start",
-        "sortable": false,
-        "key": "cMarketPlace"
+        "key": "cCredit"
       },
       {
         "title": "Bemerkung",
         "align": "start",
         "sortable": false,
         "key": "cDescription"
+      },
+      {
+        "title": "Buchungstyp",
+        "align": "start",
+        "sortable": false,
+        "key": "cAccountType"
+      },
+      {
+        "title": "Konto",
+        "align": "start",
+        "sortable": false,
+        "key": "cAccountID"
       }
     ],
     "menuItems": [
@@ -294,8 +253,8 @@
   "dialogs": {
     "cancel": "Abbrechen",
     "ok": "OK",
-    "addAccount": {
-      "title": "Unternehmen hinzufügen",
+    "booking": {
+      "title": "Buchung hinzufügen",
       "isin": "ISIN",
       "company": "Unternehmen",
       "wkn": "WKN",

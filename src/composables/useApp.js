@@ -194,7 +194,9 @@ export const useApp = () => {
             ]
         },
         DIALOGS: {
-            ADDCOMPANY: 'addcompany',
+            ACCOUNT: 'account',
+            BOOKING_TYPE: 'booking_type',
+            BOOKING: 'booking',
             FADEINSTOCK: 'fadeinstock',
             ADDDEPOSIT: 'adddeposit',
             ADDWITHDRAWAL: 'addwithdrawal',
@@ -210,7 +212,8 @@ export const useApp = () => {
             SELLSTOCK: 'sellstock',
             ADDDIVIDEND: 'adddividend',
             SHOWDIVIDEND: 'showdividend',
-            CONFIGSTOCK: 'configstock'
+            CONFIGSTOCK: 'configstock',
+            SETTING: 'setting'
         },
         EVENTS: {
             ABORT: 'abort',

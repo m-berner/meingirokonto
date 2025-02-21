@@ -37,7 +37,7 @@ export const useRecordsStore = defineStore('records', {
         account(state) {
             return state._account;
         },
-        account_type(state) {
+        bookingType(state) {
             return state._account_type;
         },
         booking(state) {
@@ -400,7 +400,7 @@ export const useRecordsStore = defineStore('records', {
                 requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
             });
         },
-        async addBooking(record) {
+        async booking(record) {
             return new Promise((resolve, reject) => {
                 const onSuccess = (ev) => {
                     requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
@@ -409,7 +409,7 @@ export const useRecordsStore = defineStore('records', {
                         cID: ev.target.result
                     };
                     this._booking.all_per_account.push(memRecord);
-                    resolve('RECORDS: addBooking: booking added');
+                    resolve('RECORDS: booking: booking added');
                 };
                 const onError = (ev) => {
                     requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false);

@@ -15,7 +15,6 @@ import HelpPage from '@/components/HelpPage.vue';
 import PrivacyPage from '@/components/PrivacyPage.vue';
 import TitleBar from '@/components/TitleBar.vue';
 import HeaderBar from '@/components/HeaderBar.vue';
-import InfoBar from '@/components/InfoBar.vue';
 import FooterBar from '@/components/FooterBar.vue';
 const { getUI } = useApp();
 const router = createRouter({
@@ -28,7 +27,26 @@ const router = createRouter({
                 default: HomePage,
                 title: TitleBar,
                 header: HeaderBar,
-                info: InfoBar,
+                footer: FooterBar
+            }
+        },
+        {
+            path: '/help',
+            name: 'help',
+            components: {
+                default: HelpPage,
+                title: TitleBar,
+                header: HeaderBar,
+                footer: FooterBar
+            }
+        },
+        {
+            path: '/privacy',
+            name: 'privacy',
+            components: {
+                default: PrivacyPage,
+                title: TitleBar,
+                header: HeaderBar,
                 footer: FooterBar
             }
         },
@@ -136,6 +154,9 @@ const vuetify = createVuetify({
             euro: mdiCurrencyEur,
             reload: mdiReload,
             addAccount: mdiDomainPlus,
+            booking: mdiDomainPlus,
+            bookingType: mdiDomainPlus,
+            account: mdiDomainPlus,
             deleteStock: mdiDomainRemove,
             fadeinStock: mdiDomain,
             cashPlus: mdiCashPlus,
