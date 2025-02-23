@@ -44,3 +44,11 @@ thead tr div.v-progress-linear {
 .router-link-active {
    color: white;
 }
+
+.opacity-off {
+    opacity: 0;
+}
+
+.opacity-on {
+    opacity: 1;
+}

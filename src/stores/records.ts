@@ -13,7 +13,7 @@ interface IRecordsStore {
   _dbi: IDBDatabase | null
   _account: IRecordStoreAccount
   _booking: IRecordStoreBooking
-  _account_type: IRecordStoreBookingType
+  _booking_type: IRecordStoreBookingType
   _bkup_object: IBackup
 }
 
@@ -59,7 +59,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
         selected_index: -1
       },
-      _account_type: {
+      _booking_type: {
         all: [],
         selected_index: -1
       },
@@ -67,12 +67,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         sm: {
           cVersion: 0,
           cDBVersion: 0,
-          cDBCurrency: '',
+          cDBCurrency: '', // TODO remove
           cEngine: ''
         },
         account: [],
         booking: [],
-        account_type: []
+        booking_type: []
       }
     }
   },
@@ -81,7 +81,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return state._account
     },
     bookingType(state: IRecordsStore): IRecordStoreBookingType {
-      return state._account_type
+      return state._booking_type
     },
     booking(state: IRecordsStore): IRecordStoreBooking {
       return state._booking
@@ -103,9 +103,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       //   this._stocks.active.push(memRecord)
       // }
     },
-    _loadAccountTypeIntoStore(accountType: IBookingType): void {
+    _loadBookingTypeIntoStore(bookingType: IBookingType): void {
       // const memRecord = { ...account }
-      this._account_type.all.push(accountType)
+      this._booking_type.all.push(bookingType)
       // if (memRecord.cFadeOut === 1) {
       //   this._stocks.passive.push(memRecord)
       // } else if (memRecord.cFadeOut === 0) {
@@ -439,11 +439,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
       this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
-      this._account_type.all.splice(0, this._account_type.all.length)
+      this._booking_type.all.splice(0, this._booking_type.all.length)
       this._account.all.splice(0, this._account.all.length)
       this._booking.selected_index = 0
-      this._account_type.selected_index = 0
-      this._account_type.selected_index = 0
+      this._booking_type.selected_index = 0
+      this._booking_type.selected_index = 0
       return new Promise((resolve, reject) => {
         const onError = (ev: ErrorEvent): void => {
           reject(ev.message)
@@ -463,14 +463,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
           console.info('RECORDS: account types dropped')
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).clear()
         requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
         const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).clear()
         requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
-        const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).clear()
+        const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).clear()
         requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
       })
     },
@@ -492,11 +492,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       console.info('RECORDS: databaseIntoStore')
       // const runtime = useRuntimeStore()
       this._account.all.splice(0, this._account.all.length)
-      this._account_type.all.splice(0, this._account_type.all.length)
+      this._booking_type.all.splice(0, this._booking_type.all.length)
       this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
       this._booking.selected_index = 0
-      this._account_type.selected_index = 0
-      this._account_type.selected_index = 0
+      this._booking_type.selected_index = 0
+      this._account.selected_index = 0
       return new Promise((resolve, reject) => {
         const onComplete = async (): Promise<void> => {
           console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
@@ -512,7 +512,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           notice(['RECORDS: databaseIntoStore: transaction aborted!', requestTransaction.error as string])
           reject(requestTransaction.error)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE], 'readonly')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE], 'readonly')
         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
         const onSuccessAccountOpenCursor = (ev: TIDBRequestEvent): void => {
@@ -544,7 +544,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         const onSuccessAccountTypeOpenCursor = (ev: TIDBRequestEvent): void => {
           const cursor = ev.target.result
           if (cursor !== null) {
-            this._loadAccountTypeIntoStore(cursor.value)
+            this._loadBookingTypeIntoStore(cursor.value)
             cursor.continue()
           }
         }
@@ -557,7 +557,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
         const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).openCursor()
         requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
-        const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).openCursor()
+        const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).openCursor()
         requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false)
         const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).openCursor()
         requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
@@ -567,7 +567,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       console.log('RECORDS: storeIntoDatabase')
       return new Promise((resolve, reject) => {
         const onComplete = (): void => {
-          // requestaddAccount.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
           notice(['All memory records are added to the database!'])
           resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
         }
@@ -578,15 +578,15 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         const onError = (ev: ErrorEvent): void => {
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.ACCOUNT_TYPE, CONS.DB.STORES.BOOKING], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE, CONS.DB.STORES.BOOKING], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
         for (let i = 0; i < this._account.all.length; i++) {
           requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add({...this._account.all[i]})
         }
-        for (let i = 0; i < this._account_type.all.length; i++) {
-          requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).add({...this._account_type.all[i]})
+        for (let i = 0; i < this._booking_type.all.length; i++) {
+          requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add({...this._booking_type.all[i]})
         }
         for (let i = 0; i < this._booking.all_per_account.length; i++) {
           requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({...this._booking.all_per_account[i]})
@@ -707,36 +707,31 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async addAccountType(record: IBookingType): Promise<string> {
+    async addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
-        type TAccountTypeAdd = Omit<IBookingType, 'cID'>
         const onSuccess = (ev: Event): void => {
-          requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          const memRecord: IBookingType = {
-            ...dbRecord,
-            cID: (ev.target as IDBRequest).result
+          if (ev.target instanceof IDBRequest) {
+            const memRecord: IBookingType = {
+              ...record,
+              cID: ev.target.result
+            }
+            this._booking_type.all.push(memRecord)
+            resolve(CONS.RESULTS.SUCCESS)
+          } else {
+            reject(CONS.RESULTS.ERROR)
           }
-          this._account_type.all.push(memRecord)
-          resolve('RECORDS: addAccountType: account type added')
         }
         const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          reject(ev.message)
+          reject(ev)
         }
-        const rawRecordClone = {...toRaw(record)}
-        const dbRecord: TAccountTypeAdd = {
-          cName: rawRecordClone.cName,
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).add(dbRecord)
-        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false)
-        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add(record)
+        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
-    async updateAccountType(data: IBookingType, msg: boolean = false): Promise<string> {
-      console.info('RECORDS: updateAccountType', data)
+    async updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
+      console.info('RECORDS: updateBookingType', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
@@ -751,14 +746,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           notice([ev.message])
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).put({...data})
+        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).put({...data})
         requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
         requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
-    async deleteAccountType(ident: number): Promise<string> {
+    async deleteBookingType(ident: number): Promise<string> {
       const indexOfAccountType = this._account.all.findIndex((accountType: IBookingType) => {
         return accountType.cID === ident
       })
@@ -773,9 +768,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT_TYPE], 'readwrite')
+        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT_TYPE).delete(ident)
+        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).delete(ident)
         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })

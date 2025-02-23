@@ -1,5 +1,5 @@
-import HomePage from '@/views/HomePage.vue';
-import OptionsPage from '@/views/OptionsPage.vue';
+import HomePage from '@/pages/HomePage.vue';
+import OptionsPage from '@/pages/OptionsPage.vue';
 import IndexPage from '@/App.vue';
 import { createPinia } from 'pinia';
 import { createRouter, createWebHashHistory } from 'vue-router';
@@ -8,7 +8,7 @@ import { createI18n } from 'vue-i18n';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBasketFill, mdiBasketMinus, mdiBasketPlus, mdiCalculator, mdiCashMinus, mdiCashPlus, mdiChartTimelineVariant, mdiChartTimelineVariantShimmer, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileCog, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiGiftOutline, mdiHandshake, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiTransfer } from '@mdi/js';
+import { mdiBasketFill, mdiBasketMinus, mdiBasketPlus, mdiCalculator, mdiCashMinus, mdiCashPlus, mdiChartTimelineVariant, mdiChartTimelineVariantShimmer, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileCog, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiGiftOutline, mdiHandshake, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiTransfer } from '@mdi/js';
 import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useApp } from '@/composables/useApp';
 import HelpPage from '@/components/HelpPage.vue';
@@ -155,7 +155,9 @@ const vuetify = createVuetify({
             reload: mdiReload,
             addAccount: mdiDomainPlus,
             booking: mdiDomainPlus,
-            bookingType: mdiDomainPlus,
+            addBookingType: mdiFilterPlus,
+            editBookingType: mdiFilterCog,
+            deleteBookingType: mdiFilterRemove,
             account: mdiDomainPlus,
             deleteStock: mdiDomainRemove,
             fadeinStock: mdiDomain,

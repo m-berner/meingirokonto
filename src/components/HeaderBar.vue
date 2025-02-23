@@ -35,10 +35,23 @@
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
+          size="large"
+          v-bind="props"
+          variant="tonal"
+          v-on:click="onIconClick">
+          <v-icon icon="$addBookingType"></v-icon>
+        </v-app-bar-nav-icon>
+      </template>
+    </v-tooltip>
+    <v-spacer></v-spacer>
     <v-tooltip location="top" v-bind:text="t('headerBar.bookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.BOOKING_TYPE"
+          v-bind:id="CONS.DIALOGS.EDIT_BOOKING_TYPE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -201,15 +214,13 @@
     <v-spacer></v-spacer>
   </v-app-bar>
   <Teleport to="body">
-    <v-dialog v-model="state.modal" v-bind:persistent="true" width="500">
+    <v-dialog v-model="state.modal" v-bind:persistent="true" v-bind:class="dialogOpacity" width="500">
       <v-card>
         <v-card-title class="text-center">
-          {{ t('dialogs.booking.title') }}
+          {{ childTitle }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <ComboBooking v-if="state.booking"></ComboBooking>
-          <EditBookingType v-if="state.bookingType"></EditBookingType>
-          <ComboAccount v-if="state.account"></ComboAccount>
+          <AddBookingType v-if="state.addBookingType" ref="dialog-ref"></AddBookingType>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
@@ -221,7 +232,7 @@
                 type="submit"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="() => {}"
+                v-on:click="childOk"
               ></v-btn>
             </template>
           </v-tooltip>
@@ -233,7 +244,7 @@
                 icon="$close"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="state.modal = false; state.account = false; state.bookingType = false; state.booking = false; state.setting = false"
+                v-on:click="resetState"
               ></v-btn>
             </template>
           </v-tooltip>
@@ -248,72 +259,68 @@ import {useRuntimeStore} from '@/stores/runtime'
 // import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {reactive} from 'vue'
+import {onMounted, reactive, ref, useTemplateRef} from 'vue'
 //import AddBooking from '@/components/dialogs/ComboBooking.vue'
-import ComboBooking from '@/components/dialogs/ComboBooking.vue'
-import EditBookingType from '@/components/dialogs/EditBookingType.vue'
-import ComboAccount from '@/components/dialogs/ComboAccount.vue'
+//import ComboBooking from '@/components/dialogs/ComboBooking.vue'
+//import EditBookingType from '@/components/dialogs/EditBookingType.vue'
+//import ComboAccount from '@/components/dialogs/ComboAccount.vue'
+import AddBookingType from '@/components/dialogs/AddBookingType.vue'
 
 const {t} = useI18n()
 const {CONS} = useApp()
 const runtime = useRuntimeStore()
-// const records = useRecordsStore()
-// const state: IAccount = reactive({
-//   cID: 0,
-//   cName: '',
-//   cNumber: '',
-//   cCurrency: '',
-//   cLogo: ''
-// })
-//
-const state = reactive({
-  modal: false,
-  account: false,
-  bookingType: false,
-  booking: false,
-  importDatabase: false,
-  exportDatabase: false,
-  accountancy: false,
-  setting: false,
-})
-// const state: { booking: IBooking } = reactive({
-//   booking: {
-//     cID: 0,
-//     cDate: 0,
-//     cDebit: 0,
-//     cCredit: 0,
-//     cDescription: '',
-//     cAccountID: 0,
-//     cAccountTypeID: 0
-//   }
-// })
-//
-// const state: IBooking = reactive({
-//   cID: 0,
-//   cDate: 0,
-//   cDebit: 0,
-//   cCredit: 0,
-//   cDescription: '',
-//   cAccountID: 0,
-//   cAccountTypeID: 0
-// })
-// const onToggleSettings = async (): Promise<void> => {
-//   await browser.runtime.openOptionsPage()
-// }
 
+const dialogRef = useTemplateRef('dialog-ref')
+const childTitle = ref('')
+// keep dialog hidden when first loaded but load it to initialize dialogRef
+const dialogOpacity = ref('opacity-off')
+
+onMounted(() => {
+  resetState()
+  childTitle.value = dialogRef.value!.title()
+})
+
+const childOk = (): void => {
+  dialogRef.value!.ok()
+}
+
+const state = reactive({
+  modal: true,
+  account: true,
+  addBookingType: true,
+  editBookingType: true,
+  booking: true,
+  importDatabase: true,
+  exportDatabase: true,
+  accountancy: true,
+})
+
+const resetState = () => {
+  state.modal = false
+  state.account = false
+  state.addBookingType = false
+  state.editBookingType = false
+  state.booking = false
+  state.importDatabase = false
+  state.exportDatabase = false
+  state.accountancy = false
+}
 const onIconClick = async (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
-    // console.info('HEADERBAR: onIconClick: parse', loop)
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ACCOUNT:
         state.modal = true
         state.account = true
         break
-      case CONS.DIALOGS.BOOKING_TYPE:
+      case CONS.DIALOGS.ADD_BOOKING_TYPE:
         state.modal = true
-        state.bookingType = true
+        state.addBookingType = true
+        break
+      case CONS.DIALOGS.EDIT_BOOKING_TYPE:
+        state.modal = true
+        state.editBookingType = true
         break
       case CONS.DIALOGS.BOOKING:
         state.modal = true
@@ -328,6 +335,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
     }
   }
   if (ev.target instanceof Element) {
+    dialogOpacity.value = 'opacity-on'
     await parse(ev.target)
   }
 }

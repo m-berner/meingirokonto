@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-
 declare global {
   type TIDBRequestEvent = Event & { target: IDBRequest }
 
@@ -100,7 +99,7 @@ declare global {
     sm: IBackupSm
     account: IAccount[]
     booking: IBooking[]
-    account_type: IBookingType[]
+    booking_type: IBookingType[]
   }
 
   interface IStorageLocal {
@@ -145,11 +144,8 @@ declare global {
       }
       STORES: {
         ACCOUNT: string
-        ACCOUNT_COLS: string[]
-        ACCOUNT_TYPE: string
-        ACCOUNT_TYPE_COLS: string[]
+        BOOKING_TYPE: string
         BOOKING: string
-        BOOKING_COLS: string[]
       }
       VERSION: number
       MINVERSION: number
@@ -189,6 +185,7 @@ declare global {
       origins: string[]
     }
     RESOURCES: Record<string, string>
+    RESULTS: Record<string, string>
     SERVICES: {
       goyax: {
         NAME: string
@@ -285,8 +282,7 @@ declare global {
 
   interface IUseApp {
     CONS: IConstants,
-    validators: Record<string, (v: string | number) => boolean | string>,
-    //appPort: () => browser.runtime.Port,
+    validators: Record<string, Array<(v: string | number) => boolean | string>>,
     //migrateStock: (stock: IStock) => IStock
     //migrateTransfer: (transfer: ITransfer) => ITransfer
     notice: (messages: string[]) => void
@@ -407,14 +403,11 @@ export const useApp = (): IUseApp => {
         // do not change! (part of database records)
       },
       STORES: {
-        // do not change! (part of database records)
+        // <do not change! (part of database)
         ACCOUNT: 'account',
-        ACCOUNT_COLS: ['cID', 'cName'],
         BOOKING: 'booking',
-        BOOKING_COLS: ['cID', 'cDate', 'cDebit', 'cReturn', 'cDescription', 'cAccountID', 'cAccountTypeID'],
-        ACCOUNT_TYPE: 'account_type',
-        ACCOUNT_TYPE_COLS: ['cID', 'cName']
-        // do not change! (part of database records)
+        BOOKING_TYPE: 'booking_type',
+        // do not change! (part of database)>
       },
       VERSION: 1,
       MINVERSION: 1
@@ -504,7 +497,8 @@ export const useApp = (): IUseApp => {
     },
     DIALOGS: {
       ACCOUNT: 'account',
-      BOOKING_TYPE: 'booking_type',
+      ADD_BOOKING_TYPE: 'add_booking_type',
+      EDIT_BOOKING_TYPE: 'booking_type',
       BOOKING: 'booking',
       FADEINSTOCK: 'fadeinstock',
       ADDDEPOSIT: 'adddeposit',
@@ -683,6 +677,10 @@ export const useApp = (): IUseApp => {
       LICENSE: 'license.html',
       INDEX: 'app.html',
       ROOT: '/'
+    },
+    RESULTS: {
+      ERROR: 'ERR',
+      SUCCESS: 'SUCCESS'
     },
     SERVICES: {
       goyax: {
@@ -944,132 +942,12 @@ export const useApp = (): IUseApp => {
   return {
     CONS,
     validators: {
-      dottedPositiveNumber2: (vstr: string): boolean | string => {
-        const found = vstr.match(/^0$|^[0-9]\d*(\.?\d{1,2})$/g)
-        return found !== null ? true : 'A dot formatted positive number is required.'
-      },
-      dottedPositiveNumber5:
-        (vstr: string): boolean | string => {
-          const found = vstr.match(/^0$|^[0-9]\d*(\.?\d{1,5})$/g)
-          return found !== null ? true : 'A dot formatted positive number is required.'
-        },
-      integer:
-        (v: string): boolean | string => {
-          if (v === null || v === undefined) {
-            return 'Input is required.'
-          } else {
-            const found = v.match(/^(-?[1-9]\d*|0)$/g)
-            return found !== null ? true : 'Input is required.'
-          }
-        },
-      positiveInteger:
-        (v: string): boolean | string => {
-          if (v === null || v === undefined) {
-            return 'Input is required.'
-          } else {
-            const found = v.match(/^[1-9][0-9]*$/g)
-            return found !== null ? true : 'Input is required.'
-          }
-        },
-      isin:
-        (v: string): boolean | string => {
-          if (v === null || v === undefined) {
-            return 'Input is required.'
-          } else {
-            const found = v.match(/^[a-zA-Z]{2}[a-zA-Z0-9]{10}$/g)
-            return found !== null ? true : 'Input is required.'
-          }
-        },
-      wkn:
-        (v: string): boolean | string => {
-          const found = v.match(/^[a-hj-np-zA-HJ-NP-Z0-9]{6}$/g)
-          return found !== null ? true : 'Length 6 is required. I,O are not allowed.'
-        },
-      url:
-        (v: string): boolean | string => {
-          const found = v.match(/^[htps]{4,5}:\/\/\S*$/g)
-          return found !== null ? true : 'Input is required.'
-        },
-      isoDate:
-        (v: string): boolean | string => {
-          if (v === null || v === undefined) {
-            return 'Input is required.'
-          } else {
-            const found = v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g)
-            return found !== null ? true : 'Input is required.'
-          }
-        },
-      notEmpty:
-        (v: string): boolean | string => {
-          const found = v.length
-          return found > 0 ? true : 'Input is required.'
-        },
-      positiveNumber:
-        (v: string): boolean | string => {
-          const found = Number.parseFloat(v)
-          return found > 0 ? true : 'Input is required.'
-        },
-      positiveCurrency:
-        (v: number): boolean | string => {
-          return v > 0 ? true : 'Input is required.'
-        },
-      negativeNumber:
-        (v: string): boolean | string => {
-          const found = Number.parseFloat(v)
-          return found < 0 ? true : 'Input is required.'
-        }
+      nameRules: [
+        (v: string): boolean | string => v !== null || 'Name is required',
+        (v: string): boolean | string => (v !== null && v.length < 16) || 'Name must be less than 16 characters',
+        (v: string): boolean | string => v.match(/[^a-zA-Z]/g) === null || 'Name must be characters only'
+      ]
     },
-    // appPort: (): browser.runtime.Port => {
-    //   return browser.runtime.connect()
-    // },
-    // migrateStock: (stock: IStock): IStock => {
-    //   delete stock.mPortfolio
-    //   delete stock.mBuyValue
-    //   delete stock.mValue
-    //   delete stock.mMin
-    //   delete stock.mMax
-    //   delete stock.mChange
-    //   delete stock.mEuroChange
-    //   delete stock.mDividendYielda
-    //   delete stock.mDividendYeara
-    //   delete stock.mDividendYieldb
-    //   delete stock.mDividendYearb
-    //   delete stock.mRealDividend
-    //   delete stock.mRealBuyValue
-    //   delete stock.mDeleteable
-    //   delete stock.mAskDates
-    //   stock.cFadeOut = stock.cFadeOut ?? 0
-    //   stock.cNotFirstPage = stock.cNotFirstPage ?? 1
-    //   stock.cFirstPage = stock.cFirstPage ?? (stock.cNotFirstPage + 1) % 2
-    //   stock.cQuarterDay = stock.cQuarterDay > 0 ? stock.cQuarterDay - offset() : 0
-    //   stock.cMeetingDay = stock.cMeetingDay > 0 ? stock.cMeetingDay - offset() : 0
-    //   const props: string[] = Object.keys(stock)
-    //   for (let i = 0; i < props.length; i++) {
-    //     if (!CONS.DB.STORES.ACCOUNT_COLS.includes(props[i])) {
-    //       delete stock[props[i]]
-    //     }
-    //   }
-    //   return stock
-    // },
-    // migrateTransfer: (transfer: ITransfer): ITransfer => {
-    //   delete transfer.mCompany
-    //   delete transfer.mSortDate
-    //   transfer.cCount = transfer.cNumber ?? transfer.cCount ?? 0
-    //   transfer.cAmount = transfer.cDeposit ?? transfer.cAmount ?? 0
-    //   transfer.cTax = transfer.cTaxes ?? transfer.cTax ?? 0
-    //   transfer.cFTax = transfer.cFTax ?? 0
-    //   transfer.cSTax = transfer.cSTax ?? 0
-    //   transfer.cSoli = transfer.cSoli ?? 0
-    //   transfer.cDate = transfer.cDate > 0 ? transfer.cDate - offset() : 0
-    //   transfer.cExDay = transfer.cExDay > 0 ? transfer.cExDay - offset() : 0
-    //   const props = Object.keys(transfer)
-    //   for (let i = 0; i < props.length; i++) {
-    //     if (!CONS.DB.STORES.TC.includes(props[i])) {
-    //       delete transfer[props[i]]
-    //     }
-    //   }
-    //   return transfer
-    // },
     notice: async (messages: string[]): Promise<void> => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
@@ -1180,3 +1058,5 @@ export const useApp = (): IUseApp => {
     }
   }
 }
+
+console.log('--- useApp.js ---')

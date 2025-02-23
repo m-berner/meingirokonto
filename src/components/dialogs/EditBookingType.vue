@@ -8,34 +8,36 @@
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-combobox
-      label="Buchungstyp"
+      v-model="state.selected"
+      :items="state.data"
       autofocus
-      required
-      :items="[{ cID: 1, cName: 'Garage' }, { cID: 2, cName: 'Bargeld' }]"
-      item-value="cID"
       item-title="cName"
+      item-value="cID"
+      label="Buchungstyp"
+      required
       variant="outlined"
     ></v-combobox>
   </v-form>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, useTemplateRef} from 'vue'
+import {onMounted, reactive, toRaw, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/composables/useApp'
+//import {useRecordsStore} from '@/stores/records'
+//import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {notice} = useApp()
+//const {notice} = useApp()
 const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
 
-const state: IBookingType = reactive({
-    cID: 0,
-    cName: ''
+const state = reactive({
+  selected: null,
+  data: [{cID: 1, cName: 'Garage'}, {cID: 2, cName: 'Bargeld'}]
 })
 
+// const selected = ref('')
 // const onMessageAddCompany = async (ev: MessageEvent): Promise<void> => {
 //   console.info('addAccount: onMessageAddCompany', ev)
 //   if (ev.data === undefined) {
@@ -63,23 +65,22 @@ onMounted(() => {
 })
 
 const ok = async (): Promise<void> => {
-  console.log('BOOKING_TYPE: ok')
-  const records = useRecordsStore()
-  const booking: Omit<IBookingType, 'cID'> = {
-    cName: state.cName,
-  }
-  const verify = records.booking.all_per_account.filter(() => {
-    return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
-  })
-  if (verify.length > 0) {
-    notice(['booking ERROR: booking exists already'])
-  } else {
-    await records.bookingType(booking)
-    //runtime.toggleVisibility(CONS.DIALOGS.BOOKING)
-  }
+  console.log('EDIT_BOOKING_TYPE: ok')
+  //const records = useRecordsStore()
+
+  console.error(toRaw(state.selected))
+  // const verify = records.booking.all_per_account.filter(() => {
+  //   return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
+  // })
+  // if (verify.length > 0) {
+  //   notice(['booking ERROR: booking exists already'])
+  // } else {
+  //   await records.bookingType(booking)
+  //   //runtime.toggleVisibility(CONS.DIALOGS.BOOKING)
+  // }
 }
 const title = () => {
-  return t('dialogs.bookingType.title')
+  return t('dialogs.editBookingType.title')
 }
 const classes = () => {
   return ''

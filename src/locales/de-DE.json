@@ -50,6 +50,7 @@
     "home": "Startseite",
     "transfersTable": "Buchungen",
     "reload": "Kurse aktualisieren",
+    "addBookingType": "Buchungstyp hinzufügen",
     "addAccount": "Unternehmen hinzufügen",
     "booking": "Buchung hinzufügen",
     "deleteStock": "Unternehmen entfernen",
@@ -262,6 +263,16 @@
       "errors": [
         "ISIN ist bereits vorhanden!"
       ]
+    },
+    "addBookingType": {
+      "title": "Buchungstyp hinzufügen",
+      "label": "Buchungstyp",
+      "success": "Buchungstyp wurde hinzugefügt",
+      "error": "Buchungstyp existiert bereits"
+    },
+    "editBookingType": {
+      "title": "Buchungstyp bearbeiten",
+      "label": "Buchungstyp"
     },
     "fadeinStock": {
       "title": "Ausgeblendetes Unternehmen einblenden",

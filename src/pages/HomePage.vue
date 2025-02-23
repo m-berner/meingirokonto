@@ -93,7 +93,6 @@ import {ref, watchEffect} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-// import ModalDialog from '@/components/dialogs/ModalDialog.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, rt, t, tm} = useI18n()
@@ -121,9 +120,9 @@ const options: Record<string, string>[] = tm('transfersTable.menuItems')
 
 watchEffect(
   () => {
-    console.error("EW-----------WRWREWR")
+    console.error("EW-----------")
     if (runtime.isAddAccount === true) {
-      console.error("EWWRWREWR")
+      console.error("E-W-------")
     }
   }
 )

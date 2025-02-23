@@ -5,8 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-import HomePage from '@/views/HomePage.vue'
-import OptionsPage from '@/views/OptionsPage.vue'
+import HomePage from '@/pages/HomePage.vue'
+import OptionsPage from '@/pages/OptionsPage.vue'
 import IndexPage from '@/App.vue'
 import {createPinia} from 'pinia'
 import {createRouter, createWebHashHistory} from 'vue-router'
@@ -39,7 +39,7 @@ import {
   mdiEmail,
   mdiFileCog,
   mdiFileDocumentEdit,
-  mdiFileDocumentMinus,
+  mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove,
   mdiGiftOutline,
   mdiHandshake,
   mdiHelpCircle,
@@ -200,7 +200,9 @@ const vuetify = createVuetify({
       reload: mdiReload,
       addAccount: mdiDomainPlus,
       booking: mdiDomainPlus,
-      bookingType: mdiDomainPlus,
+      addBookingType: mdiFilterPlus,
+      editBookingType: mdiFilterCog,
+      deleteBookingType: mdiFilterRemove,
       account: mdiDomainPlus,
       deleteStock: mdiDomainRemove,
       fadeinStock: mdiDomain,
@@ -357,7 +359,6 @@ const i18n = createI18n({
 })
 const pinia = createPinia()
 const app = createApp(IndexPage)
-
 app.config.errorHandler = (err: ErrorEvent) => {
   console.error(err)
 }

@@ -96,14 +96,14 @@ const useListener = () => {
                     keyPath: 'cID',
                     autoIncrement: true
                 });
-                const requestCreateAccountFrameStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNT_TYPE, {
+                const requestCreateAccountFrameStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPE, {
                     keyPath: 'cID',
                     autoIncrement: true
                 });
                 requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNT}_uk1`, 'cID', { unique: true });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_uk1`, 'cID', { unique: true });
-                requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.ACCOUNT_TYPE}_uk1`, 'cID', { unique: true });
-                requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.ACCOUNT_TYPE}_k1`, 'cName', { unique: true });
+                requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPE}_uk1`, 'cID', { unique: true });
+                requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPE}_k1`, 'cName', { unique: true });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k1`, 'cAccountID', { unique: false });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k2`, 'cAccountTypeID', { unique: false });
                 requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k3`, 'cDate', { unique: false });
