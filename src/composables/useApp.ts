@@ -170,7 +170,6 @@ declare global {
     }
     DIALOGS: Record<string, string>
     EVENTS: Record<string, string>
-    FETCH_API: Record<string, string>
     SETTINGS: {
       MP: string
       EX: string
@@ -496,10 +495,9 @@ export const useApp = (): IUseApp => {
       ]
     },
     DIALOGS: {
-      ACCOUNT: 'account',
-      ADD_BOOKING_TYPE: 'add_booking_type',
-      EDIT_BOOKING_TYPE: 'booking_type',
-      BOOKING: 'booking',
+      ADD_ACCOUNT: 'AddAccount',
+      ADD_BOOKING_TYPE: 'AddBookingType',
+      ADD_BOOKING: 'AddBooking',
       FADEINSTOCK: 'fadeinstock',
       ADDDEPOSIT: 'adddeposit',
       ADDWITHDRAWAL: 'addwithdrawal',
@@ -534,30 +532,6 @@ export const useApp = (): IUseApp => {
       SUC: 'success',
       UPG: 'upgradeneeded',
       VERSIONCHANGE: 'versionchange'
-    },
-    FETCH_API: {
-      ASK__DAILY_CHANGES: 'dc',
-      ASK__DAILY_CHANGES_ALL: 'dca',
-      ASK__DATES_DATA: 'add',
-      ASK__INDEX_DATA: 'aid',
-      ASK__MATERIAL_DATA: 'amd',
-      ASK__MIN_RATE_MAX: 'mrm',
-      ASK__COMPANY_DATA: 'cd',
-      ASK__EXCHANGES_DATA: 'aed',
-      ASK__EXCHANGES_BASE_DATA: 'aebd',
-      ANSWER__DAILY_CHANGES: '_dc',
-      ANSWER__DAILY_CHANGES_ALL: '_dca',
-      ANSWER__DATES_DATA: '_add',
-      ANSWER__INDEX_DATA: '_aid',
-      ANSWER__MATERIAL_DATA: '_amd',
-      ANSWER__MIN_RATE_MAX: '_mrm',
-      ANSWER__COMPANY_DATA: '_cd',
-      ANSWER__EXCHANGES_DATA: '_aed',
-      ANSWER__EXCHANGES_BASE_DATA: '_aebd',
-      END__DAILY_CHANGES: 'edc',
-      END__DAILY_CHANGES_ALL: 'edca',
-      FINISH__DAILY_CHANGES: '_fdc',
-      FINISH__DAILY_CHANGES_ALL: '_fdca'
     },
     SETTINGS: {
       MP: '__MP__',

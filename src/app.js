@@ -8,7 +8,7 @@ import { createI18n } from 'vue-i18n';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBasketFill, mdiBasketMinus, mdiBasketPlus, mdiCalculator, mdiCashMinus, mdiCashPlus, mdiChartTimelineVariant, mdiChartTimelineVariantShimmer, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileCog, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiGiftOutline, mdiHandshake, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiTransfer } from '@mdi/js';
+import { mdiBankPlus, mdiBankRemove, mdiBasketFill, mdiBasketMinus, mdiBasketPlus, mdiCalculator, mdiCashMinus, mdiCashPlus, mdiChartTimelineVariant, mdiChartTimelineVariantShimmer, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileCog, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiGiftOutline, mdiHandshake, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiTransfer } from '@mdi/js';
 import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useApp } from '@/composables/useApp';
 import HelpPage from '@/components/HelpPage.vue';
@@ -16,6 +16,9 @@ import PrivacyPage from '@/components/PrivacyPage.vue';
 import TitleBar from '@/components/TitleBar.vue';
 import HeaderBar from '@/components/HeaderBar.vue';
 import FooterBar from '@/components/FooterBar.vue';
+import AddAccount from '@/components/dialogs/AddAccount.vue';
+import AddBookingType from '@/components/dialogs/AddBookingType.vue';
+import AddBooking from '@/components/dialogs/AddBooking.vue';
 const { getUI } = useApp();
 const router = createRouter({
     history: createWebHashHistory(),
@@ -153,8 +156,7 @@ const vuetify = createVuetify({
             home: mdiHome,
             euro: mdiCurrencyEur,
             reload: mdiReload,
-            addAccount: mdiDomainPlus,
-            booking: mdiDomainPlus,
+            addBooking: mdiDomainPlus,
             addBookingType: mdiFilterPlus,
             editBookingType: mdiFilterCog,
             deleteBookingType: mdiFilterRemove,
@@ -189,7 +191,9 @@ const vuetify = createVuetify({
             privacy: mdiShieldAccount,
             partner: mdiHandshake,
             mail: mdiEmail,
-            magnify: mdiMagnify
+            magnify: mdiMagnify,
+            addAccount: mdiBankPlus,
+            deleteAccount: mdiBankRemove
         }
     }
 });
@@ -319,9 +323,20 @@ app.config.errorHandler = (err) => {
 app.config.warnHandler = (msg) => {
     console.warn(msg);
 };
-app.component('HomePage', HomePage);
-app.component('HelpPage', HelpPage);
-app.component('PrivacyPage', PrivacyPage);
+export const COMPONENT_NAMES = Object.freeze({
+    HOME: 'HomePage',
+    HELP: 'HelpPage',
+    PRIVACY: 'PrivacyPage',
+    ADD_ACCOUNT: 'AddAccount',
+    ADD_BOOKING: 'AddBooking',
+    ADD_BOOKING_TYPE: 'AddBookingType'
+});
+app.component(COMPONENT_NAMES.HOME, HomePage);
+app.component(COMPONENT_NAMES.HELP, HelpPage);
+app.component(COMPONENT_NAMES.PRIVACY, PrivacyPage);
+app.component(COMPONENT_NAMES.ADD_ACCOUNT, AddAccount);
+app.component(COMPONENT_NAMES.ADD_BOOKING_TYPE, AddBookingType);
+app.component(COMPONENT_NAMES.ADD_BOOKING, AddBooking);
 app.use(router);
 app.use(vuetify);
 app.use(i18n);

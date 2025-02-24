@@ -9,10 +9,10 @@
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
       v-bind:id="INPUT_FIELD_ID"
-      v-model="state.nameInput"
+      v-model="state.selected"
       autofocus
       required
-      v-bind:label="t('dialogs.addBookingType.label')"
+      v-bind:label="t('dialogs.addBooking.label')"
       v-bind:rules="validators.nameRules"
       variant="outlined"
     ></v-text-field>
@@ -24,44 +24,45 @@ import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-//import {useRuntimeStore} from '@/stores/runtime'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
-//const runtime = useRuntimeStore()
+const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
 
 const INPUT_FIELD_ID = 'abt_input'
 const state = reactive({
-  nameInput: ''
+  selected: ''
 })
 
 const ok = async (): Promise<void> => {
-  console.log('ADD_BOOKING_TYPE: ok')
+  console.log('ADD_BOOKING: ok')
   formRef.value!.validate()
   const records = useRecordsStore()
-  const nameInput = toRaw(state.nameInput)
+  const bookingType = toRaw(state.selected)
   try {
-    const result = await records.addBookingType({cName: nameInput})
+    const result = await records.addBookingType({cName: bookingType})
     if (result === CONS.RESULTS.SUCCESS) {
-      notice([t('dialogs.addBookingType.success')])
+      notice([t('dialogs.addBooking.success')])
     }
   } catch (e) {
     console.info(e)
-    notice([nameInput, t('dialogs.addBookingType.error')])
+    notice([bookingType, t('dialogs.addBooking.error')])
   } finally {
-    state.nameInput = ''
+    state.selected = ''
     document.getElementById(INPUT_FIELD_ID)!.focus()
   }
 }
-const title = t('dialogs.addBookingType.title')
+const title = t('dialogs.addBooking.title')
 
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('ADD_BOOKING_TYPE: onMounted', formRef)
+  console.log('ADD_BOOKING: onMounted', formRef)
   formRef.value!.reset()
+  runtime.setIsOk(true)
 })
 
-console.log('--- AddBookingType.vue setup ---')
+console.log('--- AddBooking.vue setup ---')
 </script>

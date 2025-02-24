@@ -22,15 +22,15 @@
     </router-link>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.account')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ACCOUNT"
+          v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon icon="$account"></v-icon>
+          <v-icon icon="$addAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -48,43 +48,15 @@
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.bookingType')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.EDIT_BOOKING_TYPE"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon icon="$bookingType"></v-icon>
-        </v-app-bar-nav-icon>
-      </template>
-    </v-tooltip>
-    <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.booking')">
-      <template v-slot:activator="{ props }">
-        <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.BOOKING"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
-          <v-icon icon="$booking"></v-icon>
-        </v-app-bar-nav-icon>
-      </template>
-    </v-tooltip>
-    <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.fadeinStock')">
-      <template v-slot:activator="{ props }">
-        <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.FADEINSTOCK"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$fadeinStock"></v-icon
-          >
+          <v-icon icon="$addBooking"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -214,25 +186,25 @@
     <v-spacer></v-spacer>
   </v-app-bar>
   <Teleport to="body">
-    <v-dialog v-model="state.modal" v-bind:persistent="true" v-bind:class="dialogOpacity" width="500">
+    <v-dialog v-model="state.modal" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
-          {{ childTitle }}
+          {{ state.childTitle }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <AddBookingType v-if="state.addBookingType" ref="dialog-ref"></AddBookingType>
+          <component v-bind:is="state.childComponentName" ref="dialog-ref"></component>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="runtime.isOk"
+                v-if="state.okButton"
                 class="ml-auto"
                 icon="$check"
                 type="submit"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="childOk"
+                v-on:click="state.childOk"
               ></v-btn>
             </template>
           </v-tooltip>
@@ -255,76 +227,52 @@
 </template>
 
 <script lang="ts" setup>
+import {COMPONENT_NAMES} from '@/app'
 import {useRuntimeStore} from '@/stores/runtime'
 // import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {onMounted, reactive, ref, useTemplateRef} from 'vue'
-//import AddBooking from '@/components/dialogs/ComboBooking.vue'
-//import ComboBooking from '@/components/dialogs/ComboBooking.vue'
-//import EditBookingType from '@/components/dialogs/EditBookingType.vue'
-//import ComboAccount from '@/components/dialogs/ComboAccount.vue'
-import AddBookingType from '@/components/dialogs/AddBookingType.vue'
+import {onUpdated, reactive, useTemplateRef} from 'vue'
 
 const {t} = useI18n()
 const {CONS} = useApp()
 const runtime = useRuntimeStore()
 
-const dialogRef = useTemplateRef('dialog-ref')
-const childTitle = ref('')
-// keep dialog hidden when first loaded but load it to initialize dialogRef
-const dialogOpacity = ref('opacity-off')
-
-onMounted(() => {
-  resetState()
-  childTitle.value = dialogRef.value!.title()
-})
-
-const childOk = (): void => {
-  dialogRef.value!.ok()
-}
+const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
 const state = reactive({
-  modal: true,
-  account: true,
-  addBookingType: true,
-  editBookingType: true,
-  booking: true,
-  importDatabase: true,
-  exportDatabase: true,
-  accountancy: true,
+  childComponentName: '',
+  childTitle: '',
+  childOk: null,
+  okButton: true,
+  modal: false
 })
-
 const resetState = () => {
+  state.childComponentName = ''
+  state.childTitle = ''
+  state.childOk = null
+  state.okButton = true
   state.modal = false
-  state.account = false
-  state.addBookingType = false
-  state.editBookingType = false
-  state.booking = false
-  state.importDatabase = false
-  state.exportDatabase = false
-  state.accountancy = false
 }
 const onIconClick = async (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
-      case CONS.DIALOGS.ACCOUNT:
+      case CONS.DIALOGS.ADD_ACCOUNT:
+        state.childComponentName = COMPONENT_NAMES.ADD_ACCOUNT
+        state.okButton = true
         state.modal = true
-        state.account = true
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
+        state.childComponentName = COMPONENT_NAMES.ADD_BOOKING_TYPE
+        state.okButton = true
         state.modal = true
-        state.addBookingType = true
         break
-      case CONS.DIALOGS.EDIT_BOOKING_TYPE:
+      case CONS.DIALOGS.ADD_BOOKING:
+        state.childComponentName = COMPONENT_NAMES.ADD_BOOKING
+        state.okButton = true
         state.modal = true
-        state.editBookingType = true
-        break
-      case CONS.DIALOGS.BOOKING:
-        state.modal = true
-        state.booking = true
         break
       case CONS.DIALOGS.SETTING:
         await browser.runtime.openOptionsPage()
@@ -335,10 +283,16 @@ const onIconClick = async (ev: Event): Promise<void> => {
     }
   }
   if (ev.target instanceof Element) {
-    dialogOpacity.value = 'opacity-on'
     await parse(ev.target)
   }
 }
+
+onUpdated(() => {
+  if (dialogRef.value!.title !== undefined) {
+    state.childTitle = dialogRef.value!.title
+    state.childOk = dialogRef.value!.ok
+  }
+})
 
 console.log('--- HeaderBar.vue setup ---')
 </script>

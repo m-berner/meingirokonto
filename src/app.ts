@@ -16,6 +16,7 @@ import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
+  mdiBankPlus, mdiBankRemove,
   mdiBasketFill,
   mdiBasketMinus,
   mdiBasketPlus,
@@ -60,6 +61,9 @@ import PrivacyPage from '@/components/PrivacyPage.vue'
 import TitleBar from '@/components/TitleBar.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
 import FooterBar from '@/components/FooterBar.vue'
+import AddAccount from '@/components/dialogs/AddAccount.vue'
+import AddBookingType from '@/components/dialogs/AddBookingType.vue'
+import AddBooking from '@/components/dialogs/AddBooking.vue'
 
 const {getUI} = useApp()
 const router = createRouter({
@@ -198,8 +202,7 @@ const vuetify = createVuetify({
       home: mdiHome,
       euro: mdiCurrencyEur,
       reload: mdiReload,
-      addAccount: mdiDomainPlus,
-      booking: mdiDomainPlus,
+      addBooking: mdiDomainPlus,
       addBookingType: mdiFilterPlus,
       editBookingType: mdiFilterCog,
       deleteBookingType: mdiFilterRemove,
@@ -234,7 +237,9 @@ const vuetify = createVuetify({
       privacy: mdiShieldAccount,
       partner: mdiHandshake,
       mail: mdiEmail,
-      magnify: mdiMagnify
+      magnify: mdiMagnify,
+      addAccount: mdiBankPlus,
+      deleteAccount: mdiBankRemove
     }
   }
 })
@@ -365,10 +370,21 @@ app.config.errorHandler = (err: ErrorEvent) => {
 app.config.warnHandler = (msg: string) => {
   console.warn(msg)
 }
+export const COMPONENT_NAMES = Object.freeze({
+  HOME: 'HomePage',
+  HELP: 'HelpPage',
+  PRIVACY: 'PrivacyPage',
+  ADD_ACCOUNT: 'AddAccount',
+  ADD_BOOKING: 'AddBooking',
+  ADD_BOOKING_TYPE: 'AddBookingType'
+})
 // NOTE: register dynamic components globally
-app.component('HomePage', HomePage)
-app.component('HelpPage', HelpPage)
-app.component('PrivacyPage', PrivacyPage)
+app.component(COMPONENT_NAMES.HOME, HomePage)
+app.component(COMPONENT_NAMES.HELP, HelpPage)
+app.component(COMPONENT_NAMES.PRIVACY, PrivacyPage)
+app.component(COMPONENT_NAMES.ADD_ACCOUNT, AddAccount)
+app.component(COMPONENT_NAMES.ADD_BOOKING_TYPE, AddBookingType)
+app.component(COMPONENT_NAMES.ADD_BOOKING, AddBooking)
 app.use(router)
 app.use(vuetify)
 app.use(i18n)

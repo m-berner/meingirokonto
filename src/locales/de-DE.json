@@ -51,8 +51,8 @@
     "transfersTable": "Buchungen",
     "reload": "Kurse aktualisieren",
     "addBookingType": "Buchungstyp hinzufügen",
-    "addAccount": "Unternehmen hinzufügen",
-    "booking": "Buchung hinzufügen",
+    "addAccount": "Bankkonto hinzufügen",
+    "addBooking": "Buchung hinzufügen",
     "deleteStock": "Unternehmen entfernen",
     "fadeinStock": "Unternehmen einblenden",
     "cashPlus": "Einzahlung",
@@ -254,7 +254,7 @@
   "dialogs": {
     "cancel": "Abbrechen",
     "ok": "OK",
-    "booking": {
+    "addBooking": {
       "title": "Buchung hinzufügen",
       "isin": "ISIN",
       "company": "Unternehmen",
@@ -263,6 +263,12 @@
       "errors": [
         "ISIN ist bereits vorhanden!"
       ]
+    },
+    "addAccount": {
+      "title": "Bankkonto hinzufügen",
+      "label": "Bankkonto",
+      "success": "Konto wurde hinzugefügt",
+      "error": "Konto existiert bereits"
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",

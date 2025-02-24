@@ -8,11 +8,11 @@
 <template>
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
-      v-bind:id="INPUT_FIELD_ID"
-      v-model="state.nameInput"
+      id="K"
+      v-model="state.inputName"
       autofocus
       required
-      v-bind:label="t('dialogs.addBookingType.label')"
+      v-bind:label="t('dialogs.addAccount.label')"
       v-bind:rules="validators.nameRules"
       variant="outlined"
     ></v-text-field>
@@ -31,37 +31,40 @@ const {CONS, notice, validators} = useApp()
 //const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
 
-const INPUT_FIELD_ID = 'abt_input'
+//const INPUT_FIELD_ID = 'abt_input'
 const state = reactive({
-  nameInput: ''
+  inputName: '',
+  inputCurrency: '',
+  inputNumber: '',
+  inputLogo: ''
 })
 
 const ok = async (): Promise<void> => {
-  console.log('ADD_BOOKING_TYPE: ok')
+  console.log('ADD_ACCOUNT: ok')
   formRef.value!.validate()
   const records = useRecordsStore()
-  const nameInput = toRaw(state.nameInput)
+  const cName = toRaw(state.inputName)
   try {
-    const result = await records.addBookingType({cName: nameInput})
+    const result = await records.addAccount({cName: cName})
     if (result === CONS.RESULTS.SUCCESS) {
-      notice([t('dialogs.addBookingType.success')])
+      notice([t('dialogs.addAccount.success')])
     }
   } catch (e) {
     console.info(e)
-    notice([nameInput, t('dialogs.addBookingType.error')])
+    notice([cName, t('dialogs.addAccount.error')])
   } finally {
-    state.nameInput = ''
-    document.getElementById(INPUT_FIELD_ID)!.focus()
+    state.inputName = ''
+    //document.getElementById(INPUT_FIELD_ID)!.focus()
   }
 }
-const title = t('dialogs.addBookingType.title')
+const title = t('dialogs.addAccount.title')
 
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('ADD_BOOKING_TYPE: onMounted', formRef)
+  console.log('ADD_ACCOUNT: onMounted', formRef)
   formRef.value!.reset()
 })
 
-console.log('--- AddBookingType.vue setup ---')
+console.log('--- AddAccount.vue setup ---')
 </script>
