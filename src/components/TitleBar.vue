@@ -7,15 +7,9 @@
   -->
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
-    <v-app-bar-title>
-        <v-btn target="_blank" v-bind:href="settings.service.url">
-          <template v-slot:prepend>
-            <CustomIcon v-bind:name="settings.service.name"></CustomIcon>
-          </template>
-          {{ settings.service.name }}
-        </v-btn>
-        {{ t('titleBar.title') }}
-    </v-app-bar-title>
+    <template v-slot:prepend>
+      <CustomIcon name="dkb"></CustomIcon>
+    </template>
     <v-spacer></v-spacer>
     <v-select
       v-model="state._selected_account"
@@ -29,16 +23,18 @@
 </template>
 
 <script lang="ts" setup>
-import CustomIcon from '@/components/CustomIcon.vue'
-//import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
-import {useI18n} from 'vue-i18n'
+// import AktienCheckIcon from '@/assets/AktienCheckIcon.vue'
+// import {useRecordsStore} from '@/stores/records'
+// import {useSettingsStore} from '@/stores/settings'
+//import {useI18n} from 'vue-i18n'
 import {reactive} from 'vue'
 import {useApp} from '@/composables/useApp'
+import CustomIcon from '@/components/CustomIcon.vue'
+// import CustomIcon from '@/components/CustomIcon.vue'
 
-const {t} = useI18n()
-const settings = useSettingsStore()
-//const records = useRecordsStore()
+//const {t} = useI18n()
+// const settings = useSettingsStore()
+// const records = useRecordsStore()
 const {CONS} = useApp()
 // watch(
 //   () => settings.service,
@@ -53,7 +49,7 @@ const state = reactive({
   _drawer_controls: CONS.DEFAULTS.DRAWER_CONTROLS,
   _selected_account: '€ ING 34242432424',
   _items_accounts: [
-    {id: 1, title: '€ ING 34242432424', name: 'ING', cur: '€', number: '34242432424', logo: ''},
+    {id: 1, title: '€ ING 34242432424', name: 'ING', cur: '€', number: '34242432424', logo: 'ING-DiBa.svg'},
     {id: 2, title: '€ DKB 34242432424', name: 'DKB', cur: '€', number: '34242432424', logo: ''}
   ]
 })

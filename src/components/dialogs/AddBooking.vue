@@ -13,7 +13,7 @@
       autofocus
       required
       v-bind:label="t('dialogs.addBooking.label')"
-      v-bind:rules="validators.nameRules"
+
       variant="outlined"
     ></v-text-field>
   </v-form>
@@ -27,7 +27,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
+const {CONS, notice} = useApp()
 const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
 

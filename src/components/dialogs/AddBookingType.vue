@@ -8,12 +8,12 @@
 <template>
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
-      v-bind:id="INPUT_FIELD_ID"
       v-model="state.nameInput"
       autofocus
       required
+      ref="name-input"
       v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:rules="validators.nameRules"
+
       variant="outlined"
     ></v-text-field>
   </v-form>
@@ -24,23 +24,23 @@ import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-//import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
-//const runtime = useRuntimeStore()
+const {CONS, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
+const nameInputRef = useTemplateRef('name-input')
 
-const INPUT_FIELD_ID = 'abt_input'
 const state = reactive({
   nameInput: ''
 })
 
 const ok = async (): Promise<void> => {
   console.log('ADD_BOOKING_TYPE: ok')
-  formRef.value!.validate()
+  const form = await formRef.value!.validate()
+  if (!form.valid) { return }
+  //
   const records = useRecordsStore()
-  const nameInput = toRaw(state.nameInput)
+  const nameInput = toRaw(state.nameInput).trim()
   try {
     const result = await records.addBookingType({cName: nameInput})
     if (result === CONS.RESULTS.SUCCESS) {
@@ -51,7 +51,7 @@ const ok = async (): Promise<void> => {
     notice([nameInput, t('dialogs.addBookingType.error')])
   } finally {
     state.nameInput = ''
-    document.getElementById(INPUT_FIELD_ID)!.focus()
+    nameInputRef.value!.focus()
   }
 }
 const title = t('dialogs.addBookingType.title')

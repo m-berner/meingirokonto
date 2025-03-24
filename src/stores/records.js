@@ -256,31 +256,25 @@ export const useRecordsStore = defineStore('records', {
         async addAccount(record) {
             return new Promise((resolve, reject) => {
                 const onSuccess = (ev) => {
-                    requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
-                    const memRecord = {
-                        ...dbRecord,
-                        cID: ev.target.result
-                    };
-                    this._account.all.push(memRecord);
-                    resolve('RECORDS: addAccount: account added');
+                    if (ev.target instanceof IDBRequest) {
+                        const memRecord = {
+                            ...record,
+                            cID: ev.target.result
+                        };
+                        this._account.all.push(memRecord);
+                        resolve(CONS.RESULTS.SUCCESS);
+                    }
+                    else {
+                        reject(CONS.RESULTS.ERROR);
+                    }
                 };
                 const onError = (ev) => {
-                    requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                    requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                    reject(ev.message);
-                };
-                const rawRecordClone = { ...toRaw(record) };
-                const dbRecord = {
-                    cName: rawRecordClone.cName,
-                    cCurrency: rawRecordClone.cCurrency,
-                    cNumber: rawRecordClone.cNumber,
-                    cLogo: rawRecordClone.cLogo
+                    reject(ev);
                 };
                 const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add(dbRecord);
-                requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
+                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add(record);
+                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
         async updateAccount(data, msg = false) {

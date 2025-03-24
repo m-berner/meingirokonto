@@ -186,19 +186,19 @@
     <v-spacer></v-spacer>
   </v-app-bar>
   <Teleport to="body">
-    <v-dialog v-model="state.modal" v-bind:persistent="true" width="500">
+    <v-dialog v-model="state.showDialog" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ state.childTitle }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component v-bind:is="state.childComponentName" ref="dialog-ref"></component>
+          <component v-bind:is="state.dialogName" ref="dialog-ref"></component>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="state.okButton"
+                v-if="state.showOkButton"
                 class="ml-auto"
                 icon="$check"
                 type="submit"
@@ -229,7 +229,6 @@
 <script lang="ts" setup>
 import {COMPONENT_NAMES} from '@/app'
 import {useRuntimeStore} from '@/stores/runtime'
-// import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {onUpdated, reactive, useTemplateRef} from 'vue'
@@ -241,18 +240,18 @@ const runtime = useRuntimeStore()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
 const state = reactive({
-  childComponentName: '',
+  dialogName: '',
   childTitle: '',
   childOk: null,
-  okButton: true,
-  modal: false
+  showOkButton: true,
+  showDialog: false
 })
 const resetState = () => {
-  state.childComponentName = ''
+  state.dialogName = ''
   state.childTitle = ''
   state.childOk = null
-  state.okButton = true
-  state.modal = false
+  state.showOkButton = true
+  state.showDialog = false
 }
 const onIconClick = async (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
@@ -260,19 +259,19 @@ const onIconClick = async (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
-        state.childComponentName = COMPONENT_NAMES.ADD_ACCOUNT
-        state.okButton = true
-        state.modal = true
+        state.dialogName = COMPONENT_NAMES.ADD_ACCOUNT
+        state.showOkButton = true
+        state.showDialog = true
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
-        state.childComponentName = COMPONENT_NAMES.ADD_BOOKING_TYPE
-        state.okButton = true
-        state.modal = true
+        state.dialogName = COMPONENT_NAMES.ADD_BOOKING_TYPE
+        state.showOkButton = true
+        state.showDialog = true
         break
       case CONS.DIALOGS.ADD_BOOKING:
-        state.childComponentName = COMPONENT_NAMES.ADD_BOOKING
-        state.okButton = true
-        state.modal = true
+        state.dialogName = COMPONENT_NAMES.ADD_BOOKING
+        state.showOkButton = true
+        state.showDialog = true
         break
       case CONS.DIALOGS.SETTING:
         await browser.runtime.openOptionsPage()

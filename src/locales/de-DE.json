@@ -266,7 +266,10 @@
     },
     "addAccount": {
       "title": "Bankkonto hinzufügen",
-      "label": "Bankkonto",
+      "nameLabel": "Bankkonto",
+      "currencyLabel": "Währungssymbol",
+      "accountIdLabel": "Kontonummer",
+      "logoLabel": "Logo",
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
@@ -754,5 +757,9 @@
       "label": "Handelsplatz",
       "error": "Der Handelsplatz ist ungültig."
     }
+  },
+  "validators": {
+    "ibanRules": "IBAN ist erforderlich | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
+    "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben"
   }
 }

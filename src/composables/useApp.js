@@ -602,11 +602,20 @@ export const useApp = () => {
     return {
         CONS,
         validators: {
-            nameRules: [
-                (v) => v !== null || 'Name is required',
-                (v) => (v !== null && v.length < 16) || 'Name must be less than 16 characters',
-                (v) => v.match(/[^a-zA-Z]/g) === null || 'Name must be characters only'
-            ]
+            ibanRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length < 37) || msgs[1],
+                    v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgs[2]
+                ];
+            },
+            nameRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length < 16) || msgs[1],
+                    v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+                ];
+            }
         },
         notice: async (messages) => {
             const msg = messages.join('\n');

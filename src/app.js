@@ -200,7 +200,7 @@ const vuetify = createVuetify({
 const i18n = createI18n({
     locale: getUI().locale,
     fallbackLocale: 'en-US',
-    legacy: false,
+    mode: 'composition',
     globalInjection: true,
     messages,
     datetimeFormats: {
@@ -324,16 +324,10 @@ app.config.warnHandler = (msg) => {
     console.warn(msg);
 };
 export const COMPONENT_NAMES = Object.freeze({
-    HOME: 'HomePage',
-    HELP: 'HelpPage',
-    PRIVACY: 'PrivacyPage',
     ADD_ACCOUNT: 'AddAccount',
     ADD_BOOKING: 'AddBooking',
     ADD_BOOKING_TYPE: 'AddBookingType'
 });
-app.component(COMPONENT_NAMES.HOME, HomePage);
-app.component(COMPONENT_NAMES.HELP, HelpPage);
-app.component(COMPONENT_NAMES.PRIVACY, PrivacyPage);
 app.component(COMPONENT_NAMES.ADD_ACCOUNT, AddAccount);
 app.component(COMPONENT_NAMES.ADD_BOOKING_TYPE, AddBookingType);
 app.component(COMPONENT_NAMES.ADD_BOOKING, AddBooking);

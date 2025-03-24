@@ -5338,6 +5338,7 @@ __metadata:
     vue-currency-input: "npm:3.2.1"
     vue-eslint-parser: "npm:9.4.3"
     vue-i18n: "npm:11.1.1"
+    vue-mask-next: "npm:^1.0.0"
     vue-router: "npm:4.4.5"
     vue-tsc: "npm:2.2.0"
     vuetify: "npm:3.7.9"
@@ -6469,6 +6470,15 @@ __metadata:
   peerDependencies:
     vue: ^3.0.0
   checksum: 10c0/070ab39eb0e046d3ba298ba952efe1ea18d22ddecb4a73411e5f1863954e582d7f98a25c4fcac8330b40745fcffd404cc936c8abd102fd3628ac2abb9d0fe58b
+  languageName: node
+  linkType: hard
+
+"vue-mask-next@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "vue-mask-next@npm:1.0.0"
+  peerDependencies:
+    vue: ^3.4.26
+  checksum: 10c0/87605d9c55c743860d4f39faf1350b8fe02809f8764f75dc79c5f44ea2ccbc42531ea2496a9e16d367fbb0da286cbb8f2b3d0300aed4bb5157f066ea86898f0d
   languageName: node
   linkType: hard
 

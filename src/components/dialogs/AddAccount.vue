@@ -8,53 +8,85 @@
 <template>
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
-      id="K"
-      v-model="state.inputName"
+      ref="name-input"
+      v-model="state.nameInput"
       autofocus
       required
-      v-bind:label="t('dialogs.addAccount.label')"
-      v-bind:rules="validators.nameRules"
+      v-bind:label="t('dialogs.addAccount.nameLabel')"
+      v-bind:rules="validators.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+      variant="outlined"
+    ></v-text-field>
+    <v-text-field
+      v-model="state.accountIdInput"
+      placeholder="e.g. DE67 1234 5678 9123 8531 78"
+      required
+      v-bind:label="t('dialogs.addAccount.accountIdLabel')"
+      v-bind:rules="validators.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+      variant="outlined"
+      @update:modelValue="ibanMask"
+    ></v-text-field>
+    <v-text-field
+      v-model="state.logoInput"
+      required
+      v-bind:label="t('dialogs.addAccount.logoLabel')"
       variant="outlined"
     ></v-text-field>
   </v-form>
 </template>
 
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-//import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
-//const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
+const nameInputRef = useTemplateRef('name-input')
 
-//const INPUT_FIELD_ID = 'abt_input'
 const state = reactive({
-  inputName: '',
-  inputCurrency: '',
-  inputNumber: '',
-  inputLogo: ''
+  nameInput: '',
+  currencyInput: '',
+  accountIdInput: '',
+  logoInput: ''
 })
+
+const ibanMask = (iban: string) => {
+  if (iban !== null) {
+    const withoutSpace = iban.replace(/\s/g, '')
+    const loops = Math.ceil(withoutSpace.length / 4)
+    let masked = ''
+    for (let i = 0; i < loops; i++) {
+      if (i === 0) {
+        masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
+      } else {
+        masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
+      }
+    }
+    state.accountIdInput = masked
+  }
+}
 
 const ok = async (): Promise<void> => {
   console.log('ADD_ACCOUNT: ok')
-  formRef.value!.validate()
+  const form = await formRef.value!.validate()
+  if (!form.valid) { return }
+  //
   const records = useRecordsStore()
-  const cName = toRaw(state.inputName)
   try {
-    const result = await records.addAccount({cName: cName})
+    const result = await records.addAccount({cName: state.nameInput, cNumber: state.accountIdInput.replace(/\s/g, ''), cLogo: state.logoInput})
     if (result === CONS.RESULTS.SUCCESS) {
       notice([t('dialogs.addAccount.success')])
     }
   } catch (e) {
     console.info(e)
-    notice([cName, t('dialogs.addAccount.error')])
+    notice([state.nameInput, t('dialogs.addAccount.error')])
   } finally {
-    state.inputName = ''
-    //document.getElementById(INPUT_FIELD_ID)!.focus()
+    state.nameInput = ''
+    state.accountIdInput = ''
+    state.logoInput = ''
+    nameInputRef.value!.focus()
   }
 }
 const title = t('dialogs.addAccount.title')

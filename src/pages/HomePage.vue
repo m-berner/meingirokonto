@@ -15,7 +15,6 @@
     v-bind:label="t('transfersTable.search')"
     variant="outlined"
   ></v-text-field>
-
   <v-data-table
     density="compact"
     item-key="cID"

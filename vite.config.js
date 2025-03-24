@@ -25,6 +25,11 @@ export default defineConfig({
           overwrite: true
         },
         {
+          src: 'assets/ING-DiBa.svg',
+          dest: '../meingirokonto@gmx.de/assets/',
+          overwrite: true
+        },
+        {
           src: '../meingirokonto@gmx.de',
           dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
           overwrite: true
