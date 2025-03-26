@@ -73,12 +73,12 @@ declare global {
 
   interface IBooking {
     cID: number
-    cDate: number
+    cDate: string
     cDebit: number
     cCredit: number
     cDescription?: string
-    cAccountID: number
-    cAccountTypeID: number
+    cType: number
+    cAccountNumber: number
   }
 
   interface IDrawerControls {
@@ -286,6 +286,8 @@ declare global {
       ibanRules: (messages: string[]) => Array<(v: string) => boolean | string>
       nameRules: (messages: string[]) => Array<(v: string) => boolean | string>
       swiftRules: (messages: string[]) => Array<(v: string) => boolean | string>
+      dateRules: (messages: string[]) => Array<(v: string) => boolean | string>
+      requiredRule: (messages: string[]) => Array<(v: string) => boolean | string>
     },
     //validators: Record<string, Array<(v: string | number) => boolean | string>>,
     //migrateStock: (stock: IStock) => IStock
@@ -942,20 +944,18 @@ export const useApp = (): IUseApp => {
           v => (v !== null && v.length < 13) || msgs[1],
           v => v.match(/[^a-zA-Z0-9]/g) === null || msgs[2]
         ]
+      },
+      dateRules: msgs => {
+        return [
+          v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+        ]
+      },
+      requiredRule: msgs => {
+        return [
+          v => v !== null || msgs[0]
+        ]
       }
     },
-    // validators: {
-    //   ibanRules: [
-    //     (v: string): boolean | string => v !== null || 'IBAN is required',
-    //     (v: string): boolean | string => (v !== null && v.length < 37) || 'IBAN must be less than 37 characters',
-    //     (v: string): boolean | string => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || 'IBAN must be country code plus numbers only'
-    //   ],
-    //   nameRules: [
-    //     (v: string): boolean | string => v !== null || 'Name is required',
-    //     (v: string): boolean | string => (v !== null && v.length < 16) || 'Name must be less than 16 characters',
-    //     (v: string): boolean | string => v.match(/[^a-zA-Z]/g) === null || 'Name must be characters only'
-    //   ]
-    // },
     notice: async (messages: string[]): Promise<void> => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =

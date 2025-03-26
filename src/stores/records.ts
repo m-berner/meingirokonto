@@ -45,7 +45,7 @@ interface IOnlineStockValues {
   pchange: number
 }
 
-const {CONS, notice, offset} = useApp()
+const {CONS, notice} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
@@ -777,11 +777,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async booking(record: IBooking): Promise<string> {
+    async addBooking(record: IBooking): Promise<string> {
       return new Promise((resolve, reject) => {
-        type TBookingAdd = Omit<IBooking, 'cID'>
         const onSuccess = (ev: Event): void => {
-          requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          //requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
           const memRecord: IBooking = {
             ...dbRecord,
             cID: (ev.target as IDBRequest).result
@@ -790,27 +789,28 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           resolve('RECORDS: booking: booking added')
         }
         const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          //requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+          //requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
         const rawRecordClone = {...toRaw(record)}
-        const dbRecord: TBookingAdd = {
-          cDate: rawRecordClone.cDate + offset(),
+        const dbRecord: Omit<IBooking, 'cID'> = {
+          cDate: rawRecordClone.cDate,
           cDebit: rawRecordClone.cDebit,
           cCredit: rawRecordClone.cCredit,
           cDescription: rawRecordClone.cDescription,
-          cAccountID: rawRecordClone.cAccountID,
-          cAccountTypeID: rawRecordClone.cAccountTypeID
+          cType: rawRecordClone.cType,
+          cAccountNumber: rawRecordClone.cAccountNumber
         }
+        console.error('TTTTT---', dbRecord, record)
         const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(dbRecord)
-        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false)
-        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
-    async updateBooking(data: IBookingType, msg: boolean = false): Promise<string> {
+    async updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBooking', data)
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {

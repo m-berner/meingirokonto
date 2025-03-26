@@ -622,6 +622,16 @@ export const useApp = () => {
                     v => (v !== null && v.length < 13) || msgs[1],
                     v => v.match(/[^a-zA-Z0-9]/g) === null || msgs[2]
                 ];
+            },
+            dateRules: msgs => {
+                return [
+                    v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+                ];
+            },
+            requiredRule: msgs => {
+                return [
+                    v => v !== null || msgs[0]
+                ];
             }
         },
         notice: async (messages) => {

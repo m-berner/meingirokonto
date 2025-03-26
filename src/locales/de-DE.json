@@ -213,13 +213,12 @@
     "ok": "OK",
     "addBooking": {
       "title": "Buchung hinzufügen",
-      "isin": "ISIN",
-      "company": "Unternehmen",
-      "wkn": "WKN",
-      "symbol": "Kürzel",
-      "errors": [
-        "ISIN ist bereits vorhanden!"
-      ]
+      "dateLabel": "Buchungstag",
+      "descriptionLabel": "Bemerkung",
+      "creditLabel": "Einnahme",
+      "debitLabel": "Ausgabe",
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
     },
     "addAccount": {
       "title": "Bankkonto hinzufügen",
@@ -719,6 +718,8 @@
   "validators": {
     "ibanRules": "IBAN ist erforderlich | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
     "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
-    "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch"
+    "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch",
+    "dateRules": "Datum ist erforderlich",
+    "requiredRule": "Ist erforderlich"
   }
 }

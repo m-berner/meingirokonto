@@ -46,8 +46,8 @@
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
-        <td>{{ item.cAccountID }}</td>
-        <td>{{ item.cAccountTypeID }}</td>
+        <td>{{ item.cType }}</td>
+        <td>{{ item.cAccountNumber }}</td>
       </tr>
     </template>
   </v-data-table>

@@ -45,13 +45,16 @@ const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
 const formRef = useTemplateRef('form-ref')
 const swiftInputRef = useTemplateRef('swift-input')
-
+//cDate: new Date(state._date).getTime(),
 const state = reactive({
   swiftInput: '',
   currencyInput: '',
   accountNumberInput: ''
 })
-
+//   <td v-if="item.cDate > 0">{{ d(new Date(item.cDate), 'short', 'de-DE') }}</td>
+// <td v-else></td>
+// <td v-if="item.cExDay > 0">{{ d(new Date(item.cExDay), 'short', 'de-DE') }}</td>
+// <td v-else></td>
 const ibanMask = (iban: string) => {
   if (iban !== null) {
     const withoutSpace = iban.replace(/\s/g, '')

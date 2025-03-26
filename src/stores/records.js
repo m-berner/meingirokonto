@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { toRaw } from 'vue';
 import { useApp } from '@/composables/useApp';
-const { CONS, notice, offset } = useApp();
+const { CONS, notice } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -399,10 +399,9 @@ export const useRecordsStore = defineStore('records', {
                 requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
             });
         },
-        async booking(record) {
+        async addBooking(record) {
             return new Promise((resolve, reject) => {
                 const onSuccess = (ev) => {
-                    requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
                     const memRecord = {
                         ...dbRecord,
                         cID: ev.target.result
@@ -411,24 +410,23 @@ export const useRecordsStore = defineStore('records', {
                     resolve('RECORDS: booking: booking added');
                 };
                 const onError = (ev) => {
-                    requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                    requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false);
                     reject(ev.message);
                 };
                 const rawRecordClone = { ...toRaw(record) };
                 const dbRecord = {
-                    cDate: rawRecordClone.cDate + offset(),
+                    cDate: rawRecordClone.cDate,
                     cDebit: rawRecordClone.cDebit,
                     cCredit: rawRecordClone.cCredit,
                     cDescription: rawRecordClone.cDescription,
-                    cAccountID: rawRecordClone.cAccountID,
-                    cAccountTypeID: rawRecordClone.cAccountTypeID
+                    cType: rawRecordClone.cType,
+                    cAccountNumber: rawRecordClone.cAccountNumber
                 };
+                console.error('TTTTT---', dbRecord, record);
                 const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
+                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                 const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(dbRecord);
-                requestAdd.addEventListener(CONS.EVENTS.ERR, onError, false);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
+                requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
         async updateBooking(data, msg = false) {
