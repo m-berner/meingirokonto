@@ -17,7 +17,7 @@
       max-width="300"
       v-bind:menu=true
       v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:items="records.bookingType.all"
+      v-bind:items="records.bookingType.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
     ></v-combobox>
   </v-form>
 </template>
