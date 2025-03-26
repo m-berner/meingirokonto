@@ -109,7 +109,8 @@ declare global {
     materials?: string[]
     markets?: string[]
     exchanges?: string[]
-    partner?: boolean
+    sAccountIndex?: number
+    sAccountActiveId?: number
     items_per_page_stocks?: number
     items_per_page_transfers?: number
   }
@@ -284,6 +285,7 @@ declare global {
     validators: {
       ibanRules: (messages: string[]) => Array<(v: string) => boolean | string>
       nameRules: (messages: string[]) => Array<(v: string) => boolean | string>
+      swiftRules: (messages: string[]) => Array<(v: string) => boolean | string>
     },
     //validators: Record<string, Array<(v: string | number) => boolean | string>>,
     //migrateStock: (stock: IStock) => IStock
@@ -932,6 +934,13 @@ export const useApp = (): IUseApp => {
           v => v !== null || msgs[0],
           v => (v !== null && v.length < 16) || msgs[1],
           v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+        ]
+      },
+      swiftRules: msgs => {
+        return [
+          v => v !== null || msgs[0],
+          v => (v !== null && v.length < 13) || msgs[1],
+          v => v.match(/[^a-zA-Z0-9]/g) === null || msgs[2]
         ]
       }
     },

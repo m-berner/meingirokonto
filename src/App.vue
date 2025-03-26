@@ -139,6 +139,7 @@ onBeforeMount(async (): Promise<void> => {
     //   data: [getUI().curusd, getUI().cureur],
     // })
     await settings.storageIntoStore(theme)
+    await records.storageIntoStore()
     await records.openDatabase()
     await records.databaseIntoStore()
     // appPort().postMessage({

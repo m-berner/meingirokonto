@@ -8,27 +8,28 @@
 <template>
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
-      ref="name-input"
-      v-model="state.nameInput"
+      ref="swift-input"
+      v-model="state.swiftInput"
       autofocus
       required
-      v-bind:label="t('dialogs.addAccount.nameLabel')"
-      v-bind:rules="validators.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+      v-bind:label="t('dialogs.addAccount.swiftLabel')"
+      v-bind:rules="validators.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state.accountIdInput"
-      placeholder="e.g. DE67 1234 5678 9123 8531 78"
+      v-model="state.accountNumberInput"
+      v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       required
-      v-bind:label="t('dialogs.addAccount.accountIdLabel')"
+      v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
       v-bind:rules="validators.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state.logoInput"
+      v-model="state.currencyInput"
       required
-      v-bind:label="t('dialogs.addAccount.logoLabel')"
+      v-bind:placeholder="t('dialogs.addAccount.currencyPlaceholder')"
+      v-bind:label="t('dialogs.addAccount.currencyLabel')"
       variant="outlined"
     ></v-text-field>
   </v-form>
@@ -43,13 +44,12 @@ import {useApp} from '@/composables/useApp'
 const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
 const formRef = useTemplateRef('form-ref')
-const nameInputRef = useTemplateRef('name-input')
+const swiftInputRef = useTemplateRef('swift-input')
 
 const state = reactive({
-  nameInput: '',
+  swiftInput: '',
   currencyInput: '',
-  accountIdInput: '',
-  logoInput: ''
+  accountNumberInput: ''
 })
 
 const ibanMask = (iban: string) => {
@@ -64,7 +64,7 @@ const ibanMask = (iban: string) => {
         masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
       }
     }
-    state.accountIdInput = masked
+    state.accountNumberInput = masked
   }
 }
 
@@ -75,18 +75,18 @@ const ok = async (): Promise<void> => {
   //
   const records = useRecordsStore()
   try {
-    const result = await records.addAccount({cName: state.nameInput, cNumber: state.accountIdInput.replace(/\s/g, ''), cLogo: state.logoInput})
+    const result = await records.addAccount({cSwift: state.swiftInput, cNumber: state.accountNumberInput.replace(/\s/g, ''), cCurrency: state.currencyInput})
     if (result === CONS.RESULTS.SUCCESS) {
       notice([t('dialogs.addAccount.success')])
     }
   } catch (e) {
     console.info(e)
-    notice([state.nameInput, t('dialogs.addAccount.error')])
+    notice([state.swiftInput, t('dialogs.addAccount.error')])
   } finally {
-    state.nameInput = ''
-    state.accountIdInput = ''
-    state.logoInput = ''
-    nameInputRef.value!.focus()
+    state.swiftInput = ''
+    state.accountNumberInput = ''
+    state.currencyInput = ''
+    swiftInputRef.value!.focus()
   }
 }
 const title = t('dialogs.addAccount.title')

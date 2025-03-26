@@ -8,50 +8,43 @@
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <CustomIcon name="dkb"></CustomIcon>
+      <CustomLogo v-bind:name="state.logo"></CustomLogo>
     </template>
-    <v-spacer></v-spacer>
+    <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-select
-      v-model="state._selected_account"
-      item-title="title"
-      item-value="id"
-      label="Konto"
+      v-if="records.account.all.length > 0"
+      v-model="records.account.active_id"
+      item-title="cNumber"
+      item-value="cID"
+      label="IBAN"
       max-width="300"
-      v-bind:items="state._items_accounts"
+      v-bind:items="records.account.all"
     ></v-select>
   </v-app-bar>
 </template>
 
 <script lang="ts" setup>
-// import AktienCheckIcon from '@/assets/AktienCheckIcon.vue'
-// import {useRecordsStore} from '@/stores/records'
-// import {useSettingsStore} from '@/stores/settings'
-//import {useI18n} from 'vue-i18n'
-import {reactive} from 'vue'
-import {useApp} from '@/composables/useApp'
-import CustomIcon from '@/components/CustomIcon.vue'
-// import CustomIcon from '@/components/CustomIcon.vue'
+import {useRecordsStore} from '@/stores/records'
+import {useI18n} from 'vue-i18n'
+import {reactive, watchEffect} from 'vue'
+import CustomLogo from '@/components/logos/CustomLogo.vue'
 
-//const {t} = useI18n()
-// const settings = useSettingsStore()
-// const records = useRecordsStore()
-const {CONS} = useApp()
-// watch(
-//   () => settings.service,
-//   () => {
-//     console.log('TITLEBAR: watch')
-//     records.resetActiveStocksValues()
-//   }
-// )
+const {t} = useI18n()
+const records = useRecordsStore()
 
 const state = reactive({
-  _show: true,
-  _drawer_controls: CONS.DEFAULTS.DRAWER_CONTROLS,
-  _selected_account: '€ ING 34242432424',
-  _items_accounts: [
-    {id: 1, title: '€ ING 34242432424', name: 'ING', cur: '€', number: '34242432424', logo: 'ING-DiBa.svg'},
-    {id: 2, title: '€ DKB 34242432424', name: 'DKB', cur: '€', number: '34242432424', logo: ''}
-  ]
+  logo: 'nologo'
+  // DE12 5001 0517 5419 2996 72 INGDEFFXXX
+  // DE13 1203 0000 1064 5069 99 BYLADEM1001
+})
+
+watchEffect(() => {
+  const accountIndex = records.account.all.findIndex((entry: IAccount) => {
+    return entry.cID === records.account.active_id
+  })
+  if (accountIndex === -1) { return }
+  state.logo = records.account.all[accountIndex].cSwift.substring(0,4).toLowerCase()
+  browser.storage.local.set({ sAccountActiveId: records.account.all[accountIndex].cID })
 })
 
 console.log('--- TitleBar.vue setup ---')

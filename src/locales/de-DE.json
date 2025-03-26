@@ -1,50 +1,7 @@
 {
   "titleBar": {
-    "title": "Aktienverwaltung mit Fast-Echtzeit-Kursen von:",
-    "linkData": [
-      {
-        "title": "finanzen.net",
-        "content": "Kursdaten, Indexdaten, Materialdaten",
-        "url": "https://www.finanzen.net/",
-        "icon": "fnet"
-      },
-      {
-        "title": "fx-rate",
-        "content": "Wechselkurs-Daten",
-        "url": "https://fx-rate.net/",
-        "icon": "fx"
-      },
-      {
-        "title": "tagesschau",
-        "content": "Kursdaten",
-        "url": "https://www.tagesschau.de/wirtschaft/boersenkurse/",
-        "icon": "ard"
-      },
-      {
-        "title": "tradegatexchange",
-        "content": "Neue Aktie Daten",
-        "url": "https://www.tradegate.de/",
-        "icon": "tgate"
-      },
-      {
-        "title": "wallstreet Online",
-        "content": "Kursdaten",
-        "url": "https://www.wallstreet-online.de/",
-        "icon": "wstreet"
-      },
-      {
-        "title": "Aktien Check",
-        "content": "Kursdaten, 52Wochen Hoch/Tief Daten",
-        "url": "https://www.aktiencheck.de/",
-        "icon": "acheck"
-      },
-      {
-        "title": "GOYAX",
-        "content": "Kursdaten",
-        "url": "https://www.goyax.de/",
-        "icon": "goyax"
-      }
-    ]
+    "title": "Mein Girokonto",
+    "error": "Es wurde noch kein Konto angelegt?"
   },
   "headerBar": {
     "home": "Startseite",
@@ -266,10 +223,11 @@
     },
     "addAccount": {
       "title": "Bankkonto hinzufügen",
-      "nameLabel": "Bankkonto",
+      "swiftLabel": "BIC/SWIFT Code",
       "currencyLabel": "Währungssymbol",
-      "accountIdLabel": "Kontonummer",
-      "logoLabel": "Logo",
+      "accountNumberLabel": "Kontonummer",
+      "currencyPlaceholder": "z. B. €",
+      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
@@ -760,6 +718,7 @@
   },
   "validators": {
     "ibanRules": "IBAN ist erforderlich | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
-    "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben"
+    "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
+    "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch"
   }
 }

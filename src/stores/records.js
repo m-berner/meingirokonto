@@ -8,7 +8,8 @@ export const useRecordsStore = defineStore('records', {
             _dbi: null,
             _account: {
                 all: [],
-                selected_index: -1
+                selected_index: -1,
+                active_id: -1
             },
             _booking: {
                 all_per_account: [],
@@ -122,6 +123,11 @@ export const useRecordsStore = defineStore('records', {
             for (booking of this._bkup_object.booking) {
                 this._loadBookingIntoStore(booking);
             }
+        },
+        async storageIntoStore() {
+            console.log('RECORDS: storageIntoStore');
+            const response = await browser.storage.local.get();
+            this._account.active_id = response.sAccountActiveId;
         },
         async cleanStoreAndDatabase() {
             console.log('RECORDS: cleanStoreAndDatabase');
@@ -255,13 +261,15 @@ export const useRecordsStore = defineStore('records', {
         },
         async addAccount(record) {
             return new Promise((resolve, reject) => {
-                const onSuccess = (ev) => {
+                const onSuccess = async (ev) => {
                     if (ev.target instanceof IDBRequest) {
                         const memRecord = {
                             ...record,
                             cID: ev.target.result
                         };
                         this._account.all.push(memRecord);
+                        this._account.active_id = ev.target.result;
+                        await browser.storage.local.set({ sAccountActiveId: ev.target.result });
                         resolve(CONS.RESULTS.SUCCESS);
                     }
                     else {

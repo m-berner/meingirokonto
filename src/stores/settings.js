@@ -11,7 +11,7 @@ export const useSettingsStore = defineStore('settings', {
             _materials: CONS.DEFAULTS.STORAGE.materials,
             _markets: CONS.DEFAULTS.STORAGE.markets,
             _exchanges: CONS.DEFAULTS.STORAGE.exchanges,
-            _partner: CONS.DEFAULTS.STORAGE.partner,
+            _accountIndex: -1,
             _items_per_page_transfers: CONS.DEFAULTS.STORAGE.items_per_page_transfers,
             _items_per_page_stocks: CONS.DEFAULTS.STORAGE.items_per_page_stocks
         };
@@ -35,8 +35,8 @@ export const useSettingsStore = defineStore('settings', {
         exchanges(state) {
             return state._exchanges;
         },
-        partner(state) {
-            return state._partner;
+        account(state) {
+            return state._accountIndex;
         },
         itemsPerPageTransfers(state) {
             return state._items_per_page_transfers;
@@ -93,13 +93,8 @@ export const useSettingsStore = defineStore('settings', {
         setExchangesStoreOnly(value) {
             this._exchanges = value;
         },
-        async togglePartner() {
-            const currentPartner = this._partner;
-            this._partner = !currentPartner;
-            await browser.storage.local.set({ partner: !currentPartner });
-        },
-        setPartnerStoreOnly(value) {
-            this._partner = value;
+        setAccountIndexStoreOnly(value) {
+            this._accountIndex = value;
         },
         async setItemsPerPageTransfers(value) {
             this._items_per_page_transfers = value;
@@ -125,7 +120,6 @@ export const useSettingsStore = defineStore('settings', {
             this.setMaterialsStoreOnly(response.materials);
             this.setMarketsStoreOnly(response.markets);
             this.setExchangesStoreOnly(response.exchanges);
-            this.setPartnerStoreOnly(response.partner);
             this.setItemsPerPageStocksStoreOnly(response.items_per_page_stocks);
             this.setItemsPerPageTransfersStoreOnly(response.items_per_page_transfers);
         },

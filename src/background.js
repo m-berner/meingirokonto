@@ -31,9 +31,9 @@ const initStorageLocal = async () => {
             exchanges: CONS.DEFAULTS.STORAGE.exchanges
         });
     }
-    if (storageLocal.partner === undefined) {
+    if (storageLocal.sAccountIndex === undefined) {
         await browser.storage.local.set({
-            partner: CONS.DEFAULTS.STORAGE.partner
+            sAccountIndex: -1
         });
     }
     if (storageLocal.items_per_page_stocks === undefined) {

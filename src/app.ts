@@ -64,6 +64,9 @@ import FooterBar from '@/components/FooterBar.vue'
 import AddAccount from '@/components/dialogs/AddAccount.vue'
 import AddBookingType from '@/components/dialogs/AddBookingType.vue'
 import AddBooking from '@/components/dialogs/AddBooking.vue'
+import ingd from '@/components/logos/ingd.vue'
+import byla from '@/components/logos/byla.vue'
+import nologo from '@/components/logos/nologo.vue'
 
 const {getUI} = useApp()
 const router = createRouter({
@@ -373,12 +376,18 @@ app.config.warnHandler = (msg: string) => {
 export const COMPONENT_NAMES = Object.freeze({
   ADD_ACCOUNT: 'AddAccount',
   ADD_BOOKING: 'AddBooking',
-  ADD_BOOKING_TYPE: 'AddBookingType'
+  ADD_BOOKING_TYPE: 'AddBookingType',
+  NO_LOGO: 'Nologo',
+  INGD: 'ingd',
+  BYLA: 'byla'
 })
 // NOTE: register dynamic components globally
 app.component(COMPONENT_NAMES.ADD_ACCOUNT, AddAccount)
 app.component(COMPONENT_NAMES.ADD_BOOKING_TYPE, AddBookingType)
 app.component(COMPONENT_NAMES.ADD_BOOKING, AddBooking)
+app.component(COMPONENT_NAMES.NO_LOGO, nologo)
+app.component(COMPONENT_NAMES.INGD, ingd)
+app.component(COMPONENT_NAMES.BYLA, byla)
 app.use(router)
 app.use(vuetify)
 app.use(i18n)

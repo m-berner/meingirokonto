@@ -8,6 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
+//import type {ThemeInstance} from 'vuetify'
 
 interface IRecordsStore {
   _dbi: IDBDatabase | null
@@ -27,6 +28,7 @@ interface IRecordStoreBooking {
 interface IRecordStoreAccount {
   all: IAccount[]
   selected_index: number
+  active_id: number
 }
 
 interface IRecordStoreBookingType {
@@ -51,7 +53,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       _dbi: null,
       _account: {
         all: [],
-        selected_index: -1
+        selected_index: -1,
+        active_id: -1
       },
       _booking: {
         all_per_account: [],
@@ -436,6 +439,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //     appPort().postMessage({type: CONS.FETCH_API.ASK__DATES_DATA, data: readISIN.isinDates})
     //   }
     // },
+    async storageIntoStore(): Promise<void> {
+      console.log('RECORDS: storageIntoStore')
+      const response: IStorageLocal = await browser.storage.local.get()
+      this._account.active_id = response.sAccountActiveId
+    },
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
       this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
@@ -633,13 +641,15 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     // },
     async addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
-        const onSuccess = (ev: Event): void => {
+        const onSuccess = async (ev: Event): Promise<void> => {
           if (ev.target instanceof IDBRequest) {
             const memRecord: IAccount = {
               ...record,
-              cID: (ev.target as IDBRequest).result
+              cID: ev.target.result
             }
             this._account.all.push(memRecord)
+            this._account.active_id = ev.target.result
+            await browser.storage.local.set({ sAccountActiveId: ev.target.result })
             resolve(CONS.RESULTS.SUCCESS)
           } else {
             reject(CONS.RESULTS.ERROR)

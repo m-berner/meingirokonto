@@ -7,18 +7,14 @@
   -->
 <template>
   <v-form ref="form-ref" validate-on="submit">
-    <v-combobox
+    <v-text-field
       v-model="state.nameInput"
+      autofocus
+      required
       ref="name-input"
-      item-title="cName"
-      item-value="cID"
       v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:rules="validators.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
-      max-width="300"
-      v-bind:menu=true
-      v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:items="records.bookingType.all"
-    ></v-combobox>
+      variant="outlined"
+    ></v-text-field>
   </v-form>
 </template>
 
@@ -29,10 +25,9 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
+const {CONS, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const nameInputRef = useTemplateRef('name-input')
-const records = useRecordsStore()
 
 const state = reactive({
   nameInput: ''

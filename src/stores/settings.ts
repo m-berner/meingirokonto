@@ -16,7 +16,7 @@ interface ISettingsStore {
   _materials: string[]
   _markets: string[]
   _exchanges: string[]
-  _partner: boolean
+  _accountIndex: number
   _items_per_page_transfers: number
   _items_per_page_stocks: number
 }
@@ -31,7 +31,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       _materials: CONS.DEFAULTS.STORAGE.materials,
       _markets: CONS.DEFAULTS.STORAGE.markets,
       _exchanges: CONS.DEFAULTS.STORAGE.exchanges,
-      _partner: CONS.DEFAULTS.STORAGE.partner,
+      _accountIndex: -1,
       _items_per_page_transfers: CONS.DEFAULTS.STORAGE.items_per_page_transfers,
       _items_per_page_stocks: CONS.DEFAULTS.STORAGE.items_per_page_stocks
     }
@@ -55,8 +55,8 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     exchanges(state: ISettingsStore) {
       return state._exchanges
     },
-    partner(state: ISettingsStore) {
-      return state._partner
+    account(state: ISettingsStore) {
+      return state._accountIndex
     },
     itemsPerPageTransfers(state: ISettingsStore) {
       return state._items_per_page_transfers
@@ -112,13 +112,8 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     setExchangesStoreOnly(value: string[] | boolean) {
       this._exchanges = value
     },
-    async togglePartner(): Promise<void> {
-      const currentPartner = this._partner
-      this._partner = !currentPartner
-      await browser.storage.local.set({partner: !currentPartner})
-    },
-    setPartnerStoreOnly(value: string[] | boolean) {
-      this._partner = value
+    setAccountIndexStoreOnly(value: number) {
+      this._accountIndex = value
     },
     async setItemsPerPageTransfers(value: number): Promise<void> {
       this._items_per_page_transfers = value
@@ -144,7 +139,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this.setMaterialsStoreOnly(response.materials)
       this.setMarketsStoreOnly(response.markets)
       this.setExchangesStoreOnly(response.exchanges)
-      this.setPartnerStoreOnly(response.partner)
       this.setItemsPerPageStocksStoreOnly(response.items_per_page_stocks)
       this.setItemsPerPageTransfersStoreOnly(response.items_per_page_transfers)
     },

@@ -25,11 +25,6 @@ export default defineConfig({
           overwrite: true
         },
         {
-          src: 'assets/ING-DiBa.svg',
-          dest: '../meingirokonto@gmx.de/assets/',
-          overwrite: true
-        },
-        {
           src: '../meingirokonto@gmx.de',
           dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
           overwrite: true
@@ -58,7 +53,7 @@ export default defineConfig({
     target: ['es2022', 'firefox132'],
     assetsDir: 'assets',
     assetsInlineLimit: 0,
-    emptyOutDir: true,
+    emptyOutDir: false,
     outDir: '../meingirokonto@gmx.de',
     modulePreload: false,
     rollupOptions: {
