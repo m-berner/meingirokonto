@@ -37,11 +37,9 @@ const state = reactive({
   // DE12 5001 0517 5419 2996 72 INGDEFFXXX
   // DE13 1203 0000 1064 5069 99 BYLADEM1001
 })
-
+// TODO calculate booking sums cCredit + cDebit
 watchEffect(() => {
-  const accountIndex = records.account.all.findIndex((entry: IAccount) => {
-    return entry.cID === records.account.active_id
-  })
+  const accountIndex = records.getAccountIndexById(records.account.active_id)
   if (accountIndex === -1) { return }
   state.logo = records.account.all[accountIndex].cSwift.substring(0,4).toLowerCase()
   browser.storage.local.set({ sAccountActiveId: records.account.all[accountIndex].cID })

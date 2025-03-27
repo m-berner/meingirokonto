@@ -7,7 +7,7 @@
   -->
 <template>
   <v-text-field
-    v-model="search"
+    v-model="state.search"
     density="compact"
     hide-details
     prepend-inner-icon="$magnify"
@@ -21,12 +21,12 @@
     v-bind:headers="tableHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="records.booking.all as IBooking[]"
+    v-bind:items="records.getBookingsPerAccount() as IBooking[]"
     v-bind:items-per-page="settings.itemsPerPageTransfers"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('transfersTable.itemsPerPageText')"
     v-bind:no-data-text="t('transfersTable.noDataText')"
-    v-bind:search="search"
+    v-bind:search="state.search"
     v-on:update:items-per-page="
       (count) => {
         settings.setItemsPerPageTransfers(count)
@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts" setup>
-// TODO only per account, sort by Date
 // const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
 //   if (el !== null) {
 //     if (toNumber(el.textContent) < 0) {
@@ -65,45 +64,29 @@
 //     el.classList.add('font-weight-bold')
 //   }
 // }
-// const onMessageStocksTable = async (ev: MessageEvent): Promise<void> => {
-//   console.info('STOCKSTABLE: onMessageStocksTable', ev)
-//   if (ev.data === undefined) {
-//     notice(['Sorry, no data arrived'])
-//   } else {
-//     if (ev.type === CONS.FETCH_API.ANSWER__MIN_RATE_MAX) {
-//       runtime.setIsStocksLoading(false)
-//       records.updatePage(ev.data)
-//       records.setDrawerDepot()
-//     } else if (ev.type === CONS.FETCH_API.ANSWER__DATES_DATA && ev.data.length > 0 && !runtime.isImportDb) {
-//       for (let i = 0; i < ev.data.length; i++) {
-//         const index = records.getAccountIndexById(ev.data[i].key)
-//         records.setDates(index, ev.data[i].value)
-//       }
-//       await records.storeIntoDatabase('update')
-//     }
-//   }
-// }
-// if (!browser.runtime.onMessage.hasListener(onMessageStocksTable)) {
-//   // noinspection JSDeprecatedSymbols
-//   browser.runtime.onMessage.addListener(onMessageStocksTable)
-// }
+
 import OptionMenu from '@/components/OptionMenu.vue'
 import {useI18n} from 'vue-i18n'
-import {ref, watchEffect} from 'vue'
+import {reactive} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, rt, t, tm} = useI18n()
 const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const runtime = useRuntimeStore()
 
-const search = ref('')
-const headers = tm('bookingTable.headers')
-const tableHeaders = headers.map((item: { title: string, align: string, sortable: boolean, key: string }) => {
+const state = reactive({
+  search: '',
+  //bookings_per_account: []
+})
+const tableHeaders = tm('bookingTable.headers').map((item: {
+  title: string,
+  align: string,
+  sortable: boolean,
+  key: string
+}) => {
   return {
     title: rt(item.title),
     align: rt(item.align) as 'start' | 'center' | 'end' | undefined,
@@ -111,21 +94,21 @@ const tableHeaders = headers.map((item: { title: string, align: string, sortable
     key: rt(item.key)
   }
 })
-const options: Record<string, string>[] = tm('transfersTable.menuItems')
-// const onUpdatePageHandler = async (p: number): Promise<void> => {
-//  console.info('STOCKSTABLE: onUpdatePageHandler', p)
-//  records.setActiveStocksPage(p)
-//  await records.updateWrapper()
-//}
+const options: Record<string, string>[] = tm('bookingTable.menuItems')
 
-watchEffect(
-  () => {
-    console.error("EW-----------")
-    if (runtime.isAddAccount === true) {
-      console.error("E-W-------")
-    }
-  }
-)
+//watchEffect(() => {
+// const activeAccountIndex = records.getAccountIndexById(records.account.active_id)
+// if (activeAccountIndex === -1) { return }
+// state.bookings_per_account = records.booking.all.filter((rec: IBooking) => {
+//   return rec.cAccountNumber === records.account.all[activeAccountIndex].cAccountNumber
+// })
+// state.bookings_per_account.sort((a: IBooking, b: IBooking)=> {
+//   const A = new Date(a.cDate).getTime()
+//   const B = new Date(b.cDate).getTime()
+//   return A - B
+// })
+//state.bookings_per_account = records.getBookingsPerAccount()
+//})
 
 console.log('--- HomePage.vue setup ---')
 </script>

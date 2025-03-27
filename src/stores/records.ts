@@ -90,14 +90,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     dbi(state: IRecordsStore): IDBDatabase | null {
       return state._dbi
-    },
-    // dividendsPerStock(state: IRecordsStore): Map<number, ITransfer[]> {
-    //   return state._transfers.dividend_transfers_per_stock
-    // }
+    }
   },
   actions: {
     _loadAccountIntoStore(account: IAccount): void {
-      // const memRecord = { ...account }
       this._account.all.push(account)
       // if (memRecord.cFadeOut === 1) {
       //   this._stocks.passive.push(memRecord)
@@ -147,6 +143,19 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return this._account.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
+    },
+    getBookingsPerAccount(): IBooking[] {
+      const activeAccountIndex = this.getAccountIndexById(this._account.active_id)
+      if (activeAccountIndex === -1) { return [] }
+      const bookings_per_account = this._booking.all.filter((rec: IBooking) => {
+        return rec.cAccountNumber === this._account.all[activeAccountIndex].cAccountNumber
+      })
+      bookings_per_account.sort((a: IBooking, b: IBooking)=> {
+        const A = new Date(a.cDate).getTime()
+        const B = new Date(b.cDate).getTime()
+        return A - B
+      })
+      return bookings_per_account
     },
     _setActiveStocksValues(val: IOnlineStockValues): void {
       this._stocks.active[val.index].mValue = val.value

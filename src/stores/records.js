@@ -44,7 +44,7 @@ export const useRecordsStore = defineStore('records', {
         },
         dbi(state) {
             return state._dbi;
-        },
+        }
     },
     actions: {
         _loadAccountIntoStore(account) {
@@ -65,6 +65,21 @@ export const useRecordsStore = defineStore('records', {
             return this._account.all.findIndex((account) => {
                 return account.cID === ident;
             });
+        },
+        getBookingsPerAccount() {
+            const activeAccountIndex = this.getAccountIndexById(this._account.active_id);
+            if (activeAccountIndex === -1) {
+                return [];
+            }
+            const bookings_per_account = this._booking.all.filter((rec) => {
+                return rec.cAccountNumber === this._account.all[activeAccountIndex].cAccountNumber;
+            });
+            bookings_per_account.sort((a, b) => {
+                const A = new Date(a.cDate).getTime();
+                const B = new Date(b.cDate).getTime();
+                return A - B;
+            });
+            return bookings_per_account;
         },
         _setActiveStocksValues(val) {
             this._stocks.active[val.index].mValue = val.value;
