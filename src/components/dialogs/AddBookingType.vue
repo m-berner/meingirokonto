@@ -8,7 +8,7 @@
 <template>
   <v-form ref="form-ref" validate-on="submit">
     <v-combobox
-      v-model="state.nameInput"
+      v-model="state.cName"
       ref="name-input"
       item-title="cName"
       item-value="cID"
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
@@ -31,31 +31,27 @@ import {useApp} from '@/composables/useApp'
 const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
 const formRef = useTemplateRef('form-ref')
-const nameInputRef = useTemplateRef('name-input')
 const records = useRecordsStore()
 
-const state = reactive({
-  nameInput: ''
+const state: Omit<IBookingType, 'cID'> = reactive({
+  cName: ''
 })
 
 const ok = async (): Promise<void> => {
   console.log('ADD_BOOKING_TYPE: ok')
-  const form = await formRef.value!.validate()
-  if (!form.valid) { return }
-  //
-  const records = useRecordsStore()
-  const nameInput = toRaw(state.nameInput).trim()
-  try {
-    const result = await records.addBookingType({cName: nameInput})
-    if (result === CONS.RESULTS.SUCCESS) {
-      notice([t('dialogs.addBookingType.success')])
+  const formIs = await formRef.value!.validate()
+  if (formIs.valid) {
+    try {
+      const records = useRecordsStore()
+      const result = await records.addBookingType({cName: state.cName.trim()})
+      if (result === CONS.RESULTS.SUCCESS) {
+        notice([t('dialogs.addBookingType.success')])
+        formRef.value!.reset()
+      }
+    } catch (e) {
+      console.error(e)
+      notice([t('dialogs.addBookingType.error')])
     }
-  } catch (e) {
-    console.info(e)
-    notice([nameInput, t('dialogs.addBookingType.error')])
-  } finally {
-    state.nameInput = ''
-    nameInputRef.value!.focus()
   }
 }
 const title = t('dialogs.addBookingType.title')

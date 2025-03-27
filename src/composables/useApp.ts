@@ -90,7 +90,6 @@ declare global {
   interface IBackupSm {
     cVersion: number
     cDBVersion: number
-    cDBCurrency: string
     cEngine: string
   }
 

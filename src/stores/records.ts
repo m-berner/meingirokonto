@@ -70,7 +70,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         sm: {
           cVersion: 0,
           cDBVersion: 0,
-          cDBCurrency: '', // TODO remove
           cEngine: ''
         },
         account: [],

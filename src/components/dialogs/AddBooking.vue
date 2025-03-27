@@ -84,14 +84,12 @@ const ok = async (): Promise<void> => {
         cDate: state.cDate,
         cCredit: state.cCredit,
         cDebit: state.cDebit,
-        cDescription: state.cDescription,
+        cDescription: state.cDescription!.trim(),
         cType: state.cType,
         cAccountNumber: aNumber
       })
       if (result === CONS.RESULTS.SUCCESS) {
         notice([t('dialogs.addBooking.success')])
-          console.info('TTTTT---------1', records.account.all[0])
-        console.info('TTTTT---------2', records.account.active_id)
         formRef.value!.reset()
       }
     } catch (e) {

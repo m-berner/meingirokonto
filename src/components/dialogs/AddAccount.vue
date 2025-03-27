@@ -73,9 +73,9 @@ const ok = async (): Promise<void> => {
     try {
       const records = useRecordsStore()
       const result = await records.addAccount({
-        cSwift: state.cSwift,
+        cSwift: state.cSwift.trim(),
         cAccountNumber: state.cAccountNumber.replace(/\s/g, ''),
-        cCurrency: state.cCurrency.toUpperCase()
+        cCurrency: state.cCurrency.trim().toUpperCase()
       })
       if (result === CONS.RESULTS.SUCCESS) {
         notice([t('dialogs.addAccount.success')])

@@ -24,7 +24,6 @@ export const useRecordsStore = defineStore('records', {
                 sm: {
                     cVersion: 0,
                     cDBVersion: 0,
-                    cDBCurrency: '',
                     cEngine: ''
                 },
                 account: [],
