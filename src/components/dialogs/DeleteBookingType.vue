@@ -69,7 +69,7 @@ const ok = async (): Promise<void> => {
   //const records = useRecordsStore()
 
   console.error(toRaw(state.selected))
-  // const verify = records.booking.all_per_account.filter(() => {
+  // const verify = records.booking.all.filter(() => {
   //   return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
   // })
   // if (verify.length > 0) {

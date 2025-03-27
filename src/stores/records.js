@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { toRaw } from 'vue';
 import { useApp } from '@/composables/useApp';
 const { CONS, notice } = useApp();
 export const useRecordsStore = defineStore('records', {
@@ -12,7 +11,7 @@ export const useRecordsStore = defineStore('records', {
                 active_id: -1
             },
             _booking: {
-                all_per_account: [],
+                all: [],
                 dividend_transfers_per_stock: new Map(),
                 total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
                 selected_index: -1
@@ -56,15 +55,15 @@ export const useRecordsStore = defineStore('records', {
             this._booking_type.all.push(bookingType);
         },
         _loadBookingIntoStore(booking) {
-            this._booking.all_per_account.push(booking);
+            this._booking.all.push(booking);
         },
         _sortTransfers() {
             return this._transfers.all.sort((a, b) => {
                 return (b.mSortDate ?? 0) - (a.mSortDate ?? 0);
             });
         },
-        _getAccountIndexById(ident) {
-            return this._account.findIndex((account) => {
+        getAccountIndexById(ident) {
+            return this._account.all.findIndex((account) => {
                 return account.cID === ident;
             });
         },
@@ -131,7 +130,7 @@ export const useRecordsStore = defineStore('records', {
         },
         async cleanStoreAndDatabase() {
             console.log('RECORDS: cleanStoreAndDatabase');
-            this._booking.all_per_account.splice(0, this._booking.all_per_account.length);
+            this._booking.all.splice(0, this._booking.all.length);
             this._booking_type.all.splice(0, this._booking_type.all.length);
             this._account.all.splice(0, this._account.all.length);
             this._booking.selected_index = 0;
@@ -185,7 +184,7 @@ export const useRecordsStore = defineStore('records', {
             console.info('RECORDS: databaseIntoStore');
             this._account.all.splice(0, this._account.all.length);
             this._booking_type.all.splice(0, this._booking_type.all.length);
-            this._booking.all_per_account.splice(0, this._booking.all_per_account.length);
+            this._booking.all.splice(0, this._booking.all.length);
             this._booking.selected_index = 0;
             this._booking_type.selected_index = 0;
             this._account.selected_index = 0;
@@ -254,8 +253,8 @@ export const useRecordsStore = defineStore('records', {
                 for (let i = 0; i < this._booking_type.all.length; i++) {
                     requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add({ ...this._booking_type.all[i] });
                 }
-                for (let i = 0; i < this._booking.all_per_account.length; i++) {
-                    requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({ ...this._booking.all_per_account[i] });
+                for (let i = 0; i < this._booking.all.length; i++) {
+                    requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({ ...this._booking.all[i] });
                 }
             });
         },
@@ -346,7 +345,7 @@ export const useRecordsStore = defineStore('records', {
                     }
                 };
                 const onError = (ev) => {
-                    reject(ev);
+                    reject(ev.message);
                 };
                 const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
@@ -402,30 +401,24 @@ export const useRecordsStore = defineStore('records', {
         async addBooking(record) {
             return new Promise((resolve, reject) => {
                 const onSuccess = (ev) => {
-                    const memRecord = {
-                        ...dbRecord,
-                        cID: ev.target.result
-                    };
-                    this._booking.all_per_account.push(memRecord);
-                    resolve('RECORDS: booking: booking added');
+                    if (ev.target instanceof IDBRequest) {
+                        const memRecord = {
+                            ...record,
+                            cID: ev.target.result
+                        };
+                        this._booking.all.push(memRecord);
+                        resolve(CONS.RESULTS.SUCCESS);
+                    }
+                    else {
+                        reject(CONS.RESULTS.ERROR);
+                    }
                 };
                 const onError = (ev) => {
                     reject(ev.message);
                 };
-                const rawRecordClone = { ...toRaw(record) };
-                const dbRecord = {
-                    cDate: rawRecordClone.cDate,
-                    cDebit: rawRecordClone.cDebit,
-                    cCredit: rawRecordClone.cCredit,
-                    cDescription: rawRecordClone.cDescription,
-                    cType: rawRecordClone.cType,
-                    cAccountNumber: rawRecordClone.cAccountNumber
-                };
-                console.error('TTTTT---', dbRecord, record);
                 const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(dbRecord);
-                requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(record);
                 requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
@@ -459,7 +452,7 @@ export const useRecordsStore = defineStore('records', {
             return new Promise((resolve, reject) => {
                 const onSuccess = () => {
                     requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
-                    this._booking.all_per_account.splice(indexOfBooking, 1);
+                    this._booking.all.splice(indexOfBooking, 1);
                     resolve('Booking deleted');
                 };
                 const onError = (ev) => {

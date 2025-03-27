@@ -223,9 +223,9 @@
     "addAccount": {
       "title": "Bankkonto hinzufügen",
       "swiftLabel": "BIC/SWIFT Code",
-      "currencyLabel": "Währungssymbol",
+      "currencyLabel": "Währungscode",
       "accountNumberLabel": "Kontonummer",
-      "currencyPlaceholder": "z. B. €",
+      "currencyPlaceholder": "z. B. EUR",
       "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
@@ -720,6 +720,7 @@
     "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
     "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch",
     "dateRules": "Datum ist erforderlich",
+    "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
     "requiredRule": "Ist erforderlich"
   }
 }

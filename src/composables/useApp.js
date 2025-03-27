@@ -601,6 +601,23 @@ export const useApp = () => {
     };
     return {
         CONS,
+        utcDate: (iso) => {
+            const tzo = new Date().getTimezoneOffset() / 60;
+            let result = '';
+            if (tzo < 0 && tzo > -10) {
+                result = `+0${-tzo}`;
+            }
+            else if (tzo < 0) {
+                result = `+${-tzo}`;
+            }
+            else if (tzo >= 0 && tzo < 10) {
+                result = `-0${tzo}`;
+            }
+            else if (tzo > 9) {
+                result = `-${tzo}`;
+            }
+            return new Date(`${iso}T00:00:00.000${result}:00`);
+        },
         validators: {
             ibanRules: msgs => {
                 return [
@@ -626,6 +643,13 @@ export const useApp = () => {
             dateRules: msgs => {
                 return [
                     v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+                ];
+            },
+            currencyCodeRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length === 3) || msgs[1],
+                    v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
                 ];
             },
             requiredRule: msgs => {

@@ -9,7 +9,7 @@
   <v-form ref="form-ref" validate-on="submit">
     <v-text-field
       ref="swift-input"
-      v-model="state.swiftInput"
+      v-model="state.cSwift"
       autofocus
       required
       v-bind:label="t('dialogs.addAccount.swiftLabel')"
@@ -17,7 +17,7 @@
       variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state.accountNumberInput"
+      v-model="state.cAccountNumber"
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       required
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
@@ -26,10 +26,11 @@
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state.currencyInput"
+      v-model="state.cCurrency"
       required
       v-bind:placeholder="t('dialogs.addAccount.currencyPlaceholder')"
       v-bind:label="t('dialogs.addAccount.currencyLabel')"
+      v-bind:rules="validators.currencyCodeRules([t('validators.currencyCodeRules', 0), t('validators.currencyCodeRules', 1), t('validators.currencyCodeRules', 2)])"
       variant="outlined"
     ></v-text-field>
   </v-form>
@@ -44,17 +45,11 @@ import {useApp} from '@/composables/useApp'
 const {t} = useI18n()
 const {CONS, notice, validators} = useApp()
 const formRef = useTemplateRef('form-ref')
-const swiftInputRef = useTemplateRef('swift-input')
-//cDate: new Date(state._date).getTime(),
-const state = reactive({
-  swiftInput: '',
-  currencyInput: '',
-  accountNumberInput: ''
+const state: Omit<IAccount, 'cID'> = reactive({
+  cSwift: '',
+  cCurrency: '',
+  cAccountNumber: ''
 })
-//   <td v-if="item.cDate > 0">{{ d(new Date(item.cDate), 'short', 'de-DE') }}</td>
-// <td v-else></td>
-// <td v-if="item.cExDay > 0">{{ d(new Date(item.cExDay), 'short', 'de-DE') }}</td>
-// <td v-else></td>
 const ibanMask = (iban: string) => {
   if (iban !== null) {
     const withoutSpace = iban.replace(/\s/g, '')
@@ -67,29 +62,29 @@ const ibanMask = (iban: string) => {
         masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
       }
     }
-    state.accountNumberInput = masked
+    state.cAccountNumber = masked
   }
 }
 
 const ok = async (): Promise<void> => {
   console.log('ADD_ACCOUNT: ok')
-  const form = await formRef.value!.validate()
-  if (!form.valid) { return }
-  //
-  const records = useRecordsStore()
-  try {
-    const result = await records.addAccount({cSwift: state.swiftInput, cNumber: state.accountNumberInput.replace(/\s/g, ''), cCurrency: state.currencyInput})
-    if (result === CONS.RESULTS.SUCCESS) {
-      notice([t('dialogs.addAccount.success')])
+  const formIs = await formRef.value!.validate()
+  if (formIs.valid) {
+    try {
+      const records = useRecordsStore()
+      const result = await records.addAccount({
+        cSwift: state.cSwift,
+        cAccountNumber: state.cAccountNumber.replace(/\s/g, ''),
+        cCurrency: state.cCurrency.toUpperCase()
+      })
+      if (result === CONS.RESULTS.SUCCESS) {
+        notice([t('dialogs.addAccount.success')])
+        formRef.value!.reset()
+      }
+    } catch (e) {
+      console.error(e)
+      notice([t('dialogs.addAccount.error')])
     }
-  } catch (e) {
-    console.info(e)
-    notice([state.swiftInput, t('dialogs.addAccount.error')])
-  } finally {
-    state.swiftInput = ''
-    state.accountNumberInput = ''
-    state.currencyInput = ''
-    swiftInputRef.value!.focus()
   }
 }
 const title = t('dialogs.addAccount.title')

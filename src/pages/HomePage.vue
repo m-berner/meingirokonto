@@ -42,7 +42,7 @@
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>
-        <td>{{ d(new Date(item.cDate), 'short', 'de-DE') }}</td>
+        <td>{{ d(utcDate(item.cDate), 'short', 'de-DE') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
@@ -54,6 +54,7 @@
 </template>
 
 <script lang="ts" setup>
+// TODO only per account, sort by Date
 // const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
 //   if (el !== null) {
 //     if (toNumber(el.textContent) < 0) {
@@ -75,7 +76,7 @@
 //       records.setDrawerDepot()
 //     } else if (ev.type === CONS.FETCH_API.ANSWER__DATES_DATA && ev.data.length > 0 && !runtime.isImportDb) {
 //       for (let i = 0; i < ev.data.length; i++) {
-//         const index = records._getAccountIndexById(ev.data[i].key)
+//         const index = records.getAccountIndexById(ev.data[i].key)
 //         records.setDates(index, ev.data[i].value)
 //       }
 //       await records.storeIntoDatabase('update')
@@ -95,7 +96,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, rt, t, tm} = useI18n()
-const {CONS} = useApp()
+const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()

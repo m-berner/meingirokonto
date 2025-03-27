@@ -14,7 +14,7 @@
     <v-select
       v-if="records.account.all.length > 0"
       v-model="records.account.active_id"
-      item-title="cNumber"
+      item-title="cAccountNumber"
       item-value="cID"
       label="IBAN"
       max-width="300"

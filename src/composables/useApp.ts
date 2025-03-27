@@ -60,10 +60,9 @@ declare global {
 
   interface IAccount {
     cID: number
-    cName: string
+    cSwift: string
     cCurrency: string
-    cNumber: string
-    cLogo?: string
+    cAccountNumber: string
   }
 
   interface IBookingType {
@@ -109,7 +108,6 @@ declare global {
     materials?: string[]
     markets?: string[]
     exchanges?: string[]
-    sAccountIndex?: number
     sAccountActiveId?: number
     items_per_page_stocks?: number
     items_per_page_transfers?: number
@@ -287,6 +285,7 @@ declare global {
       nameRules: (messages: string[]) => Array<(v: string) => boolean | string>
       swiftRules: (messages: string[]) => Array<(v: string) => boolean | string>
       dateRules: (messages: string[]) => Array<(v: string) => boolean | string>
+      currencyCodeRules: (messages: string[]) => Array<(v: string) => boolean | string>
       requiredRule: (messages: string[]) => Array<(v: string) => boolean | string>
     },
     //validators: Record<string, Array<(v: string | number) => boolean | string>>,
@@ -296,6 +295,7 @@ declare global {
     getUI: () => Record<string, string>
     group: (count: number, size?: number) => number[]
     offset: () => number
+    utcDate: (iso: string) => Date
     isoDatePlusSeconds: (iso: string | number | Date) => number
     toNumber: (
       str: string | boolean | number | undefined | null
@@ -923,6 +923,20 @@ export const useApp = (): IUseApp => {
   }
   return {
     CONS,
+    utcDate: (iso: string): Date => {
+      const tzo = new Date().getTimezoneOffset() / 60
+      let result = ''
+      if (tzo < 0 && tzo > -10) {
+        result = `+0${-tzo}`
+      } else if (tzo < 0) {
+        result = `+${-tzo}`
+      } else if (tzo >= 0 && tzo < 10) {
+        result = `-0${tzo}`
+      } else if (tzo > 9) {
+        result = `-${tzo}`
+      } 
+      return new Date(`${iso}T00:00:00.000${result}:00`)
+    },
     validators: {
       ibanRules: msgs => {
         return [
@@ -948,6 +962,13 @@ export const useApp = (): IUseApp => {
       dateRules: msgs => {
         return [
           v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+        ]
+      },
+      currencyCodeRules: msgs => {
+        return [
+          v => v !== null || msgs[0],
+          v => (v !== null && v.length === 3) || msgs[1],
+          v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
         ]
       },
       requiredRule: msgs => {

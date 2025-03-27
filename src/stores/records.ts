@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
-import {toRaw} from 'vue'
+//import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
 //import type {ThemeInstance} from 'vuetify'
 
@@ -19,7 +19,7 @@ interface IRecordsStore {
 }
 
 interface IRecordStoreBooking {
-  all_per_account: IBooking[]
+  all: IBooking[]
   dividend_transfers_per_stock: Map<number, ITransfer[]>
   total_controller: ITotalController
   selected_index: number
@@ -57,7 +57,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         active_id: -1
       },
       _booking: {
-        all_per_account: [],
+        all: [],
         dividend_transfers_per_stock: new Map<number, ITransfer[]>(),
         total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
         selected_index: -1
@@ -126,7 +126,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       // } else {
       //   transfer.mCompany = ''
       // }
-      this._booking.all_per_account.push(booking)
+      this._booking.all.push(booking)
     },
     _sortTransfers(): ITransfer[] {
       return this._transfers.all.sort((a: ITransfer, b: ITransfer): number => {
@@ -144,8 +144,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
     //   })
     // },
-    _getAccountIndexById(ident: number): number {
-      return this._account.findIndex((account: IAccount) => {
+    getAccountIndexById(ident: number): number {
+      return this._account.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
     },
@@ -254,7 +254,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //       return transfer.cStockID === stock.cID && currentYear <= year
     //     })
     //     const dividendTransfersPerStock: ITransfer[] = []
-    //     const activeStockIndex = this._getAccountIndexById(stock.cID)
+    //     const activeStockIndex = this.getAccountIndexById(stock.cID)
     //     let portfolio = 0
     //     let buyCount = 0
     //     let invest = 0
@@ -446,7 +446,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
-      this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
+      this._booking.all.splice(0, this._booking.all.length)
       this._booking_type.all.splice(0, this._booking_type.all.length)
       this._account.all.splice(0, this._account.all.length)
       this._booking.selected_index = 0
@@ -501,7 +501,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       // const runtime = useRuntimeStore()
       this._account.all.splice(0, this._account.all.length)
       this._booking_type.all.splice(0, this._booking_type.all.length)
-      this._booking.all_per_account.splice(0, this._booking.all_per_account.length)
+      this._booking.all.splice(0, this._booking.all.length)
       this._booking.selected_index = 0
       this._booking_type.selected_index = 0
       this._account.selected_index = 0
@@ -596,8 +596,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         for (let i = 0; i < this._booking_type.all.length; i++) {
           requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add({...this._booking_type.all[i]})
         }
-        for (let i = 0; i < this._booking.all_per_account.length; i++) {
-          requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({...this._booking.all_per_account[i]})
+        for (let i = 0; i < this._booking.all.length; i++) {
+          requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({...this._booking.all[i]})
         }
       })
     },
@@ -724,7 +724,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           }
         }
         const onError = (ev: ErrorEvent): void => {
-          reject(ev)
+          reject(ev.message)
         }
         const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -777,36 +777,26 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
-    async addBooking(record: IBooking): Promise<string> {
+    async addBooking(record: Omit<IBooking, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
         const onSuccess = (ev: Event): void => {
-          //requestAdd.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          const memRecord: IBooking = {
-            ...dbRecord,
-            cID: (ev.target as IDBRequest).result
+          if (ev.target instanceof IDBRequest) {
+            const memRecord: IBooking = {
+              ...record,
+              cID: ev.target.result
+            }
+            this._booking.all.push(memRecord)
+            resolve(CONS.RESULTS.SUCCESS)
+          } else {
+            reject(CONS.RESULTS.ERROR)
           }
-          this._booking.all_per_account.push(memRecord)
-          resolve('RECORDS: booking: booking added')
         }
         const onError = (ev: ErrorEvent): void => {
-          //requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          //requestAdd.removeEventListener(CONS.EVENTS.ERR, onError, false)
           reject(ev.message)
         }
-        const rawRecordClone = {...toRaw(record)}
-        const dbRecord: Omit<IBooking, 'cID'> = {
-          cDate: rawRecordClone.cDate,
-          cDebit: rawRecordClone.cDebit,
-          cCredit: rawRecordClone.cCredit,
-          cDescription: rawRecordClone.cDescription,
-          cType: rawRecordClone.cType,
-          cAccountNumber: rawRecordClone.cAccountNumber
-        }
-        console.error('TTTTT---', dbRecord, record)
         const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite')
         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(dbRecord)
-        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(record)
         requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
@@ -840,7 +830,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return new Promise((resolve, reject) => {
         const onSuccess = (): void => {
           requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._booking.all_per_account.splice(indexOfBooking, 1)
+          this._booking.all.splice(indexOfBooking, 1)
           resolve('Booking deleted')
         }
         const onError = (ev: ErrorEvent): void => {

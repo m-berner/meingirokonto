@@ -45,9 +45,9 @@ const initStorageLocal = async (): Promise<void> => {
       exchanges: CONS.DEFAULTS.STORAGE.exchanges
     })
   }
-  if (storageLocal.sAccountIndex === undefined) {
+  if (storageLocal.sAccountActiveId === undefined) {
     await browser.storage.local.set({
-      sAccountIndex: -1
+      sAccountActiveId: -1
     })
   }
   if (storageLocal.items_per_page_stocks === undefined) {
