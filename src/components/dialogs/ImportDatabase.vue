@@ -13,7 +13,7 @@
         v-bind:clearable="true"
         v-bind:label="t('dialogs.importDatabase.label')"
         variant="outlined"
-        v-on:change="(ev: EventTarget) => state._choosen_file = ev.target.files[0]"
+        v-on:change="choosenFile"
       ></v-file-input>
     </v-card-text>
   </v-form>
@@ -38,6 +38,8 @@ const runtime = useRuntimeStore()
 const state: IImportDatabase = {
   _choosen_file: null
 }
+
+const choosenFile = (ev: EventTarget) => { state._choosen_file = ev.target.files[0] }
 
 const ok = async (): Promise<void> => {
   console.log('IMPORTDATABASE: ok', state._choosen_file)

@@ -6,8 +6,6 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 declare global {
-  type TIDBRequestEvent = Event & { target: IDBRequest }
-
   interface IAddTransfer {
     cStockID: number
     cDate: number
