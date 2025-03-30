@@ -10,8 +10,8 @@
     <v-combobox
       v-model="state.cName"
       ref="name-input"
-      item-title="cName"
-      item-value="cID"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:rules="validators.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
       max-width="300"

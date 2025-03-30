@@ -10,12 +10,7 @@ import {type ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 
 interface ISettingsStore {
-  _service: IUrlWithName
   _skin: string
-  _indexes: string[]
-  _materials: string[]
-  _markets: string[]
-  _exchanges: string[]
   _accountIndex: number
   _items_per_page_transfers: number
   _items_per_page_stocks: number
@@ -25,35 +20,15 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
   state: (): ISettingsStore => {
     const {CONS} = useApp()
     return {
-      _service: CONS.DEFAULTS.STORAGE.service,
       _skin: CONS.DEFAULTS.STORAGE.skin,
-      _indexes: CONS.DEFAULTS.STORAGE.indexes,
-      _materials: CONS.DEFAULTS.STORAGE.materials,
-      _markets: CONS.DEFAULTS.STORAGE.markets,
-      _exchanges: CONS.DEFAULTS.STORAGE.exchanges,
       _accountIndex: -1,
       _items_per_page_transfers: CONS.DEFAULTS.STORAGE.items_per_page_transfers,
       _items_per_page_stocks: CONS.DEFAULTS.STORAGE.items_per_page_stocks
     }
   },
   getters: {
-    service(state: ISettingsStore) {
-      return state._service
-    },
     skin(state: ISettingsStore) {
       return state._skin
-    },
-    indexes(state: ISettingsStore) {
-      return state._indexes
-    },
-    materials(state: ISettingsStore) {
-      return state._materials
-    },
-    markets(state: ISettingsStore) {
-      return state._markets
-    },
-    exchanges(state: ISettingsStore) {
-      return state._exchanges
     },
     account(state: ISettingsStore) {
       return state._accountIndex
@@ -132,13 +107,8 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     async storageIntoStore(theme: ThemeInstance): Promise<void> {
       console.log('SETTINGS: storageIntoStore')
       const response: IStorageLocal = await browser.storage.local.get()
-      this.setServiceStoreOnly(response.service)
       theme.global.name.value = response.skin ?? 'ocean'
       this.setSkinStoreOnly(response.skin)
-      this.setIndexesStoreOnly(response.indexes)
-      this.setMaterialsStoreOnly(response.materials)
-      this.setMarketsStoreOnly(response.markets)
-      this.setExchangesStoreOnly(response.exchanges)
       this.setItemsPerPageStocksStoreOnly(response.items_per_page_stocks)
       this.setItemsPerPageTransfersStoreOnly(response.items_per_page_transfers)
     },

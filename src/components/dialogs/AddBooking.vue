@@ -40,10 +40,10 @@
       ref="type-input"
       v-model="state.cType"
       density="compact"
-      item-title="cName"
-      item-value="cID"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       max-width="300"
-      v-bind:items="records.bookingType.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+      v-bind:items="records.bookingType.all.sort((a: IBookingType, b: IBookingType): number => { return a[CONS.DB.STORES.BOOKING_TYPES.FIELDS.N].localeCompare(b[CONS.DB.STORES.BOOKING_TYPES.FIELDS.N]) })"
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:menu=false
       v-bind:menu-props="{ maxHeight: 250 }"
@@ -79,7 +79,7 @@ const ok = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const records = useRecordsStore()
-      const aNumber = records.account.all[records.getAccountIndexById(records.account.active_id)].cAccountNumber
+      const aNumber = records.account.all[records.getAccountIndexById(records.account.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
       const result = await records.addBooking({
         cDate: state.cDate,
         cCredit: state.cCredit,

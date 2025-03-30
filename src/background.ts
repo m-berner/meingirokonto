@@ -17,33 +17,8 @@ const initStorageLocal = async (): Promise<void> => {
   console.log('BACKGROUND: initStorageLocal')
   const {CONS} = useApp()
   const storageLocal: IStorageLocal = await browser.storage.local.get()
-  if (storageLocal.service === undefined) {
-    await browser.storage.local.set({
-      service: CONS.DEFAULTS.STORAGE.service
-    })
-  }
   if (storageLocal.skin === undefined) {
     await browser.storage.local.set({skin: CONS.DEFAULTS.STORAGE.skin})
-  }
-  if (storageLocal.indexes === undefined) {
-    await browser.storage.local.set({
-      indexes: CONS.DEFAULTS.STORAGE.indexes
-    })
-  }
-  if (storageLocal.materials === undefined) {
-    await browser.storage.local.set({
-      materials: CONS.DEFAULTS.STORAGE.materials
-    })
-  }
-  if (storageLocal.markets === undefined) {
-    await browser.storage.local.set({
-      markets: CONS.DEFAULTS.STORAGE.markets
-    })
-  }
-  if (storageLocal.exchanges === undefined) {
-    await browser.storage.local.set({
-      exchanges: CONS.DEFAULTS.STORAGE.exchanges
-    })
   }
   if (storageLocal.sAccountActiveId === undefined) {
     await browser.storage.local.set({
@@ -108,39 +83,33 @@ const useListener = (): IUseListener => {
       const createDB = (): void => {
         console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
         const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
-          CONS.DB.STORES.ACCOUNT,
+          CONS.DB.STORES.ACCOUNTS.NAME,
           {
-            keyPath: 'cID',
+            keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
             autoIncrement: true
           })
         const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
-          CONS.DB.STORES.BOOKING,
+          CONS.DB.STORES.BOOKINGS.NAME,
           {
-            keyPath: 'cID',
+            keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
             autoIncrement: true
           }
         )
-        const requestCreateAccountFrameStore = dbOpenRequest.result.createObjectStore(
-          CONS.DB.STORES.BOOKING_TYPE,
+        const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
+          CONS.DB.STORES.BOOKING_TYPES.NAME,
           {
-            keyPath: 'cID',
+            keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
             autoIncrement: true
           }
         )
-        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNT}_uk1`, 'cID', {unique: true})
-        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_uk1`, 'cID', {unique: true})
-        requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPE}_uk1`, 'cID', {unique: true})
-        requestCreateAccountFrameStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPE}_k1`, 'cName', {unique: true})
-        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k1`, 'cAccountID', {unique: false})
-        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k2`, 'cAccountTypeID', {unique: false})
-        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKING}_k3`, 'cDate', {unique: false})
-
-        // requestCreateSStore.createIndex('stocks_uk2', 'cSym', optTrue)
-        // requestCreateSStore.createIndex('stocks_k1', 'cFirstPage', optFalse)
-        // requestCreateSStore.createIndex('stocks_k2', 'cFadeOut', optFalse)
-        // requestCreateTStore.createIndex('transfers_k1', 'cDate', optFalse)
-        // requestCreateTStore.createIndex('transfers_k2', 'cType', optFalse)
-        // requestCreateTStore.createIndex('transfers_k3', 'cStockID', optFalse)
+        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
+        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, {unique: true})
+        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
+        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, {unique: true})
+        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
+        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, {unique: false})
+        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, {unique: false})
+        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, {unique: false})
       }
       const updateDB = (): void => {
         console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
@@ -234,20 +203,19 @@ const useListener = (): IUseListener => {
         //   }
         // }
       }
-      const updateStorageLocal = async () => {
-        const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
-        const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
-        const storage: IStorageLocal = await browser.storage.local.get(
-          storageKeys
-        )
-        for (let i = 0; i < storageKeys.length; i++) {
-          if (storage[storageKeys[i]] === undefined) {
-            await browser.storage.local.set({
-              [storageKeys[i]]: storageValues[i]
-            })
-          }
-        }
-      }
+      // const updateStorageLocal = async () => {
+      //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
+      //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
+      //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
+      //   for (let i = 0; i < storageKeys.length; i++) {
+      //     if (storage[storageKeys[i]] === undefined) {
+      //       await browser.storage.local.set({
+      //         [storageKeys[i]]: storageValues[i]
+      //       })
+      //     }
+      //   }
+      // }
+      //
       if (ev.oldVersion === 0) {
         createDB()
       } else {
@@ -256,7 +224,7 @@ const useListener = (): IUseListener => {
         await browser.storage.local
           .remove(CONS.SYSTEM.STORAGE_OLD)
       }
-      await updateStorageLocal()
+      //await updateStorageLocal()
     }
     //
     const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)

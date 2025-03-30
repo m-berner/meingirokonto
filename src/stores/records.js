@@ -72,7 +72,7 @@ export const useRecordsStore = defineStore('records', {
                 return [];
             }
             const bookings_per_account = this._booking.all.filter((rec) => {
-                return rec.cAccountNumber === this._account.all[activeAccountIndex].cAccountNumber;
+                return rec.cAccountNumber === this._account.all[activeAccountIndex][CONS.DB.STORES.ACCOUNTS.FIELDS.N];
             });
             bookings_per_account.sort((a, b) => {
                 const A = new Date(a.cDate).getTime();
@@ -169,14 +169,14 @@ export const useRecordsStore = defineStore('records', {
                     requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
                     console.info('RECORDS: account types dropped');
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).clear();
+                const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
                 requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false);
-                const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).clear();
+                const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
                 requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false);
-                const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).clear();
+                const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
                 requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
             });
         },
@@ -211,7 +211,7 @@ export const useRecordsStore = defineStore('records', {
                     notice(['RECORDS: databaseIntoStore: transaction aborted!', requestTransaction.error]);
                     reject(requestTransaction.error);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING, CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE], 'readonly');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly');
                 requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
                 const onSuccessAccountOpenCursor = (ev) => {
@@ -235,11 +235,11 @@ export const useRecordsStore = defineStore('records', {
                         cursor.continue();
                     }
                 };
-                const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).openCursor();
+                const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
                 requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).openCursor();
+                const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
                 requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false);
-                const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).openCursor();
+                const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
                 requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
             });
         },
@@ -257,18 +257,18 @@ export const useRecordsStore = defineStore('records', {
                 const onError = (ev) => {
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT, CONS.DB.STORES.BOOKING_TYPE, CONS.DB.STORES.BOOKING], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
                 for (let i = 0; i < this._account.all.length; i++) {
-                    requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add({ ...this._account.all[i] });
+                    requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...this._account.all[i] });
                 }
                 for (let i = 0; i < this._booking_type.all.length; i++) {
-                    requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add({ ...this._booking_type.all[i] });
+                    requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...this._booking_type.all[i] });
                 }
                 for (let i = 0; i < this._booking.all.length; i++) {
-                    requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add({ ...this._booking.all[i] });
+                    requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...this._booking.all[i] });
                 }
             });
         },
@@ -292,9 +292,9 @@ export const useRecordsStore = defineStore('records', {
                 const onError = (ev) => {
                     reject(ev);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).add(record);
+                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record);
                 requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
@@ -314,9 +314,9 @@ export const useRecordsStore = defineStore('records', {
                     notice([ev.message]);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).put({ ...data });
+                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({ ...data });
                 requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
                 requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false);
             });
@@ -336,9 +336,9 @@ export const useRecordsStore = defineStore('records', {
                     requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNT], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNT).delete(ident);
+                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
                 requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false);
                 requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
             });
@@ -361,9 +361,9 @@ export const useRecordsStore = defineStore('records', {
                 const onError = (ev) => {
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).add(record);
+                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record);
                 requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
@@ -383,9 +383,9 @@ export const useRecordsStore = defineStore('records', {
                     notice([ev.message]);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).put({ ...data });
+                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).put({ ...data });
                 requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
                 requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false);
             });
@@ -405,9 +405,9 @@ export const useRecordsStore = defineStore('records', {
                     requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPE], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPE).delete(ident);
+                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident);
                 requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false);
                 requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
             });
@@ -430,9 +430,9 @@ export const useRecordsStore = defineStore('records', {
                 const onError = (ev) => {
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).add(record);
+                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record);
                 requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             });
         },
@@ -452,9 +452,9 @@ export const useRecordsStore = defineStore('records', {
                     notice([ev.message]);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).put({ ...data });
+                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put({ ...data });
                 requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
                 requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false);
             });
@@ -474,9 +474,9 @@ export const useRecordsStore = defineStore('records', {
                     requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false);
                     reject(ev.message);
                 };
-                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING], 'readwrite');
+                const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                 requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING).delete(ident);
+                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
                 requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false);
                 requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
             });

@@ -661,24 +661,8 @@
   "optionsPage": {
     "tabs": [
       {
-        "title": "Allgemein",
+        "title": "Thema",
         "id": "register_ge"
-      },
-      {
-        "title": "Marktplatz",
-        "id": "register_mp"
-      },
-      {
-        "title": "Indizes",
-        "id": "register_ind"
-      },
-      {
-        "title": "Rohstoffe",
-        "id": "register_mat"
-      },
-      {
-        "title": "Währungen",
-        "id": "register_ex"
       }
     ],
     "capitals": {

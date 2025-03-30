@@ -160,32 +160,11 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
       console.info('MODALDIALOG: toggleVisibility', ev, dialogId)
       this._dialogs._is_visible = !this._dialogs._is_visible
       switch (dialogId) {
-        case CONS.DIALOGS.ADDACCOUNT:
-          this._dialogs._is_add_account = !this._dialogs._is_add_account
-          break
-        case CONS.DIALOGS.FADEINSTOCK:
-          this._dialogs._is_fadein_stock = !this._dialogs._is_fadein_stock
-          break
-        case CONS.DIALOGS.ADDDEPOSIT:
-          this._dialogs._is_add_deposit = !this._dialogs._is_add_deposit
-          break
-        case CONS.DIALOGS.ADDWITHDRAWAL:
-          this._dialogs._is_add_withdrawal = !this._dialogs._is_add_withdrawal
-          break
-        case CONS.DIALOGS.DAILYCHANGES:
-          this._dialogs._is_daily_changes = !this._dialogs._is_daily_changes
-          break
-        case CONS.DIALOGS.DAILYCHANGESALL:
-          this._dialogs._is_daily_changes = !this._dialogs._is_daily_changes
-          break
         case CONS.DIALOGS.EXPORTDB:
           this._dialogs._is_export_db = !this._dialogs._is_export_db
           break
         case CONS.DIALOGS.IMPORTDB:
           this._dialogs._is_import_db = !this._dialogs._is_import_db
-          break
-        case CONS.DIALOGS.SHOWACCOUNTING:
-          this._dialogs._is_show_accounting = !this._dialogs._is_show_accounting
           break
         case CONS.DIALOGS.DELETETRANSFER:
           this._dialogs._is_delete_transfer = !this._dialogs._is_delete_transfer

@@ -17,7 +17,7 @@
       variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state.cAccountNumber"
+      v-model="state.cNumber"
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       required
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
@@ -48,7 +48,7 @@ const formRef = useTemplateRef('form-ref')
 const state: Omit<IAccount, 'cID'> = reactive({
   cSwift: '',
   cCurrency: '',
-  cAccountNumber: ''
+  cNumber: ''
 })
 const ibanMask = (iban: string) => {
   if (iban !== null) {
@@ -62,7 +62,7 @@ const ibanMask = (iban: string) => {
         masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
       }
     }
-    state.cAccountNumber = masked
+    state.cNumber = masked
   }
 }
 
@@ -74,7 +74,7 @@ const ok = async (): Promise<void> => {
       const records = useRecordsStore()
       const result = await records.addAccount({
         cSwift: state.cSwift.trim(),
-        cAccountNumber: state.cAccountNumber.replace(/\s/g, ''),
+        cNumber: state.cNumber.replace(/\s/g, ''),
         cCurrency: state.cCurrency.trim().toUpperCase()
       })
       if (result === CONS.RESULTS.SUCCESS) {

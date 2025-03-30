@@ -65,7 +65,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.cashPlus')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADDDEPOSIT"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -80,7 +80,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.cashMinus')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADDWITHDRAWAL"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -96,7 +96,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.dailyChanges')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.DAILYCHANGES"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -111,7 +111,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.dailyChangesAll')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.DAILYCHANGESALL"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -158,7 +158,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.SHOWACCOUNTING"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"

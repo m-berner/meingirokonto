@@ -14,8 +14,8 @@
     <v-select
       v-if="records.account.all.length > 0"
       v-model="records.account.active_id"
-      item-title="cAccountNumber"
-      item-value="cID"
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       label="IBAN"
       max-width="300"
       v-bind:items="records.account.all"
@@ -28,9 +28,11 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {reactive, watchEffect} from 'vue'
 import CustomLogo from '@/components/logos/CustomLogo.vue'
+import {useApp} from '@/composables/useApp'
 
 const {t} = useI18n()
 const records = useRecordsStore()
+const {CONS} = useApp()
 
 const state = reactive({
   logo: 'nologo'

@@ -89,20 +89,35 @@ export const useApp = () => {
         DB: {
             BKFN: 'meingirokonto.json',
             NAME: 'meingirokonto.db',
-            RECORD_TYPES: {
-                BUY: 1,
-                CUR: 8,
-                DIV: 3,
-                DEPOSIT: 4,
-                WITHDRAWAL: 5,
-                SELL: 2,
-                PER: 7,
-                UNDEFINED: -1
-            },
             STORES: {
-                ACCOUNT: 'account',
-                BOOKING: 'booking',
-                BOOKING_TYPE: 'booking_type',
+                ACCOUNTS: {
+                    NAME: 'accounts',
+                    FIELDS: {
+                        ID: 'cID',
+                        S: 'cSwift',
+                        C: 'cCurrency',
+                        N: 'cNumber'
+                    }
+                },
+                BOOKINGS: {
+                    NAME: 'bookings',
+                    FIELDS: {
+                        ID: 'cID',
+                        DAT: 'cDate',
+                        C: 'cCredit',
+                        D: 'cDebit',
+                        DESC: 'cDescription',
+                        T: 'cType',
+                        AN: 'cAccountNumber'
+                    }
+                },
+                BOOKING_TYPES: {
+                    NAME: 'booking_types',
+                    FIELDS: {
+                        ID: 'cID',
+                        N: 'cName',
+                    }
+                }
             },
             VERSION: 1,
             MINVERSION: 1
@@ -112,13 +127,7 @@ export const useApp = () => {
             LANG: 'de',
             YEAR: 9999,
             STORAGE: {
-                service: { name: 'fnet', url: 'https://www.finanzen.net/aktienkurse/' },
                 skin: 'ocean',
-                indexes: ['dax', 'dow'],
-                materials: ['au', 'brent'],
-                markets: ['Frankfurt', 'XETRA'],
-                exchanges: ['EURUSD'],
-                partner: false,
                 items_per_page_stocks: 9,
                 items_per_page_transfers: 9
             },
@@ -194,14 +203,8 @@ export const useApp = () => {
             ADD_ACCOUNT: 'AddAccount',
             ADD_BOOKING_TYPE: 'AddBookingType',
             ADD_BOOKING: 'AddBooking',
-            FADEINSTOCK: 'fadeinstock',
-            ADDDEPOSIT: 'adddeposit',
-            ADDWITHDRAWAL: 'addwithdrawal',
-            DAILYCHANGES: 'dailychanges',
-            DAILYCHANGESALL: 'dailychangesall',
             EXPORTDB: 'exportdb',
             IMPORTDB: 'importdb',
-            SHOWACCOUNTING: 'showaccoutning',
             DELETETRANSFER: 'deletetransfer',
             UPDATETRANSFER: 'updatetransfer',
             DELETESTOCK: 'deletestock',
@@ -230,41 +233,6 @@ export const useApp = () => {
             VERSIONCHANGE: 'versionchange'
         },
         SETTINGS: {
-            MP: '__MP__',
-            EX: '__EX__',
-            INDEXES: {
-                dax: 'DAX',
-                dow: 'Dow Jones',
-                nasdaq: 'NASDAQ Comp.',
-                nikkei: 'NIKKEI 225',
-                hang: 'Hang Seng',
-                ibex: 'IBEX 35',
-                straits: 'Straits Times',
-                asx: 'Australia All Ordinaries',
-                rts: 'RTS',
-                bovespa: 'BOVESPA',
-                sensex: 'SENSEX',
-                sci: 'Shanghai Composite',
-                ftse: 'FTSE 100',
-                smi: 'SMI',
-                cac: 'CAC 40',
-                stoxx: 'Euro Stoxx 50',
-                tsx: 'S&P/TSX',
-                sp: 'S&P 500'
-            },
-            MATERIALS: new Map([
-                ['Goldpreis', 'au'],
-                ['Silberpreis', 'ag'],
-                ['Ölpreis (Brent)', 'brent'],
-                ['Ölpreis (WTI)', 'wti'],
-                ['Kupferpreis', 'cu'],
-                ['Platinpreis', 'pt'],
-                ['Aluminiumpreis', 'al'],
-                ['Nickelpreis', 'ni'],
-                ['Zinnpreis', 'sn'],
-                ['Bleipreis', 'pb'],
-                ['Palladiumpreis', 'pd']
-            ]),
             ITEMS_PER_PAGE_OPTIONS: [
                 {
                     value: 5,
@@ -296,7 +264,7 @@ export const useApp = () => {
             ]
         },
         RESOURCES: {
-            SRC: '_assets',
+            SRC: 'assets',
             OK: 'ok.png',
             OKD: 'ok-dark.png',
             CANCEL: 'cancel.png',
@@ -347,110 +315,6 @@ export const useApp = () => {
         RESULTS: {
             ERROR: 'ERR',
             SUCCESS: 'SUCCESS'
-        },
-        SERVICES: {
-            goyax: {
-                NAME: 'Goyax',
-                HOME: 'https://www.goyax.de/',
-                QUOTE: 'https://www.goyax.de/aktien/',
-                DELAY: 50
-            },
-            fnet: {
-                NAME: 'Finanzen.Net',
-                HOME: 'https://www.finanzen.net/aktienkurse/',
-                INDEXES: 'https://www.finanzen.net/indizes/',
-                QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
-                DATES: 'https://www.finanzen.net/termine/',
-                MATERIALS: 'https://www.finanzen.net/rohstoffe/',
-                GM: 'Hauptversammlung',
-                QF: 'Quartalszahlen',
-                DELAY: 750
-            },
-            wstreet: {
-                NAME: 'Wallstreet-Online',
-                HOME: 'https://www.wallstreet-online.de',
-                QUOTE: 'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
-                DELAY: 50
-            },
-            acheck: {
-                NAME: 'Aktien Check',
-                HOME: 'https://m.aktiencheck.de/',
-                QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
-                DELAY: 50
-            },
-            ard: {
-                NAME: 'ARD',
-                HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
-                QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
-                DELAY: 50
-            },
-            fx: {
-                NAME: 'fx-rate',
-                HOME: 'https://fx-rate.net/qwsaq',
-                EXCHANGE: 'https://fx-rate.net/calculator/?c_input=',
-                DELAY: 50
-            },
-            tgate: {
-                NAME: 'Tradegate',
-                HOME: 'https://www.tradegate.de/',
-                QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-                CHSURL: 'https://www.tradegate.de/indizes.php?index=',
-                CHBURL: 'https://www.tradegate.de/indizes.php?buchstabe=',
-                CHS: [
-                    'DE000A1EXRV0',
-                    'DE000A1EXRY4',
-                    'DE000A1EXRW8',
-                    'DE000A1EXRX6',
-                    'EU0009658145',
-                    'DE000A0SNK21',
-                    'US0000000002'
-                ],
-                CHB: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '7',
-                    '8',
-                    '9',
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                    'E',
-                    'F',
-                    'G',
-                    'H',
-                    'I',
-                    'J',
-                    'K',
-                    'L',
-                    'M',
-                    'N',
-                    'O',
-                    'P',
-                    'Q',
-                    'R',
-                    'S',
-                    'T',
-                    'U',
-                    'V',
-                    'W',
-                    'X',
-                    'Y',
-                    'Z',
-                    'Ö'
-                ],
-                CHANGES: {
-                    SMALL: 1,
-                    BIG: 2,
-                    STEP: 8,
-                    NAME: 2,
-                    VALUE: 7
-                },
-                DELAY: 50
-            }
         },
         STATES: {
             DONE: 'complete',
@@ -503,78 +367,7 @@ export const useApp = () => {
             ONCE: { once: true }
         },
         RECORDS: {
-            TEMPLATES: {
-                STOCK: {
-                    cID: 0,
-                    cCompany: '',
-                    cISIN: '',
-                    cWKN: '',
-                    cSym: '',
-                    cFirstPage: 0,
-                    cFadeOut: 0,
-                    cQuarterDay: 0,
-                    cMeetingDay: 0,
-                    cURL: '',
-                    mPortfolio: 0,
-                    mBuyValue: 0,
-                    mValue: 0,
-                    mMin: 0,
-                    mMax: 0,
-                    mChange: 0,
-                    mEuroChange: 0,
-                    mDividendYielda: 0,
-                    mDividendYeara: 0,
-                    mDividendYieldb: 0,
-                    mDividendYearb: 0,
-                    mRealDividend: 0,
-                    mRealBuyValue: 0,
-                    mDeleteable: true
-                },
-                MSTOCK: {
-                    mPortfolio: 0,
-                    mBuyValue: 0,
-                    mValue: 0,
-                    mMin: 0,
-                    mMax: 0,
-                    mChange: 0,
-                    mEuroChange: 0,
-                    mDividendYielda: 0,
-                    mDividendYeara: 0,
-                    mDividendYieldb: 0,
-                    mDividendYearb: 0,
-                    mRealDividend: 0,
-                    mRealBuyValue: 0,
-                    mDeleteable: true,
-                    mAskDates: true
-                },
-                TRANSFER: {
-                    cID: 0,
-                    cDate: 0,
-                    cExDay: 0,
-                    cCount: 0,
-                    cUnitQuotation: 0,
-                    cStockID: 0,
-                    cAmount: 0,
-                    cFees: 0,
-                    cSTax: 0,
-                    cFTax: 0,
-                    cTax: 0,
-                    cSoli: 0,
-                    cType: 0,
-                    cMarketPlace: '',
-                    cDescription: '',
-                    mCompany: '',
-                    mSortDate: 0
-                }
-            },
-            TYPES: {
-                TRANSFER: 11,
-                FEE: 12,
-                STAX: 13,
-                FTAX: 14,
-                TAX: 15,
-                SOLI: 16
-            },
+            TEMPLATES: {},
             CONTROLLER: {
                 TOTAL: {
                     efficiency: 0,
