@@ -5,7 +5,6 @@
     "./src/**/*.vue",
     "./src/locales/*.json",
     "./src/assets/**/*.png",
-    "./src/assets/**/*.css",
     "./vite.config.ts",
     "./src/**/*.css"
   ],
