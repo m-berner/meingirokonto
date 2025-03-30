@@ -109,15 +109,6 @@ export const useRuntimeStore = defineStore('runtime', {
         }
     },
     actions: {
-        setExchanges(entry) {
-            this._info_bar.exchanges = entry;
-        },
-        setIndexes(entry) {
-            this._info_bar.indexes = entry;
-        },
-        setMaterials(entry) {
-            this._info_bar.materials = entry;
-        },
         setExchangesUsd(value) {
             this._exchanges.curusd = value;
         },

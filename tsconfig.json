@@ -65,7 +65,7 @@
     "noEmitOnError": true,
     "jsx": "preserve",
     /* Linting */
-    "strict": false,
+    "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

@@ -75,7 +75,7 @@ declare global {
     cCredit: number
     cDescription?: string
     cType: number
-    cAccountNumber: number
+    cAccountNumber: string
   }
 
   interface IBackupSm {

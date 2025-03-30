@@ -43,7 +43,7 @@
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       max-width="300"
-      v-bind:items="records.bookingType.all.sort((a: IBookingType, b: IBookingType): number => { return a[CONS.DB.STORES.BOOKING_TYPES.FIELDS.N].localeCompare(b[CONS.DB.STORES.BOOKING_TYPES.FIELDS.N]) })"
+      v-bind:items="records.bookingType.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:menu=false
       v-bind:menu-props="{ maxHeight: 250 }"
@@ -70,7 +70,7 @@ const state: Omit<IBooking, 'cID'> = reactive({
   cCredit: 0,
   cDescription: '',
   cType: 0,
-  cAccountNumber: 0
+  cAccountNumber: ''
 })
 
 const ok = async (): Promise<void> => {
@@ -89,12 +89,12 @@ const ok = async (): Promise<void> => {
         cAccountNumber: aNumber
       })
       if (result === CONS.RESULTS.SUCCESS) {
-        notice([t('dialogs.addBooking.success')])
+        await notice([t('dialogs.addBooking.success')])
         formRef.value!.reset()
       }
     } catch (e) {
       console.error(e)
-      notice([t('dialogs.addBooking.error')])
+      await notice([t('dialogs.addBooking.error')])
     }
   }
 }

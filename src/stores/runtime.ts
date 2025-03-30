@@ -126,15 +126,6 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     }
   },
   actions: {
-    setExchanges(entry: Map<string, number>) {
-      this._info_bar.exchanges = entry
-    },
-    setIndexes(entry: Map<string, number>) {
-      this._info_bar.indexes = entry
-    },
-    setMaterials(entry: Map<string, number>) {
-      this._info_bar.materials = entry
-    },
     setExchangesUsd(value: number) {
       this._exchanges.curusd = value
     },

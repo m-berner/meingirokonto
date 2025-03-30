@@ -47,9 +47,8 @@ const ok = async (): Promise<void> => {
   await records.cleanStoreAndDatabase()
   // read backup file into records store bkup object
   await new Promise((resolve, reject) => {
-    const onError = (err: ErrorEvent): void => {
-      notice([err.message])
-      reject(err.message)
+    const onError = (ev: Event): void => {
+      reject(ev)
     }
     const onLoadBackup = (): void => {
       console.log('HEADERBAR: onLoadBackup')
@@ -83,7 +82,7 @@ const ok = async (): Promise<void> => {
     runtime.toggleVisibility()
     return Promise.resolve()
   } else {
-    notice(['IMPORTDATABASE: onLoad', result])
+    await notice(['IMPORTDATABASE: onLoad', result])
     return Promise.reject('ERROR: database could not be loaded!')
   }
 }

@@ -8,6 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 //import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
+
 //import type {ThemeInstance} from 'vuetify'
 
 interface IRecordsStore {
@@ -34,15 +35,6 @@ interface IRecordStoreAccount {
 interface IRecordStoreBookingType {
   all: IBookingType[]
   selected_index: number
-}
-
-interface IOnlineStockValues {
-  index: number
-  value: number
-  min: number
-  max: number
-  echange: number
-  pchange: number
 }
 
 const {CONS, notice} = useApp()
@@ -123,11 +115,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       // }
       this._booking.all.push(booking)
     },
-    _sortTransfers(): ITransfer[] {
-      return this._transfers.all.sort((a: ITransfer, b: ITransfer): number => {
-        return (b.mSortDate ?? 0) - (a.mSortDate ?? 0)
-      })
-    },
     // _sortActiveStocks(): void {
     //   this._stocks.active.sort((a: IStock, b: IStock): number => {
     //     return (a.cID ?? 0) - (b.cID ?? 0)
@@ -146,43 +133,18 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     getBookingsPerAccount(): IBooking[] {
       const activeAccountIndex = this.getAccountIndexById(this._account.active_id)
-      if (activeAccountIndex === -1) { return [] }
+      if (activeAccountIndex === -1) {
+        return []
+      }
       const bookings_per_account = this._booking.all.filter((rec: IBooking) => {
-        return rec.cAccountNumber === this._account.all[activeAccountIndex][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        return rec.cAccountNumber === this._account.all[activeAccountIndex].cNumber
       })
-      bookings_per_account.sort((a: IBooking, b: IBooking)=> {
+      bookings_per_account.sort((a: IBooking, b: IBooking) => {
         const A = new Date(a.cDate).getTime()
         const B = new Date(b.cDate).getTime()
         return A - B
       })
       return bookings_per_account
-    },
-    _setActiveStocksValues(val: IOnlineStockValues): void {
-      this._stocks.active[val.index].mValue = val.value
-      this._stocks.active[val.index].mMin = val.min
-      this._stocks.active[val.index].mMax = val.max
-      this._stocks.active[val.index].mEuroChange = val.echange
-      this._stocks.active[val.index].mChange = val.pchange
-    },
-    initialYearTransfers(): number {
-      const years: number[] = this._transfers.all.map((record: ITransfer) => {
-        return new Date(record.mSortDate ?? 0).getFullYear()
-      })
-      return Math.min(...Array.from(new Set(years)))
-    },
-    yearRangeTransfers(): number[] {
-      const years: number[] = this._transfers.all.map((record: ITransfer) => {
-        return new Date(record.mSortDate ?? 0).getFullYear()
-      })
-      const uniqueYears = Array.from(new Set(years))
-      uniqueYears.sort((a: number, b: number): number => {
-        return b - a
-      })
-      return uniqueYears
-    },
-    setDates(i: number, d): void {
-      this._stocks.active[i].cMeetingDay = d.gm
-      this._stocks.active[i].cQuarterDay = d.qf
     },
     // setDrawerDepot(): void {
     //   console.log('RECORDS: setDrawerDepot')
@@ -225,11 +187,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         sm: {
           cVersion: 0,
           cDBVersion: 0,
-          cDBCurrency: '',
           cEngine: ''
         },
         account: [],
-        account_type: [],
+        booking_type: [],
         booking: []
       }
       this._bkup_object = value
@@ -371,13 +332,13 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       console.log('RECORDS: loadBkupObjectIntoStore')
       let account: IAccount
       let booking: IBooking
-      let accountType: IBookingType
+      let bookingType: IBookingType
       for (account of this._bkup_object.account) {
         // addAccount = migrateStock({...stock})
         this._loadAccountIntoStore(account)
       }
-      for (accountType of this._bkup_object.account_type) {
-        this._loadAccounTypeIntoStore(accountType)
+      for (bookingType of this._bkup_object.booking_type) {
+        this._loadBookingTypeIntoStore(bookingType)
       }
       for (booking of this._bkup_object.booking) {
         this._loadBookingIntoStore(booking)
@@ -450,7 +411,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     async storageIntoStore(): Promise<void> {
       console.log('RECORDS: storageIntoStore')
       const response: IStorageLocal = await browser.storage.local.get()
-      this._account.active_id = response.sAccountActiveId
+      if (response.sAccountActiveId != null) {
+        this._account.active_id = response.sAccountActiveId
+      }
     },
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
@@ -461,43 +424,48 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._booking_type.selected_index = 0
       this._booking_type.selected_index = 0
       return new Promise((resolve, reject) => {
-        const onError = (ev: ErrorEvent): void => {
-          reject(ev.message)
+        if (this._dbi != null) {
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const onComplete = (): void => {
+            resolve('RECORDS: all stores (databases and memory) are clean!')
+          }
+          const onSuccessClearBooking = (): void => {
+            requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
+            console.info('RECORDS: bookings dropped')
+          }
+          const onSuccessClearAccount = (): void => {
+            requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
+            console.info('RECORDS: accounts dropped')
+          }
+          const onSuccessClearAccountType = (): void => {
+            requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
+            console.info('RECORDS: account types dropped')
+          }
+
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+          requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
+          const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+          requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
+          const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+          requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
         }
-        const onComplete = (): void => {
-          resolve('RECORDS: all stores (databases and memory) are clean!')
-        }
-        const onSuccessClearBooking = (): void => {
-          requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
-          console.info('RECORDS: bookings dropped')
-        }
-        const onSuccessClearAccount = (): void => {
-          requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
-          console.info('RECORDS: accounts dropped')
-        }
-        const onSuccessClearAccountType = (): void => {
-          requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
-          console.info('RECORDS: account types dropped')
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
-        requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
-        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
-        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
-        const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
-        requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
       })
     },
     async openDatabase(): Promise<string> {
       return new Promise((resolve, reject) => {
-        const onError = (err: ErrorEvent): void => {
-          reject(err.message)
+        const onError = (ev: Event): void => {
+          reject(ev)
         }
         const onSuccess = (ev: Event): void => {
-          this._dbi = (ev.target as IDBOpenDBRequest).result
-          resolve('RECORDS: database opened successfully!')
+          if (ev.target instanceof IDBOpenDBRequest) {
+            this._dbi = ev.target.result
+            resolve('RECORDS: database opened successfully!')
+          }
         }
         const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
         openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
@@ -514,185 +482,126 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._booking_type.selected_index = 0
       this._account.selected_index = 0
       return new Promise((resolve, reject) => {
-        const onComplete = async (): Promise<void> => {
-          console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
-          // this.evaluateTransfers()
-          // this._sortActiveStocks()
-          // this.setActiveStocksPage(1)
-          // this.resetActiveStocksValues()
-          // runtime.setTable('StocksTable')
-          // await this.updateWrapper()
-          resolve('RECORDS: databaseIntoStore: all database records loaded into memory!')
-        }
-        const onAbort = (): void => {
-          notice(['RECORDS: databaseIntoStore: transaction aborted!', requestTransaction.error as string])
-          reject(requestTransaction.error)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly')
-        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-        const onSuccessAccountOpenCursor = (ev: TIDBRequestEvent): void => {
-          const cursor = ev.target.result
-          if (cursor !== null) {
-            this._loadAccountIntoStore(cursor.value)
-            cursor.continue()
+        if (this._dbi != null) {
+          const onComplete = async (): Promise<void> => {
+            console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
+            resolve('RECORDS: databaseIntoStore: all database records loaded into memory!')
           }
-          // else {
-          //   requestStocksOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessStocksOpenCursor, false)
-          //   console.info('RECORDS: stocks loaded into memory')
-          //   const onSuccessTransfersOpenCursor = (ev: TIDBRequestEvent): void => {
-          //     const cursor: IDBCursorWithValue | null = ev.target.result
-          //     if (cursor !== null) {
-          //       const transfer: ITransfer = {...cursor.value}
-          //       const newTransfer = migrateTransfer({...transfer})
-          //       const currentStock: IStock[] = this._stocks.all.filter((stock: IStock) => {
-          //         return stock.cID === newTransfer.cStockID
-          //       })
-          //       this._loadTransferIntoStore(currentStock, newTransfer)
-          //       cursor.continue()
-          //     } else {
-          //       requestTransfersOpenCursor.removeEventListener(CONS.EVENTS.SUC, onSuccessTransfersOpenCursor, false)
-          //       console.info('RECORDS: transfers loaded into memory')
-          //       this._sortTransfers()
-          //     }
-          //   }
-        }
-        const onSuccessAccountTypeOpenCursor = (ev: TIDBRequestEvent): void => {
-          const cursor = ev.target.result
-          if (cursor !== null) {
-            this._loadBookingTypeIntoStore(cursor.value)
-            cursor.continue()
+          const onAbort = (): void => {
+            notice(['RECORDS: databaseIntoStore: transaction aborted!'])
+            reject(requestTransaction.error)
           }
-        }
-        const onSuccessBookingOpenCursor = (ev: TIDBRequestEvent): void => {
-          const cursor = ev.target.result
-          if (cursor !== null) {
-            this._loadBookingIntoStore(cursor.value)
-            cursor.continue()
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+          const onSuccessAccountOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBCursorWithValue) {
+              this._loadAccountIntoStore(ev.target.value)
+              ev.target.continue()
+            }
           }
+          const onSuccessAccountTypeOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBCursorWithValue) {
+              this._loadBookingTypeIntoStore(ev.target.value)
+              ev.target.continue()
+            }
+          }
+          const onSuccessBookingOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBCursorWithValue) {
+              this._loadBookingIntoStore(ev.target.value)
+              ev.target.continue()
+            }
+          }
+          const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
+          requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
+          const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor()
+          requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false)
+          const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor()
+          requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
         }
-        const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
-        requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
-        const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor()
-        requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false)
-        const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor()
-        requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
       })
     },
     async storeIntoDatabase(): Promise<string> {
       console.log('RECORDS: storeIntoDatabase')
       return new Promise((resolve, reject) => {
-        const onComplete = (): void => {
-          // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          notice(['All memory records are added to the database!'])
-          resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
-        }
-        const onAbort = (): void => {
-          notice(['Transaction aborted!', requestTransaction.error as string])
-          reject(requestTransaction.error)
-        }
-        const onError = (ev: ErrorEvent): void => {
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-        for (let i = 0; i < this._account.all.length; i++) {
-          requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...this._account.all[i]})
-        }
-        for (let i = 0; i < this._booking_type.all.length; i++) {
-          requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...this._booking_type.all[i]})
-        }
-        for (let i = 0; i < this._booking.all.length; i++) {
-          requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...this._booking.all[i]})
+        if (this._dbi != null) {
+          const onComplete = (): void => {
+            // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            notice(['All memory records are added to the database!'])
+            resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
+          }
+          const onAbort = (): void => {
+            notice(['Transaction aborted!'])
+            reject(requestTransaction.error)
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+          for (let i = 0; i < this._account.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...this._account.all[i]})
+          }
+          for (let i = 0; i < this._booking_type.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...this._booking_type.all[i]})
+          }
+          for (let i = 0; i < this._booking.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...this._booking.all[i]})
+          }
         }
       })
     },
-    // async updateAccountsStoreIntoDatabase(): Promise<string> {
-    //   console.log('RECORDS: updateAccountsStoreIntoDatabase')
-    //   return new Promise((resolve, reject) => {
-    //     let requestaddAccount: IDBRequest
-    //     const onComplete = (): void => {
-    //       requestaddAccount.removeEventListener(CONS.EVENTS.ERR, onError, false)
-    //       resolve('RECORDS: updateAccountsStoreIntoDatabase: stocks updated in database!')
-    //     }
-    //     const onAbort = (): void => {
-    //       notice(['Transaction aborted!', requestTransaction.error as string])
-    //       reject(requestTransaction.error)
-    //     }
-    //     const onError = (ev: ErrorEvent): void => {
-    //       reject(ev.message)
-    //     }
-    //     const requestTransaction = this._dbi.transaction([CONS.DB.STORES.S], 'readwrite')
-    //     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-    //     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-    //     for (let i = 0; i < this._stocks.all.length; i++) {
-    //       const stock: IStock = {...this._stocks.all[i]}
-    //       delete stock.mBuyValue
-    //       delete stock.mRealBuyValue
-    //       delete stock.mPortfolio
-    //       delete stock.mDividendYielda
-    //       delete stock.mDividendYeara
-    //       delete stock.mDividendYieldb
-    //       delete stock.mDividendYearb
-    //       delete stock.mRealDividend
-    //       delete stock.mMin
-    //       delete stock.mMax
-    //       delete stock.mValue
-    //       delete stock.mChange
-    //       delete stock.mEuroChange
-    //       requestaddAccount = requestTransaction.objectStore(CONS.DB.STORES.S).put({...stock})
-    //       requestaddAccount.addEventListener(CONS.EVENTS.ERR, onError, false)
-    //     }
-    //   })
-    // },
     async addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
-        const onSuccess = async (ev: Event): Promise<void> => {
-          if (ev.target instanceof IDBRequest) {
-            const memRecord: IAccount = {
-              ...record,
-              cID: ev.target.result
+        if (this._dbi != null) {
+          const onSuccess = async (ev: Event): Promise<void> => {
+            if (ev.target instanceof IDBRequest) {
+              const memRecord: IAccount = {
+                ...record,
+                cID: ev.target.result
+              }
+              this._account.all.push(memRecord)
+              this._account.active_id = ev.target.result
+              await browser.storage.local.set({sAccountActiveId: ev.target.result})
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
             }
-            this._account.all.push(memRecord)
-            this._account.active_id = ev.target.result
-            await browser.storage.local.set({ sAccountActiveId: ev.target.result })
-            resolve(CONS.RESULTS.SUCCESS)
-          } else {
-            reject(CONS.RESULTS.ERROR)
           }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          reject(ev)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record)
-        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
     async updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateAccount', data)
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          if (msg) {
-            notice(['sm_msg_updaterecord'])
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+            if (msg) {
+              notice(['sm_msg_updaterecord'])
+            }
+            resolve('Account updated')
           }
-          resolve('Account updated')
+          const onError = (ev: Event): void => {
+            requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({...data})
+          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
+          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          notice([ev.message])
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({...data})
-        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
     async deleteAccount(ident: number): Promise<string> {
@@ -700,157 +609,157 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return account.cID === ident
       })
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._account.all.splice(indexOfAccount, 1)
-          resolve('Account deleted')
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
+            this._account.all.splice(indexOfAccount, 1)
+            resolve('Account deleted')
+          }
+          const onError = (ev: Event): void => {
+            requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident)
-        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
-        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
     async addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
-        const onSuccess = (ev: Event): void => {
-          if (ev.target instanceof IDBRequest) {
-            const memRecord: IBookingType = {
-              ...record,
-              cID: ev.target.result
+        if (this._dbi != null) {
+          const onSuccess = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest) {
+              const memRecord: IBookingType = {
+                ...record,
+                cID: ev.target.result
+              }
+              this._booking_type.all.push(memRecord)
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
             }
-            this._booking_type.all.push(memRecord)
-            resolve(CONS.RESULTS.SUCCESS)
-          } else {
-            reject(CONS.RESULTS.ERROR)
           }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record)
-        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
     async updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBookingType', data)
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          if (msg) {
-            notice(['sm_msg_updaterecord'])
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            if (msg) {
+              notice(['sm_msg_updaterecord'])
+            }
+            resolve('Account type updated')
           }
-          resolve('Account type updated')
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).put({...data})
+          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          notice([ev.message])
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).put({...data})
-        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
     async deleteBookingType(ident: number): Promise<string> {
-      const indexOfAccountType = this._account.all.findIndex((accountType: IBookingType) => {
-        return accountType.cID === ident
+      const indexOfBookingType = this._booking_type.all.findIndex((bookingType: IBookingType) => {
+        return bookingType.cID === ident
       })
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._account.all.splice(indexOfAccountType, 1)
-          resolve('Account type deleted')
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            this._booking_type.all.splice(indexOfBookingType, 1)
+            resolve('Booking type deleted')
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident)
-        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
-        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     },
     async addBooking(record: Omit<IBooking, 'cID'>): Promise<string> {
       return new Promise((resolve, reject) => {
-        const onSuccess = (ev: Event): void => {
-          if (ev.target instanceof IDBRequest) {
-            const memRecord: IBooking = {
-              ...record,
-              cID: ev.target.result
+        if (this._dbi != null) {
+          const onSuccess = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest) {
+              const memRecord: IBooking = {
+                ...record,
+                cID: ev.target.result
+              }
+              this._booking.all.push(memRecord)
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
             }
-            this._booking.all.push(memRecord)
-            resolve(CONS.RESULTS.SUCCESS)
-          } else {
-            reject(CONS.RESULTS.ERROR)
           }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record)
-        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       })
     },
     async updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBooking', data)
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          if (msg) {
-            notice(['sm_msg_updaterecord'])
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            if (msg) {
+              notice(['sm_msg_updaterecord'])
+            }
+            resolve('Booking updated')
           }
-          resolve('Booking updated')
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put({...data})
+          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          notice([ev.message])
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put({...data})
-        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
       })
     },
     async deleteBooking(ident: number): Promise<string> {
-      const indexOfBooking = this._account.all.findIndex((booking: IBooking) => {
+      const indexOfBooking = this._booking.all.findIndex((booking: IBooking) => {
         return booking.cID === ident
       })
       return new Promise((resolve, reject) => {
-        const onSuccess = (): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          this._booking.all.splice(indexOfBooking, 1)
-          resolve('Booking deleted')
+        if (this._dbi != null) {
+          const onSuccess = (): void => {
+            this._booking.all.splice(indexOfBooking, 1)
+            resolve('Booking deleted')
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
-        const onError = (ev: ErrorEvent): void => {
-          requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false)
-          reject(ev.message)
-        }
-        const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident)
-        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false)
-        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
       })
     }
   }

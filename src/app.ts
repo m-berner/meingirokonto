@@ -367,7 +367,7 @@ const i18n = createI18n({
 })
 const pinia = createPinia()
 const app = createApp(IndexPage)
-app.config.errorHandler = (err: ErrorEvent) => {
+app.config.errorHandler = (err: unknown) => {
   console.error(err)
 }
 app.config.warnHandler = (msg: string) => {

@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
 import { useApp } from '@/composables/useApp';
+const { CONS } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
-        const { CONS } = useApp();
         return {
             _skin: CONS.DEFAULTS.STORAGE.skin,
             _accountIndex: -1,
@@ -26,52 +26,18 @@ export const useSettingsStore = defineStore('settings', {
         }
     },
     actions: {
-        async setService(value) {
-            this._service = value;
-            await browser.storage.local.set({ service: value });
-        },
-        setServiceStoreOnly(value) {
-            this._service = value;
-        },
         async setSkin(value, theme) {
             theme.global.name.value = value;
             this._skin = value;
             await browser.storage.local.set({ skin: value });
         },
         setSkinStoreOnly(value) {
-            this._skin = value;
-        },
-        async toggleIndexes(keys, n) {
-            let ind;
-            const ar = [...this._indexes];
-            if ((ind = ar.indexOf(keys[n])) >= 0) {
-                ar.splice(ind, 1);
+            if (value === undefined) {
+                this._skin = CONS.DEFAULTS.STORAGE.skin;
             }
             else {
-                ar.push(keys[n]);
+                this._skin = value;
             }
-            this._indexes = ar;
-            await browser.storage.local.set({ indexes: ar });
-        },
-        setIndexesStoreOnly(value) {
-            this._indexes = value;
-        },
-        setMaterialsStoreOnly(value) {
-            this._materials = value;
-        },
-        async setMarkets(value) {
-            this._markets = value;
-            await browser.storage.local.set({ markets: value });
-        },
-        setMarketsStoreOnly(value) {
-            this._markets = value;
-        },
-        async setExchanges(value) {
-            this._exchanges = value;
-            await browser.storage.local.set({ exchanges: value });
-        },
-        setExchangesStoreOnly(value) {
-            this._exchanges = value;
         },
         setAccountIndexStoreOnly(value) {
             this._accountIndex = value;
@@ -81,14 +47,24 @@ export const useSettingsStore = defineStore('settings', {
             await browser.storage.local.set({ itemsPerPageTransfers: value });
         },
         setItemsPerPageTransfersStoreOnly(value) {
-            this._items_per_page_transfers = value;
+            if (value === undefined) {
+                this._items_per_page_stocks = CONS.DEFAULTS.STORAGE.items_per_page_transfers;
+            }
+            else {
+                this._items_per_page_stocks = value;
+            }
         },
         async setItemsPerPageStocks(value) {
             this._items_per_page_stocks = value;
             await browser.storage.local.set({ itemsPerPageStocks: value });
         },
         setItemsPerPageStocksStoreOnly(value) {
-            this._items_per_page_stocks = value;
+            if (value === undefined) {
+                this._items_per_page_stocks = CONS.DEFAULTS.STORAGE.items_per_page_stocks;
+            }
+            else {
+                this._items_per_page_stocks = value;
+            }
         },
         async storageIntoStore(theme) {
             console.log('SETTINGS: storageIntoStore');
@@ -97,18 +73,6 @@ export const useSettingsStore = defineStore('settings', {
             this.setSkinStoreOnly(response.skin);
             this.setItemsPerPageStocksStoreOnly(response.items_per_page_stocks);
             this.setItemsPerPageTransfersStoreOnly(response.items_per_page_transfers);
-        },
-        async toggleMaterials(keys, n) {
-            let ind;
-            const ar = [...this._materials];
-            if ((ind = ar.indexOf(keys[n])) >= 0) {
-                ar.splice(ind, 1);
-            }
-            else {
-                ar.push(keys[n]);
-            }
-            this._materials = ar;
-            await browser.storage.local.set({ materials: ar });
         }
     }
 });

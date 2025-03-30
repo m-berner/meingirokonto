@@ -45,12 +45,12 @@ const ok = async (): Promise<void> => {
       const records = useRecordsStore()
       const result = await records.addBookingType({cName: state.cName.trim()})
       if (result === CONS.RESULTS.SUCCESS) {
-        notice([t('dialogs.addBookingType.success')])
+        await notice([t('dialogs.addBookingType.success')])
         formRef.value!.reset()
       }
     } catch (e) {
       console.error(e)
-      notice([t('dialogs.addBookingType.error')])
+      await notice([t('dialogs.addBookingType.error')])
     }
   }
 }

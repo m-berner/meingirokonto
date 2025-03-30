@@ -48,52 +48,56 @@ const useListener = () => {
     const onRemove = (permissions) => {
         console.warn('BACKGROUND: onRemove');
         const { notice } = useApp();
-        notice(['Online data might not be available.', JSON.stringify(permissions)]);
+        notice(['Online data might not be available.', JSON.stringify(permissions)]).then();
     };
     const onInstall = () => {
         console.log('BACKGROUND: onInstall');
         const onSuccess = (ev) => {
             console.log('BACKGROUND: onInstall: onSuccess');
-            ev.target.result.close();
+            if (ev.target instanceof IDBRequest) {
+                ev.target.result.close();
+            }
         };
-        const onError = (err) => {
-            console.error('BACKGROUND: onError: ', err.message);
+        const onError = (ev) => {
+            console.error('BACKGROUND: onError: ', ev);
         };
         const onUpgradeNeeded = async (ev) => {
-            console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
-            const createDB = () => {
-                console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
-                const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
-                    keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-                    autoIncrement: true
-                });
-                const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                    keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-                    autoIncrement: true
-                });
-                const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                    keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-                    autoIncrement: true
-                });
-                requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
-                requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
-                requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
-                requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
-                requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
-                requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
-                requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
-            };
-            const updateDB = () => {
-                console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB');
-            };
-            if (ev.oldVersion === 0) {
-                createDB();
-            }
-            else {
-                updateDB();
-                await browser.storage.local
-                    .remove(CONS.SYSTEM.STORAGE_OLD);
+            if (ev instanceof IDBVersionChangeEvent) {
+                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
+                const createDB = () => {
+                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                    const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
+                        keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
+                };
+                const updateDB = () => {
+                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB');
+                };
+                if (ev.oldVersion === 0) {
+                    createDB();
+                }
+                else {
+                    updateDB();
+                    await browser.storage.local
+                        .remove(CONS.SYSTEM.STORAGE_OLD);
+                }
             }
         };
         const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);

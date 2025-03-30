@@ -16,9 +16,10 @@ interface ISettingsStore {
   _items_per_page_stocks: number
 }
 
+const {CONS} = useApp()
+
 export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = defineStore('settings', {
   state: (): ISettingsStore => {
-    const {CONS} = useApp()
     return {
       _skin: CONS.DEFAULTS.STORAGE.skin,
       _accountIndex: -1,
@@ -41,51 +42,17 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     }
   },
   actions: {
-    async setService(value: { name: string; url: string }): Promise<void> {
-      this._service = value
-      await browser.storage.local.set({service: value})
-    },
-    setServiceStoreOnly(value: { name: string; url: string }) {
-      this._service = value
-    },
     async setSkin(value: string, theme: ThemeInstance): Promise<void> {
       theme.global.name.value = value // NOTE: change theme options instance
       this._skin = value
       await browser.storage.local.set({skin: value})
     },
-    setSkinStoreOnly(value: string) {
-      this._skin = value
-    },
-    async toggleIndexes(keys: string[], n: number): Promise<void> {
-      let ind: number
-      const ar = [...this._indexes]
-      if ((ind = ar.indexOf(keys[n])) >= 0) {
-        ar.splice(ind, 1)
+    setSkinStoreOnly(value: string | undefined) {
+      if (value === undefined) {
+        this._skin = CONS.DEFAULTS.STORAGE.skin
       } else {
-        ar.push(keys[n])
+        this._skin = value
       }
-      this._indexes = ar
-      await browser.storage.local.set({indexes: ar})
-    },
-    setIndexesStoreOnly(value: string[] | boolean) {
-      this._indexes = value
-    },
-    setMaterialsStoreOnly(value: string[] | boolean) {
-      this._materials = value
-    },
-    async setMarkets(value: string[] | boolean): Promise<void> {
-      this._markets = value
-      await browser.storage.local.set({markets: value})
-    },
-    setMarketsStoreOnly(value: string[] | boolean) {
-      this._markets = value
-    },
-    async setExchanges(value: string[] | boolean): Promise<void> {
-      this._exchanges = value
-      await browser.storage.local.set({exchanges: value})
-    },
-    setExchangesStoreOnly(value: string[] | boolean) {
-      this._exchanges = value
     },
     setAccountIndexStoreOnly(value: number) {
       this._accountIndex = value
@@ -94,15 +61,23 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._items_per_page_transfers = value
       await browser.storage.local.set({itemsPerPageTransfers: value})
     },
-    setItemsPerPageTransfersStoreOnly(value: number) {
-      this._items_per_page_transfers = value
+    setItemsPerPageTransfersStoreOnly(value: number | undefined) {
+      if (value === undefined) {
+        this._items_per_page_stocks = CONS.DEFAULTS.STORAGE.items_per_page_transfers
+      } else {
+        this._items_per_page_stocks = value
+      }
     },
     async setItemsPerPageStocks(value: number): Promise<void> {
       this._items_per_page_stocks = value
       await browser.storage.local.set({itemsPerPageStocks: value})
     },
-    setItemsPerPageStocksStoreOnly(value: number) {
-      this._items_per_page_stocks = value
+    setItemsPerPageStocksStoreOnly(value: number | undefined) {
+      if (value === undefined) {
+        this._items_per_page_stocks = CONS.DEFAULTS.STORAGE.items_per_page_stocks
+      } else {
+        this._items_per_page_stocks = value
+      }
     },
     async storageIntoStore(theme: ThemeInstance): Promise<void> {
       console.log('SETTINGS: storageIntoStore')
@@ -111,17 +86,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this.setSkinStoreOnly(response.skin)
       this.setItemsPerPageStocksStoreOnly(response.items_per_page_stocks)
       this.setItemsPerPageTransfersStoreOnly(response.items_per_page_transfers)
-    },
-    async toggleMaterials(keys: string[], n: number): Promise<void> {
-      let ind: number
-      const ar = [...this._materials]
-      if ((ind = ar.indexOf(keys[n])) >= 0) {
-        ar.splice(ind, 1)
-      } else {
-        ar.push(keys[n])
-      }
-      this._materials = ar
-      await browser.storage.local.set({materials: ar})
     }
   }
 })
