@@ -11,7 +11,6 @@ import {useApp} from '@/composables/useApp'
 
 interface ISettingsStore {
   _skin: string
-  _accountIndex: number
   _items_per_page_transfers: number
   _items_per_page_stocks: number
 }
@@ -22,7 +21,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
   state: (): ISettingsStore => {
     return {
       _skin: CONS.DEFAULTS.STORAGE.skin,
-      _accountIndex: -1,
       _items_per_page_transfers: CONS.DEFAULTS.STORAGE.items_per_page_transfers,
       _items_per_page_stocks: CONS.DEFAULTS.STORAGE.items_per_page_stocks
     }
@@ -30,9 +28,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
   getters: {
     skin(state: ISettingsStore) {
       return state._skin
-    },
-    account(state: ISettingsStore) {
-      return state._accountIndex
     },
     itemsPerPageTransfers(state: ISettingsStore) {
       return state._items_per_page_transfers
@@ -53,9 +48,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       } else {
         this._skin = value
       }
-    },
-    setAccountIndexStoreOnly(value: number) {
-      this._accountIndex = value
     },
     async setItemsPerPageTransfers(value: number): Promise<void> {
       this._items_per_page_transfers = value

@@ -6,7 +6,6 @@ export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {
             _skin: CONS.DEFAULTS.STORAGE.skin,
-            _accountIndex: -1,
             _items_per_page_transfers: CONS.DEFAULTS.STORAGE.items_per_page_transfers,
             _items_per_page_stocks: CONS.DEFAULTS.STORAGE.items_per_page_stocks
         };
@@ -14,9 +13,6 @@ export const useSettingsStore = defineStore('settings', {
     getters: {
         skin(state) {
             return state._skin;
-        },
-        account(state) {
-            return state._accountIndex;
         },
         itemsPerPageTransfers(state) {
             return state._items_per_page_transfers;
@@ -38,9 +34,6 @@ export const useSettingsStore = defineStore('settings', {
             else {
                 this._skin = value;
             }
-        },
-        setAccountIndexStoreOnly(value) {
-            this._accountIndex = value;
         },
         async setItemsPerPageTransfers(value) {
             this._items_per_page_transfers = value;

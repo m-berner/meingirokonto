@@ -99,233 +99,234 @@ declare global {
   interface IUseApp{
     CONS: Readonly<{
       CURRENCIES: {
-        EUR: string;
-        USD: string;
-        CODE: Map<string, string>;
-      };
+        EUR: string
+        USD: string
+        CODE: Map<string, string>
+      }
       DATE: {
-        DEFAULT: number;
-        DEFAULTSTR: string;
-        FYEAR: number;
-        MILLIPERDAY: number;
-        MILLIPERMIN: number;
-      };
+        DEFAULT: number
+        DEFAULTSTR: string
+        FYEAR: number
+        MILLIPERDAY: number
+        MILLIPERMIN: number
+      }
       DB: {
-        BKFN: string;
-        NAME: string;
+        BKFN: string
+        NAME: string
         STORES: {
           ACCOUNTS: {
-            NAME: string;
+            NAME: string
             FIELDS: {
-              ID: string;
-              S: string;
-              C: string;
-              N: string;
-            };
-          };
+              ID: string
+              S: string
+              C: string
+              N: string
+            }
+          }
           BOOKINGS: {
-            NAME: string;
+            NAME: string
             FIELDS: {
-              ID: string;
-              DAT: string;
-              C: string;
-              D: string;
-              DESC: string;
-              T: string;
-              AN: string;
-            };
-          };
+              ID: string
+              DAT: string
+              C: string
+              D: string
+              DESC: string
+              T: string
+              AN: string
+            }
+          }
           BOOKING_TYPES: {
-            NAME: string;
+            NAME: string
             FIELDS: {
-              ID: string;
-              N: string;
-            };
-          };
-        };
-        VERSION: number;
-        MINVERSION: number;
-      };
+              ID: string
+              N: string
+            }
+          }
+        }
+        VERSION: number
+        MINVERSION: number
+      }
       DEFAULTS: {
-        CURRENCY: string;
-        LANG: string;
-        YEAR: number;
+        CURRENCY: string
+        LANG: string
+        YEAR: number
         STORAGE: {
-          skin: string;
-          items_per_page_stocks: number;
-          items_per_page_transfers: number;
-        };
-        DRAWER_KEYS: string[];
+          skin: string
+          items_per_page_stocks: number
+          items_per_page_transfers: number
+        }
+        DRAWER_KEYS: string[]
         DRAWER_CONTROLS: {
-          id: number;
-          title: string;
-          value: string;
-          class: string;
-        }[];
-      };
+          id: number
+          title: string
+          value: string
+          class: string
+        }[]
+      }
       DIALOGS: {
-        ADD_ACCOUNT: string;
-        ADD_BOOKING_TYPE: string;
-        ADD_BOOKING: string;
-        EXPORTDB: string;
-        IMPORTDB: string;
-        DELETETRANSFER: string;
-        UPDATETRANSFER: string;
-        DELETESTOCK: string;
-        BUYSTOCK: string;
-        SELLSTOCK: string;
-        ADDDIVIDEND: string;
-        SHOWDIVIDEND: string;
-        CONFIGSTOCK: string;
-        SETTING: string;
-      };
+        ADD_ACCOUNT: string
+        ADD_BOOKING_TYPE: string
+        ADD_BOOKING: string
+        DELETE_BOOKING: string
+        EXPORTDB: string
+        IMPORTDB: string
+        DELETETRANSFER: string
+        UPDATETRANSFER: string
+        DELETESTOCK: string
+        BUYSTOCK: string
+        SELLSTOCK: string
+        ADDDIVIDEND: string
+        SHOWDIVIDEND: string
+        CONFIGSTOCK: string
+        SETTING: string
+      }
       EVENTS: {
-        ABORT: string;
-        BEFOREUNLOAD: string;
-        CHANGE: string;
-        CLICK: string;
-        COMP: string;
-        DOM: string;
-        ERR: string;
-        INP: string;
-        KEYDOWN: string;
-        LOAD: string;
-        FOCUS: string;
-        BLUR: string;
-        SUC: string;
-        UPG: string;
-        VERSIONCHANGE: string;
-      };
+        ABORT: string
+        BEFOREUNLOAD: string
+        CHANGE: string
+        CLICK: string
+        COMP: string
+        DOM: string
+        ERR: string
+        INP: string
+        KEYDOWN: string
+        LOAD: string
+        FOCUS: string
+        BLUR: string
+        SUC: string
+        UPG: string
+        VERSIONCHANGE: string
+      }
       SETTINGS: {
         ITEMS_PER_PAGE_OPTIONS: {
-          value: number;
-          title: string;
-        }[];
-      };
+          value: number
+          title: string
+        }[]
+      }
       PERMISSIONS: {
-        origins: string[];
-      };
+        origins: string[]
+      }
       RESOURCES: {
-        SRC: string;
-        OK: string;
-        OKD: string;
-        CANCEL: string;
-        CANCELD: string;
-        ICON32: string;
-        LOGO16: string;
-        LOGO256: string;
-        MAG: string;
-        CALENDAR: string;
-        RENEW: string;
-        FIRST: string;
-        NEXT: string;
-        PREV: string;
-        LAST: string;
-        CB: string;
-        UP: string;
-        NS: string;
-        DS: string;
-        FI: string;
-        IT: string;
-        OT: string;
-        CHS: string;
-        CHB: string;
-        BK: string;
-        RE: string;
-        OB: string;
-        TB: string;
-        PY: string;
-        CO: string;
-        SE: string;
-        RESET: string;
-        ADD: string;
-        CHANGE: string;
-        DEL: string;
-        NO: string;
-        BUY: string;
-        SELL: string;
-        ND: string;
-        SD: string;
-        CONF: string;
-        HTTP: string;
-        HELP: string;
-        PRIVACY: string;
-        LICENSE: string;
-        INDEX: string;
-        ROOT: string;
-      };
+        SRC: string
+        OK: string
+        OKD: string
+        CANCEL: string
+        CANCELD: string
+        ICON32: string
+        LOGO16: string
+        LOGO256: string
+        MAG: string
+        CALENDAR: string
+        RENEW: string
+        FIRST: string
+        NEXT: string
+        PREV: string
+        LAST: string
+        CB: string
+        UP: string
+        NS: string
+        DS: string
+        FI: string
+        IT: string
+        OT: string
+        CHS: string
+        CHB: string
+        BK: string
+        RE: string
+        OB: string
+        TB: string
+        PY: string
+        CO: string
+        SE: string
+        RESET: string
+        ADD: string
+        CHANGE: string
+        DEL: string
+        NO: string
+        BUY: string
+        SELL: string
+        ND: string
+        SD: string
+        CONF: string
+        HTTP: string
+        HELP: string
+        PRIVACY: string
+        LICENSE: string
+        INDEX: string
+        ROOT: string
+      }
       RESULTS: {
-        ERROR: string;
-        SUCCESS: string;
-      };
+        ERROR: string
+        SUCCESS: string
+      }
       STATES: {
-        DONE: string;
-        SRV: number;
-        SUCCESS: number;
-        PAUSE: string;
-        MUTATE: string;
-        NORENDER: string;
-      };
+        DONE: string
+        SRV: number
+        SUCCESS: number
+        PAUSE: string
+        MUTATE: string
+        NORENDER: string
+      }
       SYSTEM: {
-        COPYRIGHT: string;
-        FETCHTO: number;
-        DELAY: number;
-        EMAIL: string;
-        GET: string;
-        HTMLENTITY: string;
-        ISINLENGTH: number;
+        COPYRIGHT: string
+        FETCHTO: number
+        DELAY: number
+        EMAIL: string
+        GET: string
+        HTMLENTITY: string
+        ISINLENGTH: number
         KEYS: {
-          ENTER: string;
-          TAB: string;
-          T: string;
-          V: string;
-          Z: string;
-        };
+          ENTER: string
+          TAB: string
+          T: string
+          V: string
+          Z: string
+        }
         ERRORS: {
-          CURR: string;
-          ERR: string;
-          INVALID: string;
-          NOCASE: string;
-          NODEL: string;
-          REQ: string;
-          SRV: string;
-          WRONGPARAM: string;
-          SEND: string;
-        };
-        NULL: number;
-        PERCENT: number;
+          CURR: string
+          ERR: string
+          INVALID: string
+          NOCASE: string
+          NODEL: string
+          REQ: string
+          SRV: string
+          WRONGPARAM: string
+          SEND: string
+        }
+        NULL: number
+        PERCENT: number
         PROGRESSBAR: {
-          MAX: number;
-        };
-        ROWS: number;
-        STARTUP: number;
-        STORAGE_OLD: string[];
-        TYPE: number;
+          MAX: number
+        }
+        ROWS: number
+        STARTUP: number
+        STORAGE_OLD: string[]
+        TYPE: number
         ONCE: {
-          once: boolean;
-        };
-      };
+          once: boolean
+        }
+      }
       RECORDS: {
         CONTROLLER: {
           TOTAL: {
-            efficiency: number;
-            returnRate: number;
-            buy: number;
-            sell: number;
-            dividends: number;
-            deposits: number;
-            withdrawals: number;
-            taxes: number;
-            fees: number;
-            earnings: number;
-            account: number;
-            depot: number;
-            winloss: number;
-            winlossPercent: number;
-            depotBuyValue: number;
-          };
-        };
-      };
+            efficiency: number
+            returnRate: number
+            buy: number
+            sell: number
+            dividends: number
+            deposits: number
+            withdrawals: number
+            taxes: number
+            fees: number
+            earnings: number
+            account: number
+            depot: number
+            winloss: number
+            winlossPercent: number
+            depotBuyValue: number
+          }
+        }
+      }
     }>
     utcDate: (iso: string) => Date
     validators: {
@@ -555,6 +556,7 @@ export const useApp = (): IUseApp => {
       ADD_ACCOUNT: 'AddAccount',
       ADD_BOOKING_TYPE: 'AddBookingType',
       ADD_BOOKING: 'AddBooking',
+      DELETE_BOOKING: 'DeleteBooking',
       EXPORTDB: 'exportdb',
       IMPORTDB: 'importdb',
       DELETETRANSFER: 'deletetransfer',

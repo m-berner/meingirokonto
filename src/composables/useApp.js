@@ -203,6 +203,7 @@ export const useApp = () => {
             ADD_ACCOUNT: 'AddAccount',
             ADD_BOOKING_TYPE: 'AddBookingType',
             ADD_BOOKING: 'AddBooking',
+            DELETE_BOOKING: 'DeleteBooking',
             EXPORTDB: 'exportdb',
             IMPORTDB: 'importdb',
             DELETETRANSFER: 'deletetransfer',

@@ -127,12 +127,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //   })
     // },
     getAccountIndexById(ident: number): number {
+      console.error('ID', ident, this._account.all)
       return this._account.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
     },
     getBookingsPerAccount(): IBooking[] {
       const activeAccountIndex = this.getAccountIndexById(this._account.active_id)
+      console.error('TTT', activeAccountIndex)
       if (activeAccountIndex === -1) {
         return []
       }
@@ -495,21 +497,21 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
           const onSuccessAccountOpenCursor = (ev: Event): void => {
-            if (ev.target instanceof IDBCursorWithValue) {
-              this._loadAccountIntoStore(ev.target.value)
-              ev.target.continue()
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              this._loadAccountIntoStore(ev.target.result.value)
+              ev.target.result.continue()
             }
           }
           const onSuccessAccountTypeOpenCursor = (ev: Event): void => {
-            if (ev.target instanceof IDBCursorWithValue) {
-              this._loadBookingTypeIntoStore(ev.target.value)
-              ev.target.continue()
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              this._loadBookingTypeIntoStore(ev.target.result.value)
+              ev.target.result.continue()
             }
           }
           const onSuccessBookingOpenCursor = (ev: Event): void => {
-            if (ev.target instanceof IDBCursorWithValue) {
-              this._loadBookingIntoStore(ev.target.value)
-              ev.target.continue()
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              this._loadBookingIntoStore(ev.target.result.value)
+              ev.target.result.continue()
             }
           }
           const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()

@@ -17,30 +17,13 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {onBeforeMount, ref, watchEffect} from 'vue'
+import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
-// import {useApp} from '@/composables/useApp'
-import {useRoute} from 'vue-router'
-// import TitleBar from '@/components/TitleBar.vue'
-//import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
-//const runtime = useRuntimeStore()
 const theme = useTheme()
-// const {getUI} = useApp()
-const layout = ref()
-const route = useRoute()
 
-watchEffect(
-  () => {
-    if (route.meta.layout === undefined) {
-      layout.value = 'DefaultLayout'
-    } else {
-      layout.value = `${route.meta.layout}Layout`
-    }
-  }
-)
 onBeforeMount(async (): Promise<void> => {
     console.log('APP: onBeforeMount')
     //const keyStrokeController: string[] = []
@@ -128,34 +111,17 @@ onBeforeMount(async (): Promise<void> => {
     //   browser.runtime.onMessage.addListener(onMessageExchangesBase)
     // }
     /* Listen to onKeyup, onKeyDown:
-     * - set the service to tgate if ctrl + alt + t is pressed.
      * - clear the local storage if ctrl + alt + r is pressed.
      */
     // window.addEventListener('keydown', onKeyDown, false)
     // window.addEventListener('keyup', onKeyUp, false)
     window.addEventListener('beforeunload', onBeforeOnload, false)
-    // appPort().postMessage({
-    //   type: CONS.FETCH_API.ASK__EXCHANGES_BASE_DATA,
-    //   data: [getUI().curusd, getUI().cureur],
-    // })
-    await settings.storageIntoStore(theme)
-    await records.storageIntoStore()
     await records.openDatabase()
     await records.databaseIntoStore()
-    // appPort().postMessage({
-    //   type: CONS.FETCH_API.ASK__EXCHANGES_DATA,
-    //   data: toRaw(settings.exchanges),
-    // })
-    // appPort().postMessage({
-    //   type: CONS.FETCH_API.ASK__MATERIAL_DATA,
-    //   data: [],
-    // })
-    // appPort().postMessage({
-    //   type: CONS.FETCH_API.ASK__INDEX_DATA,
-    //   data: [],
-    // })
+    await settings.storageIntoStore(theme)
+    await records.storageIntoStore()
   }
 )
-// TODO vue-router might not be required due to dynamic imports???
+
 console.log('--- App.vue setup ---')
 </script>

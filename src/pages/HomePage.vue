@@ -12,7 +12,7 @@
     hide-details
     prepend-inner-icon="$magnify"
     single-line
-    v-bind:label="t('transfersTable.search')"
+    v-bind:label="t('bookingTable.search')"
     variant="outlined"
   ></v-text-field>
   <v-data-table
@@ -24,8 +24,8 @@
     v-bind:items="records.getBookingsPerAccount() as IBooking[]"
     v-bind:items-per-page="settings.itemsPerPageTransfers"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="t('transfersTable.itemsPerPageText')"
-    v-bind:no-data-text="t('transfersTable.noDataText')"
+    v-bind:items-per-page-text="t('booking.itemsPerPageText')"
+    v-bind:no-data-text="t('bookingTable.noDataText')"
     v-bind:search="state.search"
     v-on:update:items-per-page="
       (count) => {
@@ -37,7 +37,6 @@
       <tr class="table-row">
         <td>
           <OptionMenu
-            menuType="transfers"
             v-bind:menuItems="options"
             v-bind:recordID="item.cID"
           ></OptionMenu>
