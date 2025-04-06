@@ -21,8 +21,6 @@ interface IRecordsStore {
 
 interface IRecordStoreBooking {
   all: IBooking[]
-  dividend_transfers_per_stock: Map<number, ITransfer[]>
-  total_controller: ITotalController
   selected_index: number
 }
 
@@ -50,8 +48,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       },
       _booking: {
         all: [],
-        dividend_transfers_per_stock: new Map<number, ITransfer[]>(),
-        total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
         selected_index: -1
       },
       _booking_type: {

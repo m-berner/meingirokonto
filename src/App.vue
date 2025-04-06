@@ -21,6 +21,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
+import {CONS} from '@/background'
 //import {useApp} from '@/composables/useApp'
 
 const settings = useSettingsStore()
@@ -31,6 +32,23 @@ const theme = useTheme()
 onBeforeMount(async (): Promise<void> => {
     console.log('APP: onBeforeMount')
     const keyStrokeController: string[] = []
+    const initStorageLocal = async () => {
+      console.log('APP: initStorageLocal')
+      const storageLocal: IStorageLocal = await browser.storage.local.get()
+      if (storageLocal.sSkin === undefined) {
+        await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
+      }
+      if (storageLocal.sAccountActiveId === undefined) {
+        await browser.storage.local.set({sAccountActiveId: CONS.DEFAULTS.STORAGE.ACCOUNT_ACTIVE_ID})
+      }
+      if (storageLocal.sBookingsPerPage === undefined) {
+        await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+      }
+      if (storageLocal.sDebug === undefined) {
+        await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
+      }
+      return 'BACKGROUND: browser.storage.local initialized'
+    }
     const onStorageChange = async (change: Record<string, browser.storage.StorageChange>): Promise<void> => {
       console.info('APP: onStorageChange', change)
       switch (true) {
@@ -69,6 +87,8 @@ onBeforeMount(async (): Promise<void> => {
       keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
     }
 
+    const msg = await initStorageLocal()
+    console.log('APP: ', msg)
     if (!browser.storage.onChanged.hasListener(onStorageChange)) {
       browser.storage.onChanged.addListener(onStorageChange)
     }

@@ -1,5 +1,4 @@
-const DEFAULT_LOCALE = 'de-DE';
-const DEBUG = await browser.storage.local.get(['sDebug']);
+import { CONS } from '@/background';
 export const useApp = () => {
     return {
         VALIDATORS: Object.freeze({
@@ -75,7 +74,7 @@ export const useApp = () => {
                 region: '',
                 locale: ''
             };
-            const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? DEFAULT_LOCALE;
+            const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
             if (uiLang.includes('-')) {
                 result.lang = uiLang.split('-')[0];
                 result.region = uiLang.split('-')[1].toUpperCase();
@@ -157,8 +156,8 @@ export const useApp = () => {
         },
         emptyFunction: () => {
         },
-        debug: (text, obj, logLevel = 0) => {
-            if (DEBUG.sDebug && obj === undefined) {
+        log: (text, logLevel = 0, debug = false, obj) => {
+            if (debug && obj === undefined) {
                 switch (logLevel) {
                     case 0:
                         console.log(text);
@@ -175,7 +174,7 @@ export const useApp = () => {
                     default:
                 }
             }
-            else if (DEBUG.sDebug && obj !== undefined) {
+            else if (debug && obj !== undefined) {
                 switch (logLevel) {
                     case 0:
                         console.log(text, obj);

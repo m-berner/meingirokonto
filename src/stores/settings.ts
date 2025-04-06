@@ -7,7 +7,6 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
-import {useApp} from '@/composables/useApp'
 import {CONS} from '@/background'
 
 interface ISettingsStore {
@@ -15,7 +14,6 @@ interface ISettingsStore {
   _bookings_per_page: number
 }
 
-const {debug} = useApp()
 
 export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = defineStore('settings', {
   state: (): ISettingsStore => {
@@ -39,7 +37,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       await browser.storage.local.set({sSkin: value})
     },
     async storageIntoStore(theme: ThemeInstance): Promise<void> {
-      debug('SETTINGS: storageIntoStore')
+      console.log('SETTINGS: storageIntoStore')
       const response: IStorageLocal = await browser.storage.local.get()
       theme.global.name.value = response.sSkin ?? CONS.DEFAULTS.STORAGE.SKIN
       this._skin = response.sSkin ?? CONS.DEFAULTS.STORAGE.SKIN

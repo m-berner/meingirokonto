@@ -124,6 +124,7 @@ export const CONS = Object.freeze({
     DEFAULTS: {
         CURRENCY: 'EUR',
         LANG: 'de',
+        LOCALE: 'de-DE',
         YEAR: 9999,
         STORAGE: {
             ACCOUNT_ACTIVE_ID: -1,
@@ -289,7 +290,6 @@ export const CONS = Object.freeze({
         ONCE: { once: true }
     },
     RECORDS: {
-        TEMPLATES: {},
         CONTROLLER: {
             TOTAL: {
                 efficiency: 0,
@@ -312,7 +312,7 @@ export const CONS = Object.freeze({
     }
 });
 const useBackground = () => {
-    const appUrls = { url: browser.runtime.getURL(CONS.RESOURCES.INDEX) + '*' };
+    const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}*` };
     const onClick = async () => {
         console.log('BACKGROUND: onClick');
         const start = async () => {
@@ -345,7 +345,6 @@ const useBackground = () => {
             console.error('BACKGROUND: onError: ', ev);
         };
         const onUpgradeNeeded = async (ev) => {
-            console.error('FDSFS', typeof ev);
             if (ev instanceof IDBVersionChangeEvent) {
                 console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
                 const createDB = () => {
@@ -385,29 +384,9 @@ const useBackground = () => {
         dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
         dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
     };
-    const initStorageLocal = async () => {
-        console.log('BACKGROUND: initStorageLocal');
-        const storageLocal = await browser.storage.local.get();
-        if (storageLocal.sSkin === undefined) {
-            await browser.storage.local.set({ sSkin: CONS.DEFAULTS.STORAGE.SKIN });
-        }
-        if (storageLocal.sAccountActiveId === undefined) {
-            await browser.storage.local.set({ sAccountActiveId: CONS.DEFAULTS.STORAGE.ACCOUNT_ACTIVE_ID });
-        }
-        if (storageLocal.sBookingsPerPage === undefined) {
-            await browser.storage.local.set({ sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
-        }
-        if (storageLocal.sDebug === undefined) {
-            await browser.storage.local.set({ sDebug: CONS.DEFAULTS.STORAGE.DEBUG });
-        }
-        return 'BACKGROUND: browser.storage.local initialized';
-    };
-    return { initStorageLocal, onClick, onInstall };
+    return { onClick, onInstall };
 };
-const { initStorageLocal, onClick, onInstall } = useBackground();
-initStorageLocal().then((msg) => {
-    console.error(msg);
-});
+const { onClick, onInstall } = useBackground();
 if (!browser.runtime.onInstalled.hasListener(onInstall)) {
     browser.runtime.onInstalled.addListener(onInstall);
 }

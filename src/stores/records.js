@@ -13,8 +13,6 @@ export const useRecordsStore = defineStore('records', {
             },
             _booking: {
                 all: [],
-                dividend_transfers_per_stock: new Map(),
-                total_controller: CONS.RECORDS.CONTROLLER.TOTAL,
                 selected_index: -1
             },
             _booking_type: {

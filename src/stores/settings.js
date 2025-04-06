@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
-import { useApp } from '@/composables/useApp';
 import { CONS } from '@/background';
-const { debug } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {
@@ -25,7 +23,7 @@ export const useSettingsStore = defineStore('settings', {
             await browser.storage.local.set({ sSkin: value });
         },
         async storageIntoStore(theme) {
-            debug('SETTINGS: storageIntoStore');
+            console.log('SETTINGS: storageIntoStore');
             const response = await browser.storage.local.get();
             theme.global.name.value = response.sSkin ?? CONS.DEFAULTS.STORAGE.SKIN;
             this._skin = response.sSkin ?? CONS.DEFAULTS.STORAGE.SKIN;

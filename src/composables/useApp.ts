@@ -5,122 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-declare global {
-  interface IAddTransfer {
-    cStockID: number
-    cDate: number
-    cUnitQuotation: number
-    cAmount: number
-    cDeposit?: number
-    cCount: number
-    cNumber?: number
-    cFees: number
-    cTaxes?: number
-    cTax: number
-    cSTax: number
-    cFTax: number
-    cSoli: number
-    cExDay: number
-    cDescription: string
-    cMarketPlace: string
-    cType: number
-  }
-
-  interface ITransfer extends IAddTransfer {
-    cID: number
-    mCompany?: string
-    mSortDate?: number
-  }
-
-  interface IYearController {
-    buy: number
-    sell: number
-    dividends: number
-    deposits: number
-    withdrawals: number
-    taxes: number
-    fees: number
-    earnings: number
-  }
-
-  interface ITotalController extends IYearController {
-    account: number
-    depot: number
-    winloss: number
-    winlossPercent: number
-    depotBuyValue: number
-  }
-
-  interface IAccount {
-    // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
-    cID: number
-    cSwift: string
-    cCurrency: string
-    cNumber: string
-  }
-
-  interface IBookingType {
-    // NOTE: correlates with CONS.DB.STORES.BOOKING_TYPES.FIELDS
-    cID: number
-    cName: string
-  }
-
-  interface IBooking {
-    // NOTE: correlates with CONS.DB.STORES.BOOKINGS.FIELDS
-    cID: number
-    cDate: string
-    cDebit: number
-    cCredit: number
-    cDescription?: string
-    cType: number
-    cAccountNumber: string
-  }
-
-  interface IBackupSm {
-    cVersion: number
-    cDBVersion: number
-    cEngine: string
-  }
-
-  interface IBackup {
-    sm: IBackupSm
-    account: IAccount[]
-    booking: IBooking[]
-    booking_type: IBookingType[]
-  }
-
-  interface IStorageLocal {
-    sAccountActiveId?: number
-    sBookingsPerPage?: number
-    sDebug?: boolean
-    sSkin?: string
-  }
-
-  interface IUseApp {
-    VALIDATORS: Readonly<{
-      ibanRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      nameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      swiftRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
-    }>
-    utcDate: (iso: string) => Date
-    notice: (messages: string[]) => Promise<void>
-    getUI: () => Record<string, string>
-    group: (count: number, size?: number) => number[]
-    offset: () => number
-    isoDatePlusSeconds: (iso: string | number | Date) => number
-    toNumber: (str: string | boolean | number | undefined | null) => number
-    mean: (nar: number[]) => number
-    dateToISO: (value: number) => string
-    emptyFunction: () => void
-    debug: (text: string, obj?: unknown, logLevel?: number) => void
-  }
-}
-
-const DEFAULT_LOCALE = 'de-DE'
-const DEBUG = await browser.storage.local.get(['sDebug'])
+import {CONS} from '@/background'
 
 export const useApp = (): IUseApp => {
   return {
@@ -196,7 +81,7 @@ export const useApp = (): IUseApp => {
         locale: ''
       }
       const uiLang: string =
-        browser.i18n.getUILanguage().toLowerCase() ?? DEFAULT_LOCALE
+        browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
       if (uiLang.includes('-')) {
         result.lang = uiLang.split('-')[0]
         result.region = uiLang.split('-')[1].toUpperCase()
@@ -276,9 +161,9 @@ export const useApp = (): IUseApp => {
     },
     emptyFunction: () => {
     },
-    debug: (text, obj, logLevel= 0) => {
-      if (DEBUG.sDebug && obj === undefined) {
-        switch(logLevel) {
+    log: (text, logLevel = 0, debug = false, obj) => {
+      if (debug && obj === undefined) {
+        switch (logLevel) {
           case 0:
             console.log(text)
             break
@@ -293,8 +178,8 @@ export const useApp = (): IUseApp => {
             break
           default:
         }
-      } else if (DEBUG.sDebug && obj !== undefined) {
-        switch(logLevel) {
+      } else if (debug && obj !== undefined) {
+        switch (logLevel) {
           case 0:
             console.log(text, obj)
             break

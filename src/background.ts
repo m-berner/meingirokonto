@@ -5,13 +5,304 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserve
  */
+declare global {
+  interface IAccount {
+    // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
+    cID: number
+    cSwift: string
+    cCurrency: string
+    cNumber: string
+  }
+
+  interface IBookingType {
+    // NOTE: correlates with CONS.DB.STORES.BOOKING_TYPES.FIELDS
+    cID: number
+    cName: string
+  }
+
+  interface IBooking {
+    // NOTE: correlates with CONS.DB.STORES.BOOKINGS.FIELDS
+    cID: number
+    cDate: string
+    cDebit: number
+    cCredit: number
+    cDescription?: string
+    cType: number
+    cAccountNumber: string
+  }
+
+  interface IBackupSm {
+    cVersion: number
+    cDBVersion: number
+    cEngine: string
+  }
+
+  interface IBackup {
+    sm: IBackupSm
+    account: IAccount[]
+    booking: IBooking[]
+    booking_type: IBookingType[]
+  }
+
+  interface IStorageLocal {
+    sAccountActiveId?: number
+    sBookingsPerPage?: number
+    sDebug?: boolean
+    sSkin?: string
+  }
+
+  interface IUseApp {
+    VALIDATORS: Readonly<{
+      ibanRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+      nameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+      swiftRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+      dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+      currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+      requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
+    }>
+    utcDate: (iso: string) => Date
+    notice: (messages: string[]) => Promise<void>
+    getUI: () => Record<string, string>
+    group: (count: number, size?: number) => number[]
+    offset: () => number
+    isoDatePlusSeconds: (iso: string | number | Date) => number
+    toNumber: (str: string | boolean | number | undefined | null) => number
+    mean: (nar: number[]) => number
+    dateToISO: (value: number) => string
+    emptyFunction: () => void
+    log: (text: string, logLevel: number, debug: boolean, obj?: unknown) => void
+  }
+}
+
+type TCons = Readonly<{
+  CURRENCIES: {
+    EUR: string;
+    USD: string;
+    CODE: Map<string, string>;
+  }
+  DATE: {
+    DEFAULT: number;
+    DEFAULTSTR: string;
+    FYEAR: number;
+    MILLIPERDAY: number;
+    MILLIPERMIN: number;
+  }
+  DB: {
+    BKFN: string;
+    NAME: string;
+    STORES: {
+      ACCOUNTS: {
+        NAME: string;
+        FIELDS: {
+          ID: string;
+          S: string;
+          C: string;
+          N: string;
+        };
+      };
+      BOOKINGS: {
+        NAME: string;
+        FIELDS: {
+          ID: string;
+          DAT: string;
+          C: string;
+          D: string;
+          DESC: string;
+          T: string;
+          AN: string;
+        };
+      };
+      BOOKING_TYPES: {
+        NAME: string;
+        FIELDS: {
+          ID: string;
+          N: string;
+        };
+      };
+    };
+    VERSION: number;
+    MINVERSION: number;
+  }
+  DEFAULTS: {
+    CURRENCY: string
+    LANG: string
+    LOCALE: string
+    YEAR: number
+    STORAGE: {
+      ACCOUNT_ACTIVE_ID: number
+      BOOKINGS_PER_PAGE: number
+      DEBUG: boolean
+      SKIN: string
+    };
+  }
+  DIALOGS: {
+    ADD_ACCOUNT: string;
+    ADD_BOOKING_TYPE: string;
+    ADD_BOOKING: string;
+    DELETE_BOOKING: string;
+    EXPORTDB: string;
+    IMPORTDB: string;
+    DELETETRANSFER: string;
+    UPDATETRANSFER: string;
+    DELETESTOCK: string;
+    BUYSTOCK: string;
+    SELLSTOCK: string;
+    ADDDIVIDEND: string;
+    SHOWDIVIDEND: string;
+    CONFIGSTOCK: string;
+    SETTING: string;
+  }
+  EVENTS: {
+    ABORT: string;
+    BEFOREUNLOAD: string;
+    CHANGE: string;
+    CLICK: string;
+    COMP: string;
+    DOM: string;
+    ERR: string;
+    INP: string;
+    KEYDOWN: string;
+    LOAD: string;
+    FOCUS: string;
+    BLUR: string;
+    SUC: string;
+    UPG: string;
+  }
+  SETTINGS: {
+    ITEMS_PER_PAGE_OPTIONS: {
+      value: number;
+      title: string;
+    }[];
+  }
+  RESOURCES: {
+    SRC: string;
+    OK: string;
+    OKD: string;
+    CANCEL: string;
+    CANCELD: string;
+    ICON32: string;
+    LOGO16: string;
+    LOGO256: string;
+    MAG: string;
+    CALENDAR: string;
+    RENEW: string;
+    FIRST: string;
+    NEXT: string;
+    PREV: string;
+    LAST: string;
+    CB: string;
+    UP: string;
+    NS: string;
+    DS: string;
+    FI: string;
+    IT: string;
+    OT: string;
+    CHS: string;
+    CHB: string;
+    BK: string;
+    RE: string;
+    OB: string;
+    TB: string;
+    PY: string;
+    CO: string;
+    SE: string;
+    RESET: string;
+    ADD: string;
+    CHANGE: string;
+    DEL: string;
+    NO: string;
+    BUY: string;
+    SELL: string;
+    ND: string;
+    SD: string;
+    CONF: string;
+    HTTP: string;
+    HELP: string;
+    PRIVACY: string;
+    LICENSE: string;
+    INDEX: string;
+    ROOT: string;
+  }
+  RESULTS: {
+    ERROR: string;
+    SUCCESS: string;
+  }
+  STATES: {
+    DONE: string;
+    SRV: number;
+    SUCCESS: number;
+    PAUSE: string;
+    MUTATE: string;
+    NORENDER: string;
+  }
+  SYSTEM: {
+    COPYRIGHT: string;
+    FETCHTO: number;
+    DELAY: number;
+    EMAIL: string;
+    GET: string;
+    HTMLENTITY: string;
+    ISINLENGTH: number;
+    KEYS: {
+      ENTER: string;
+      TAB: string;
+      T: string;
+      V: string;
+      Z: string;
+    };
+    ERRORS: {
+      CURR: string;
+      ERR: string;
+      INVALID: string;
+      NOCASE: string;
+      NODEL: string;
+      REQ: string;
+      SRV: string;
+      WRONGPARAM: string;
+      SEND: string;
+    };
+    NULL: number;
+    PERCENT: number;
+    PROGRESSBAR: {
+      MAX: number;
+    };
+    ROWS: number;
+    STARTUP: number;
+    STORAGE_OLD: string[];
+    TYPE: number;
+    ONCE: {
+      once: boolean;
+    };
+  }
+  RECORDS: {
+    CONTROLLER: {
+      TOTAL: {
+        efficiency: number;
+        returnRate: number;
+        buy: number;
+        sell: number;
+        dividends: number;
+        deposits: number;
+        withdrawals: number;
+        taxes: number;
+        fees: number;
+        earnings: number;
+        account: number;
+        depot: number;
+        winloss: number;
+        winlossPercent: number;
+        depotBuyValue: number;
+      };
+    };
+  }
+}>
+
 interface IUseBackground {
-  initStorageLocal: () => Promise<string>;
   onClick: () => Promise<void>
   onInstall: () => void
 }
 
-export const CONS = Object.freeze({
+export const CONS: TCons = Object.freeze({
   CURRENCIES: {
     EUR: 'EUR',
     USD: 'USD',
@@ -139,6 +430,7 @@ export const CONS = Object.freeze({
   DEFAULTS: {
     CURRENCY: 'EUR',
     LANG: 'de',
+    LOCALE: 'de-DE',
     YEAR: 9999,
     STORAGE: {
       ACCOUNT_ACTIVE_ID: -1,
@@ -309,7 +601,6 @@ export const CONS = Object.freeze({
     ONCE: {once: true}
   },
   RECORDS: {
-    TEMPLATES: {},
     CONTROLLER: {
       TOTAL: {
         efficiency: 0,
@@ -333,7 +624,7 @@ export const CONS = Object.freeze({
 })
 
 const useBackground = (): IUseBackground => {
-  const appUrls = {url: browser.runtime.getURL(CONS.RESOURCES.INDEX) + '*'}
+  const appUrls = {url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}*`}
   const onClick = async () => {
     console.log('BACKGROUND: onClick')
     const start = async (): Promise<void> => {
@@ -357,20 +648,18 @@ const useBackground = (): IUseBackground => {
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = () => {
     console.log('BACKGROUND: onInstall')
-    // const {migrateStock, migrateTransfer} = useApp()
     const onSuccess = (ev: Event): void => {
       console.log('BACKGROUND: onInstall: onSuccess', ev)
       if (ev.target instanceof IDBRequest) {
         ev.target.result.close()
       }
     }
-    const onError = (ev: Event | IDBVersionChangeEvent): void => {
+    const onError = (ev: Event): void => {
       console.error('BACKGROUND: onError: ', ev)
     }
     const onUpgradeNeeded = async (
-      ev: Event | IDBVersionChangeEvent
+      ev: Event
     ): Promise<void> => {
-      console.error('FDSFS', typeof ev)
       if (ev instanceof IDBVersionChangeEvent) {
         console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion)
         const createDB = (): void => {
@@ -521,36 +810,15 @@ const useBackground = (): IUseBackground => {
       }
     }
 
-    const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
+    const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
     dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
     dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
     dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
   }
-  const initStorageLocal = async () => {
-    console.log('BACKGROUND: initStorageLocal')
-    const storageLocal: IStorageLocal = await browser.storage.local.get()
-    if (storageLocal.sSkin === undefined) {
-      await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
-    }
-    if (storageLocal.sAccountActiveId === undefined) {
-      await browser.storage.local.set({sAccountActiveId: CONS.DEFAULTS.STORAGE.ACCOUNT_ACTIVE_ID})
-    }
-    if (storageLocal.sBookingsPerPage === undefined) {
-      await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
-    }
-    if (storageLocal.sDebug === undefined) {
-      await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
-    }
-    return 'BACKGROUND: browser.storage.local initialized'
-  }
-  return {initStorageLocal, onClick, onInstall}
+  return {onClick, onInstall}
 }
 
-const {initStorageLocal, onClick, onInstall} = useBackground()
-
-initStorageLocal().then((msg) => {
-  console.error(msg)
-})
+const {onClick, onInstall} = useBackground()
 
 if (!browser.runtime.onInstalled.hasListener(onInstall)) {
   browser.runtime.onInstalled.addListener(onInstall)
