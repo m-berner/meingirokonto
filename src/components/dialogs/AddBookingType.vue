@@ -13,7 +13,7 @@
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:rules="validators.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
       max-width="300"
       v-bind:menu=true
       v-bind:menu-props="{ maxHeight: 250 }"
@@ -27,9 +27,10 @@ import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import {CONS} from '@/background'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
+const {notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 

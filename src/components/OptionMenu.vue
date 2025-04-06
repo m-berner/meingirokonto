@@ -31,13 +31,12 @@
 </template>
 
 <script lang="ts" setup>
-import {useApp} from '@/composables/useApp'
 //import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
+import {CONS} from '@/background'
 
 const {rt} = useI18n()
-const {CONS} = useApp()
 //const records = useRecordsStore()
 const runtime = useRuntimeStore()
 

@@ -13,7 +13,7 @@
       autofocus
       required
       v-bind:label="t('dialogs.addAccount.swiftLabel')"
-      v-bind:rules="validators.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+      v-bind:rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
@@ -21,7 +21,7 @@
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       required
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
-      v-bind:rules="validators.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+      v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
       @update:modelValue="ibanMask"
     ></v-text-field>
@@ -30,7 +30,7 @@
       required
       v-bind:placeholder="t('dialogs.addAccount.currencyPlaceholder')"
       v-bind:label="t('dialogs.addAccount.currencyLabel')"
-      v-bind:rules="validators.currencyCodeRules([t('validators.currencyCodeRules', 0), t('validators.currencyCodeRules', 1), t('validators.currencyCodeRules', 2)])"
+      v-bind:rules="VALIDATORS.currencyCodeRules([t('validators.currencyCodeRules', 0), t('validators.currencyCodeRules', 1), t('validators.currencyCodeRules', 2)])"
       variant="outlined"
     ></v-text-field>
   </v-form>
@@ -41,9 +41,10 @@ import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import {CONS} from '@/background'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
+const {notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const state: Omit<IAccount, 'cID'> = reactive({
   cSwift: '',
@@ -78,12 +79,12 @@ const ok = async (): Promise<void> => {
         cCurrency: state.cCurrency.trim().toUpperCase()
       })
       if (result === CONS.RESULTS.SUCCESS) {
-        notice([t('dialogs.addAccount.success')])
+        await notice([t('dialogs.addAccount.success')])
         formRef.value!.reset()
       }
     } catch (e) {
       console.error(e)
-      notice([t('dialogs.addAccount.error')])
+      await notice([t('dialogs.addAccount.error')])
     }
   }
 }

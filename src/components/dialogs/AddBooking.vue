@@ -15,7 +15,7 @@
       required
       type="date"
       v-bind:label="t('dialogs.addBooking.dateLabel')"
-      v-bind:rules="validators.dateRules([t('validators.dateRules', 0)])"
+      v-bind:rules="VALIDATORS.dateRules([t('validators.dateRules', 0)])"
       variant="outlined"
       v-on:focus="formRef?.resetValidation"
     ></v-text-field>
@@ -47,7 +47,7 @@
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:menu=false
       v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:rules="validators.requiredRule([t('validators.requiredRule', 0)])"
+      v-bind:rules="VALIDATORS.requiredRule([t('validators.requiredRule', 0)])"
       variant="outlined"
     ></v-select>
   </v-form>
@@ -59,9 +59,10 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import CurrencyInput from '@/components/CurrencyInput.vue'
+import {CONS} from '@/background'
 
 const {t} = useI18n()
-const {CONS, notice, validators} = useApp()
+const {notice, VALIDATORS} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 const state: Omit<IBooking, 'cID'> = reactive({

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
-const { CONS, notice } = useApp();
+import { CONS } from '@/background';
+const { notice } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {

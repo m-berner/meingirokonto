@@ -28,11 +28,10 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {reactive, watchEffect} from 'vue'
 import CustomLogo from '@/components/logos/CustomLogo.vue'
-import {useApp} from '@/composables/useApp'
+import {CONS} from '@/background'
 
 const {t} = useI18n()
 const records = useRecordsStore()
-const {CONS} = useApp()
 
 const state = reactive({
   logo: 'nologo'

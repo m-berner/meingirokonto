@@ -230,11 +230,10 @@
 import {COMPONENT_NAMES} from '@/app'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
 import {onUpdated, reactive, useTemplateRef} from 'vue'
+import {CONS} from '@/background'
 
 const {t} = useI18n()
-const {CONS} = useApp()
 const runtime = useRuntimeStore()
 
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')

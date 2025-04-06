@@ -8,7 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 //import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
-
+import {CONS} from '@/background'
 //import type {ThemeInstance} from 'vuetify'
 
 interface IRecordsStore {
@@ -37,7 +37,7 @@ interface IRecordStoreBookingType {
   selected_index: number
 }
 
-const {CONS, notice} = useApp()
+const {notice} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {

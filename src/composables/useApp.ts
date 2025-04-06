@@ -90,253 +90,22 @@ declare global {
   }
 
   interface IStorageLocal {
-    skin?: string
     sAccountActiveId?: number
-    items_per_page_stocks?: number
-    items_per_page_transfers?: number
+    sBookingsPerPage?: number
+    sDebug?: boolean
+    sSkin?: string
   }
 
-  interface IUseApp{
-    CONS: Readonly<{
-      CURRENCIES: {
-        EUR: string
-        USD: string
-        CODE: Map<string, string>
-      }
-      DATE: {
-        DEFAULT: number
-        DEFAULTSTR: string
-        FYEAR: number
-        MILLIPERDAY: number
-        MILLIPERMIN: number
-      }
-      DB: {
-        BKFN: string
-        NAME: string
-        STORES: {
-          ACCOUNTS: {
-            NAME: string
-            FIELDS: {
-              ID: string
-              S: string
-              C: string
-              N: string
-            }
-          }
-          BOOKINGS: {
-            NAME: string
-            FIELDS: {
-              ID: string
-              DAT: string
-              C: string
-              D: string
-              DESC: string
-              T: string
-              AN: string
-            }
-          }
-          BOOKING_TYPES: {
-            NAME: string
-            FIELDS: {
-              ID: string
-              N: string
-            }
-          }
-        }
-        VERSION: number
-        MINVERSION: number
-      }
-      DEFAULTS: {
-        CURRENCY: string
-        LANG: string
-        YEAR: number
-        STORAGE: {
-          skin: string
-          items_per_page_stocks: number
-          items_per_page_transfers: number
-        }
-        DRAWER_KEYS: string[]
-        DRAWER_CONTROLS: {
-          id: number
-          title: string
-          value: string
-          class: string
-        }[]
-      }
-      DIALOGS: {
-        ADD_ACCOUNT: string
-        ADD_BOOKING_TYPE: string
-        ADD_BOOKING: string
-        DELETE_BOOKING: string
-        EXPORTDB: string
-        IMPORTDB: string
-        DELETETRANSFER: string
-        UPDATETRANSFER: string
-        DELETESTOCK: string
-        BUYSTOCK: string
-        SELLSTOCK: string
-        ADDDIVIDEND: string
-        SHOWDIVIDEND: string
-        CONFIGSTOCK: string
-        SETTING: string
-      }
-      EVENTS: {
-        ABORT: string
-        BEFOREUNLOAD: string
-        CHANGE: string
-        CLICK: string
-        COMP: string
-        DOM: string
-        ERR: string
-        INP: string
-        KEYDOWN: string
-        LOAD: string
-        FOCUS: string
-        BLUR: string
-        SUC: string
-        UPG: string
-        VERSIONCHANGE: string
-      }
-      SETTINGS: {
-        ITEMS_PER_PAGE_OPTIONS: {
-          value: number
-          title: string
-        }[]
-      }
-      PERMISSIONS: {
-        origins: string[]
-      }
-      RESOURCES: {
-        SRC: string
-        OK: string
-        OKD: string
-        CANCEL: string
-        CANCELD: string
-        ICON32: string
-        LOGO16: string
-        LOGO256: string
-        MAG: string
-        CALENDAR: string
-        RENEW: string
-        FIRST: string
-        NEXT: string
-        PREV: string
-        LAST: string
-        CB: string
-        UP: string
-        NS: string
-        DS: string
-        FI: string
-        IT: string
-        OT: string
-        CHS: string
-        CHB: string
-        BK: string
-        RE: string
-        OB: string
-        TB: string
-        PY: string
-        CO: string
-        SE: string
-        RESET: string
-        ADD: string
-        CHANGE: string
-        DEL: string
-        NO: string
-        BUY: string
-        SELL: string
-        ND: string
-        SD: string
-        CONF: string
-        HTTP: string
-        HELP: string
-        PRIVACY: string
-        LICENSE: string
-        INDEX: string
-        ROOT: string
-      }
-      RESULTS: {
-        ERROR: string
-        SUCCESS: string
-      }
-      STATES: {
-        DONE: string
-        SRV: number
-        SUCCESS: number
-        PAUSE: string
-        MUTATE: string
-        NORENDER: string
-      }
-      SYSTEM: {
-        COPYRIGHT: string
-        FETCHTO: number
-        DELAY: number
-        EMAIL: string
-        GET: string
-        HTMLENTITY: string
-        ISINLENGTH: number
-        KEYS: {
-          ENTER: string
-          TAB: string
-          T: string
-          V: string
-          Z: string
-        }
-        ERRORS: {
-          CURR: string
-          ERR: string
-          INVALID: string
-          NOCASE: string
-          NODEL: string
-          REQ: string
-          SRV: string
-          WRONGPARAM: string
-          SEND: string
-        }
-        NULL: number
-        PERCENT: number
-        PROGRESSBAR: {
-          MAX: number
-        }
-        ROWS: number
-        STARTUP: number
-        STORAGE_OLD: string[]
-        TYPE: number
-        ONCE: {
-          once: boolean
-        }
-      }
-      RECORDS: {
-        CONTROLLER: {
-          TOTAL: {
-            efficiency: number
-            returnRate: number
-            buy: number
-            sell: number
-            dividends: number
-            deposits: number
-            withdrawals: number
-            taxes: number
-            fees: number
-            earnings: number
-            account: number
-            depot: number
-            winloss: number
-            winlossPercent: number
-            depotBuyValue: number
-          }
-        }
-      }
-    }>
-    utcDate: (iso: string) => Date
-    validators: {
+  interface IUseApp {
+    VALIDATORS: Readonly<{
       ibanRules: (msgs: string[]) => ((v: string) => string | boolean)[]
       nameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
       swiftRules: (msgs: string[]) => ((v: string) => string | boolean)[]
       dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
       currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
       requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
-    };
+    }>
+    utcDate: (iso: string) => Date
     notice: (messages: string[]) => Promise<void>
     getUI: () => Record<string, string>
     group: (count: number, size?: number) => number[]
@@ -346,432 +115,16 @@ declare global {
     mean: (nar: number[]) => number
     dateToISO: (value: number) => string
     emptyFunction: () => void
+    debug: (text: string, obj?: unknown, logLevel?: number) => void
   }
 }
 
+const DEFAULT_LOCALE = 'de-DE'
+const DEBUG = await browser.storage.local.get(['sDebug'])
+
 export const useApp = (): IUseApp => {
-  const CONS = Object.freeze({
-    CURRENCIES: {
-      EUR: 'EUR',
-      USD: 'USD',
-      CODE: new Map([
-        ['ar', 'ARS'],
-        ['at', 'EUR'],
-        ['au', 'AUD'],
-        ['be', 'EUR'],
-        ['bg', 'BGN'],
-        ['bo', 'BOB'],
-        ['br', 'BRL'],
-        ['bz', 'BZD'],
-        ['ca', 'CAD'],
-        ['ch', 'CHF'],
-        ['cl', 'CLP'],
-        ['chs', 'CNY'],
-        ['cht', 'CNY'],
-        ['co', 'COU'],
-        ['cr', 'CRC'],
-        ['cs', 'CZK'],
-        ['cy', 'EUR'],
-        ['da', 'DKK'],
-        ['de', 'EUR'],
-        ['do', 'DOP'],
-        ['ec', 'USD'],
-        ['ee', 'EUR'],
-        ['el', 'EUR'],
-        ['es', 'EUR'],
-        ['et', 'EUR'],
-        ['fi', 'EUR'],
-        ['fr', 'EUR'],
-        ['gb', 'GBP'],
-        ['gr', 'EUR'],
-        ['gt', 'GTQ'],
-        ['hk', 'HKD'],
-        ['hn', 'HNL'],
-        ['hu', 'HUF'],
-        ['ie', 'EUR'],
-        ['in', 'INR'],
-        ['is', 'ISK'],
-        ['it', 'EUR'],
-        ['ja', 'JPY'],
-        ['jm', 'JMD'],
-        ['ko', 'KRW'],
-        ['li', 'EUR'],
-        ['lt', 'EUR'],
-        ['lu', 'EUR'],
-        ['mc', 'EUR'],
-        ['mo', 'MOP'],
-        ['mt', 'EUR'],
-        ['mx', 'MXN'],
-        ['ni', 'NIO'],
-        ['nl', 'EUR'],
-        ['no', 'NOK'],
-        ['nz', 'NZD'],
-        ['pa', 'PAB'],
-        ['pe', 'PEN'],
-        ['ph', 'PHP'],
-        ['pl', 'PLN'],
-        ['pr', 'USD'],
-        ['pt', 'EUR'],
-        ['py', 'PYG'],
-        ['ro', 'RON'],
-        ['ru', 'RUB'],
-        ['se', 'SEK'],
-        ['sg', 'SGD'],
-        ['sk', 'EUR'],
-        ['sl', 'EUR'],
-        ['sp', 'RSD'],
-        ['sv', 'USD'],
-        ['tr', 'TRY'],
-        ['tt', 'TTD'],
-        ['tw', 'TWD'],
-        ['uy', 'UYU'],
-        ['ve', 'VES'],
-        ['za', 'ZAR'],
-        ['zw', 'ZWD']
-      ])
-    },
-    DATE: {
-      DEFAULT: 0,
-      DEFAULTSTR: '1.1.1970',
-      FYEAR: 1970,
-      MILLIPERDAY: 86400000,
-      MILLIPERMIN: 60000
-    },
-    DB: {
-      BKFN: 'meingirokonto.json',
-      NAME: 'meingirokonto.db',
-      STORES: {
-        // <do not change! (part of database)
-        ACCOUNTS: {
-          NAME: 'accounts',
-          FIELDS: {
-            ID: 'cID',
-            S: 'cSwift',
-            C: 'cCurrency',
-            N: 'cNumber'
-          }
-        },
-        BOOKINGS: {
-          NAME: 'bookings',
-          FIELDS: {
-            ID: 'cID',
-            DAT: 'cDate',
-            C: 'cCredit',
-            D: 'cDebit',
-            DESC: 'cDescription',
-            T: 'cType',
-            AN: 'cAccountNumber'
-          }
-        },
-        BOOKING_TYPES: {
-          NAME: 'booking_types',
-          FIELDS: {
-            ID: 'cID',
-            N: 'cName',
-          }
-        }
-        // do not change! (part of database)>
-      },
-      VERSION: 1,
-      MINVERSION: 1
-    },
-    DEFAULTS: {
-      CURRENCY: 'EUR',
-      LANG: 'de',
-      YEAR: 9999,
-      STORAGE: {
-        skin: 'ocean',
-        items_per_page_stocks: 9,
-        items_per_page_transfers: 9
-      },
-      DRAWER_KEYS: [
-        'winloss',
-        'earnings',
-        'deposits',
-        'dividends',
-        'withdrawals',
-        'fees',
-        'taxes',
-        'account',
-        'depot'
-      ],
-      DRAWER_CONTROLS: [
-        {
-          id: 0,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 1,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 2,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 3,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 4,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 5,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 6,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 7,
-          title: '',
-          value: '0',
-          class: ''
-        },
-        {
-          id: 8,
-          title: '',
-          value: '0',
-          class: ''
-        }
-      ]
-    },
-    DIALOGS: {
-      ADD_ACCOUNT: 'AddAccount',
-      ADD_BOOKING_TYPE: 'AddBookingType',
-      ADD_BOOKING: 'AddBooking',
-      DELETE_BOOKING: 'DeleteBooking',
-      EXPORTDB: 'exportdb',
-      IMPORTDB: 'importdb',
-      DELETETRANSFER: 'deletetransfer',
-      UPDATETRANSFER: 'updatetransfer',
-      DELETESTOCK: 'deletestock',
-      BUYSTOCK: 'buystock',
-      SELLSTOCK: 'sellstock',
-      ADDDIVIDEND: 'adddividend',
-      SHOWDIVIDEND: 'showdividend',
-      CONFIGSTOCK: 'configstock',
-      SETTING: 'setting'
-    },
-    EVENTS: {
-      ABORT: 'abort',
-      BEFOREUNLOAD: 'beforeunload',
-      CHANGE: 'change',
-      CLICK: 'click',
-      COMP: 'complete',
-      DOM: 'DOMContentLoaded',
-      ERR: 'error',
-      INP: 'input',
-      KEYDOWN: 'keydown',
-      LOAD: 'load',
-      FOCUS: 'focus',
-      BLUR: 'blur',
-      SUC: 'success',
-      UPG: 'upgradeneeded',
-      VERSIONCHANGE: 'versionchange'
-    },
-    SETTINGS: {
-      ITEMS_PER_PAGE_OPTIONS: [
-        {
-          value: 5,
-          title: '5'
-        },
-        {
-          value: 7,
-          title: '7'
-        },
-        {
-          value: 9,
-          title: '9'
-        },
-        {
-          value: 11,
-          title: '11'
-        }
-        // {
-        //   value: -1,
-        //   title: 'Alle'
-        // }
-      ]
-    },
-    PERMISSIONS: {
-      origins: [
-        'https://www.tradegate.de/*',
-        'https://www.goyax.de/*',
-        'https://*.finanzen.net/*',
-        'https://www.wallstreet-online.de/*',
-        'https://*.aktiencheck.de/*',
-        'https://www.tagesschau.de/*',
-        'https://fx-rate.net/*'
-      ]
-    },
-    RESOURCES: {
-      SRC: 'assets',
-      OK: 'ok.png',
-      OKD: 'ok-dark.png',
-      CANCEL: 'cancel.png',
-      CANCELD: 'cancel-dark.png',
-      ICON32: 'icon32.png',
-      LOGO16: 'logo16.png',
-      LOGO256: 'logo256.png',
-      MAG: 'magnifier.png',
-      CALENDAR: 'calendar.png',
-      RENEW: 'renew.png',
-      FIRST: 'first.png',
-      NEXT: 'next.png',
-      PREV: 'previous.png',
-      LAST: 'last.png',
-      CB: 'home.png',
-      UP: 'update.png',
-      NS: 'addAccount.png',
-      DS: 'deletestock.png',
-      FI: 'fadein.png',
-      IT: 'intransfer.png',
-      OT: 'outtransfer.png',
-      CHS: 'changes.png',
-      CHB: 'allchanges.png',
-      BK: 'backup.png',
-      RE: 'restore.png',
-      OB: 'orderbook.png',
-      TB: 'transferbook.png',
-      PY: 'peryear.png',
-      CO: 'clean.png',
-      SE: 'settings.png',
-      RESET: 'reset.png',
-      ADD: 'add.png',
-      CHANGE: 'change.png',
-      DEL: 'delete.png',
-      NO: 'neworder.png',
-      BUY: 'buy.png',
-      SELL: 'sell.png',
-      ND: 'newdividend.png',
-      SD: 'showdividends.png',
-      CONF: 'config.png',
-      HTTP: 'http.png',
-      HELP: 'help.json',
-      PRIVACY: 'privacy.json',
-      LICENSE: 'license.html',
-      INDEX: 'app.html',
-      ROOT: '/'
-    },
-    RESULTS: {
-      ERROR: 'ERR',
-      SUCCESS: 'SUCCESS'
-    },
-    STATES: {
-      DONE: 'complete',
-      SRV: 500,
-      SUCCESS: 200,
-      PAUSE: 'resting',
-      MUTATE: 'mutation',
-      NORENDER: 'norender'
-    },
-    SYSTEM: {
-      COPYRIGHT: '2013-2025 Martin Berner',
-      FETCHTO: 20,
-      DELAY: 600,
-      EMAIL: 'mailto:meingirokonto@gmx.de',
-      GET: 'GET',
-      HTMLENTITY:
-        '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
-      ISINLENGTH: 12,
-      KEYS: {
-        ENTER: 'Enter',
-        TAB: 'Tab',
-        T: 'T',
-        V: 'V',
-        Z: 'Z'
-      },
-      ERRORS: {
-        CURR: 'Missing current record!',
-        ERR: 'System error!',
-        INVALID: 'Invalid Range!',
-        NOCASE: 'Missing case!',
-        NODEL: 'Deletion off memory failed!',
-        REQ: 'Request failed!',
-        SRV: 'Remote Server error!',
-        WRONGPARAM: 'Wrong parameter!',
-        SEND: 'Send message failed!'
-      },
-      NULL: 0.00001,
-      PERCENT: 100,
-      PROGRESSBAR: {MAX: 400},
-      ROWS: 10,
-      STARTUP: 2,
-      STORAGE_OLD: [
-        'resetconfig',
-        'config',
-        'reset',
-        'itemsPerPage',
-        'cb',
-        'tb'
-      ],
-      TYPE: 599,
-      ONCE: {once: true}
-    },
-    RECORDS: {
-      TEMPLATES: {
-      },
-      CONTROLLER: {
-        TOTAL: {
-          efficiency: 0,
-          returnRate: 0,
-          buy: 0,
-          sell: 0,
-          dividends: 0,
-          deposits: 0,
-          withdrawals: 0,
-          taxes: 0,
-          fees: 0,
-          earnings: 0,
-          account: 0,
-          depot: 0,
-          winloss: 0,
-          winlossPercent: 0,
-          depotBuyValue: 0
-        }
-      }
-    }
-  })
-  const offset = (): number => {
-    return new Date().getTimezoneOffset() * 60000
-    // - 7.200.000 we are UTC/GMT + 2
-    // DB to store -offset
-    // Store to DB +offset
-  }
   return {
-    CONS,
-    utcDate: (iso: string): Date => {
-      const tzo = new Date().getTimezoneOffset() / 60
-      let result = ''
-      if (tzo < 0 && tzo > -10) {
-        result = `+0${-tzo}`
-      } else if (tzo < 0) {
-        result = `+${-tzo}`
-      } else if (tzo >= 0 && tzo < 10) {
-        result = `-0${tzo}`
-      } else if (tzo > 9) {
-        result = `-${tzo}`
-      } 
-      return new Date(`${iso}T00:00:00.000${result}:00`)
-    },
-    validators: {
+    VALIDATORS: Object.freeze({
       ibanRules: msgs => {
         return [
           v => v !== null || msgs[0],
@@ -810,8 +163,22 @@ export const useApp = (): IUseApp => {
           v => v !== null || msgs[0]
         ]
       }
+    }),
+    utcDate: (iso) => {
+      const tzo = new Date().getTimezoneOffset() / 60
+      let result = ''
+      if (tzo < 0 && tzo > -10) {
+        result = `+0${-tzo}`
+      } else if (tzo < 0) {
+        result = `+${-tzo}`
+      } else if (tzo >= 0 && tzo < 10) {
+        result = `-0${tzo}`
+      } else if (tzo > 9) {
+        result = `-${tzo}`
+      }
+      return new Date(`${iso}T00:00:00.000${result}:00`)
     },
-    notice: async (messages: string[]): Promise<void> => {
+    notice: async (messages) => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
         {
@@ -822,41 +189,26 @@ export const useApp = (): IUseApp => {
         }
       await browser.notifications.create(notificationOption)
     },
-    getUI: (): Record<string, string> => {
-      let code: string
+    getUI: () => {
       const result: Record<string, string> = {
         lang: '',
         region: '',
-        locale: '',
-        cur: '',
-        curusd: '',
-        cureur: '',
-        fontSize: '0'
+        locale: ''
       }
       const uiLang: string =
-        browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LANG
+        browser.i18n.getUILanguage().toLowerCase() ?? DEFAULT_LOCALE
       if (uiLang.includes('-')) {
         result.lang = uiLang.split('-')[0]
         result.region = uiLang.split('-')[1].toUpperCase()
         result.locale = uiLang
-        code =
-          CONS.CURRENCIES.CODE.get(uiLang.split('-')[1]) ?? CONS.DEFAULTS.CURRENCY
-        result.cur = code ?? CONS.DEFAULTS.CURRENCY
       } else {
         result.lang = uiLang
         result.region = uiLang.toUpperCase()
         result.locale = uiLang + '-' + uiLang.toUpperCase()
-        code = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY
-        result.cur = code ?? CONS.DEFAULTS.CURRENCY
       }
-      result.cureur = result.cur + CONS.CURRENCIES.EUR
-      result.curusd = result.cur + CONS.CURRENCIES.USD
-      result.fontSize = window
-        .getComputedStyle(document.body, null)
-        .getPropertyValue('font-size')
       return result
     },
-    group: (count: number, size = 2): number[] => {
+    group: (count, size = 2) => {
       const ar: number[] = []
       const isOdd = count % 2 === 1
       const part = Math.ceil(count / size)
@@ -869,11 +221,16 @@ export const useApp = (): IUseApp => {
       }
       return ar
     },
-    offset,
-    isoDatePlusSeconds: (iso: string | number | Date): number => {
+    offset: () => {
+      return new Date().getTimezoneOffset() * 60000
+      // - 7.200.000 we are UTC/GMT + 2
+      // DB to store -offset
+      // Store to DB +offset
+    },
+    isoDatePlusSeconds: (iso) => {
       return new Date(iso).getTime() + (Date.now() % 86400)
     },
-    toNumber: (str: string | boolean | number | undefined | null): number => {
+    toNumber: (str) => {
       let result = 0
       if (str !== null && str !== undefined) {
         const a = str.toString().replace(/,$/g, '')
@@ -901,7 +258,7 @@ export const useApp = (): IUseApp => {
       }
       return result
     },
-    mean: (nar: number[]): number => {
+    mean: (nar) => {
       let sum = 0
       let len: number = nar.length
       let n: number
@@ -914,10 +271,45 @@ export const useApp = (): IUseApp => {
       }
       return len > 0 ? sum / len : 0
     },
-    dateToISO: (value: number): string => {
+    dateToISO: (value) => {
       return new Date(value).toISOString().substring(0, 10)
     },
-    emptyFunction: (): void => {
+    emptyFunction: () => {
+    },
+    debug: (text, obj, logLevel= 0) => {
+      if (DEBUG.sDebug && obj === undefined) {
+        switch(logLevel) {
+          case 0:
+            console.log(text)
+            break
+          case 1:
+            console.info(text)
+            break
+          case 2:
+            console.warn(text)
+            break
+          case 3:
+            console.error(text)
+            break
+          default:
+        }
+      } else if (DEBUG.sDebug && obj !== undefined) {
+        switch(logLevel) {
+          case 0:
+            console.log(text, obj)
+            break
+          case 1:
+            console.info(text, obj)
+            break
+          case 2:
+            console.warn(text, obj)
+            break
+          case 3:
+            console.error(text, obj)
+            break
+          default:
+        }
+      }
     }
   }
 }

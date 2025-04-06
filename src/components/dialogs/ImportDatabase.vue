@@ -24,6 +24,7 @@ import {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
+import {CONS} from '@/background'
 
 interface IImportDatabase {
   _choosen_file: Blob | null
@@ -43,7 +44,7 @@ const choosenFile = (ev: EventTarget) => { state._choosen_file = ev.target.files
 
 const ok = async (): Promise<void> => {
   console.log('IMPORTDATABASE: ok', state._choosen_file)
-  const {CONS, notice} = useApp()
+  const {notice} = useApp()
   const records = useRecordsStore()
   // NOTE: only database version 21.0 or newer could be restored
   await records.cleanStoreAndDatabase()

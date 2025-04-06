@@ -22,13 +22,13 @@ import {useRecordsStore} from '@/stores/records'
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {CONS} from '@/background'
 
 interface IExportDatabase {
   _file_name: string
 }
 
 const {t} = useI18n()
-const {CONS} = useApp()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
 const state: IExportDatabase = reactive({
@@ -39,7 +39,7 @@ const runtime = useRuntimeStore()
 const ok = () => {
   console.log('EXPORTDATABASE: ok')
   const records = useRecordsStore()
-  const {notice, getUI, offset} = useApp()
+  const {notice, offset} = useApp()
   const stringifyDB = (): string => {
     let buffer: string
     let i: number
@@ -93,7 +93,7 @@ const ok = () => {
   }
   let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${
     CONS.DB.VERSION
-  }, "cDBCurrency":"${getUI().cur}", "cEngine":"indexeddb"},\n`
+  }, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'
   const blob = new Blob([buffer], {type: 'application/json'})

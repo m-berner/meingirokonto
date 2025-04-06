@@ -8,7 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 import {ref, type Ref} from 'vue'
 import {VForm} from 'vuetify/components'
-import {useApp} from '@/composables/useApp'
+//import {useApp} from '@/composables/useApp'
 
 interface IRuntimeStore {
   _is_stocks_loading: boolean
@@ -136,7 +136,7 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
       this._dialogs._is_ok = value
     },
     toggleVisibility(ev = '') {
-      const {CONS} = useApp()
+      // const {CONS} = useApp()
       let dialogId = ''
       if (ev !== undefined) {
         dialogId = ev
@@ -151,36 +151,36 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
       console.info('MODALDIALOG: toggleVisibility', ev, dialogId)
       this._dialogs._is_visible = !this._dialogs._is_visible
       switch (dialogId) {
-        case CONS.DIALOGS.EXPORTDB:
-          this._dialogs._is_export_db = !this._dialogs._is_export_db
-          break
-        case CONS.DIALOGS.IMPORTDB:
-          this._dialogs._is_import_db = !this._dialogs._is_import_db
-          break
-        case CONS.DIALOGS.DELETETRANSFER:
-          this._dialogs._is_delete_transfer = !this._dialogs._is_delete_transfer
-          break
-        case CONS.DIALOGS.UPDATETRANSFER:
-          this._dialogs._is_update_transfer = !this._dialogs._is_update_transfer
-          break
-        case CONS.DIALOGS.DELETESTOCK:
-          this._dialogs._is_delete_stock = !this._dialogs._is_delete_stock
-          break
-        case CONS.DIALOGS.BUYSTOCK:
-          this._dialogs._is_buy_stock = !this._dialogs._is_buy_stock
-          break
-        case CONS.DIALOGS.SELLSTOCK:
-          this._dialogs._is_sell_stock = !this._dialogs._is_sell_stock
-          break
-        case CONS.DIALOGS.ADDDIVIDEND:
-          this._dialogs._is_add_dividend = !this._dialogs._is_add_dividend
-          break
-        case CONS.DIALOGS.SHOWDIVIDEND:
-          this._dialogs._is_show_dividend = !this._dialogs._is_show_dividend
-          break
-        case CONS.DIALOGS.CONFIGSTOCK:
-          this._dialogs._is_config_company = !this._dialogs._is_config_company
-          break
+        // case CONS.DIALOGS.EXPORTDB:
+        //   this._dialogs._is_export_db = !this._dialogs._is_export_db
+        //   break
+        // case CONS.DIALOGS.IMPORTDB:
+        //   this._dialogs._is_import_db = !this._dialogs._is_import_db
+        //   break
+        // case CONS.DIALOGS.DELETETRANSFER:
+        //   this._dialogs._is_delete_transfer = !this._dialogs._is_delete_transfer
+        //   break
+        // case CONS.DIALOGS.UPDATETRANSFER:
+        //   this._dialogs._is_update_transfer = !this._dialogs._is_update_transfer
+        //   break
+        // case CONS.DIALOGS.DELETESTOCK:
+        //   this._dialogs._is_delete_stock = !this._dialogs._is_delete_stock
+        //   break
+        // case CONS.DIALOGS.BUYSTOCK:
+        //   this._dialogs._is_buy_stock = !this._dialogs._is_buy_stock
+        //   break
+        // case CONS.DIALOGS.SELLSTOCK:
+        //   this._dialogs._is_sell_stock = !this._dialogs._is_sell_stock
+        //   break
+        // case CONS.DIALOGS.ADDDIVIDEND:
+        //   this._dialogs._is_add_dividend = !this._dialogs._is_add_dividend
+        //   break
+        // case CONS.DIALOGS.SHOWDIVIDEND:
+        //   this._dialogs._is_show_dividend = !this._dialogs._is_show_dividend
+        //   break
+        // case CONS.DIALOGS.CONFIGSTOCK:
+        //   this._dialogs._is_config_company = !this._dialogs._is_config_company
+        //   break
         default:
           this._dialogs._is_add_account = false
           this._dialogs._is_fadein_stock = false

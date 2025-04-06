@@ -274,12 +274,6 @@
       "marketplace": "Handelsplatz",
       "validationError": "Die Aktie kann nicht validiert werden.",
       "hint": "Angabe ist erforderlich"
-    },
-    "validators": {
-      "standard": "Eingabe ist erforderlich",
-      "positiveInteger": "Eine ganze Zahl ist erforderlich",
-      "isoDate": "Datum ist erforderlich",
-      "isin": "ISIN Format ist zu beachten"
     }
   },
   "footer": {
