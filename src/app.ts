@@ -246,7 +246,6 @@ const vuetify = createVuetify({
     }
   }
 })
-
 const i18n = createI18n({
   locale: getUI().locale,
   fallbackLocale: 'en-US',

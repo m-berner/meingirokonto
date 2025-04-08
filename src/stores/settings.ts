@@ -31,9 +31,10 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     }
   },
   actions: {
-    async setSkin(value: string, theme: ThemeInstance): Promise<void> {
+    async setSkin(value: string, theme?: ThemeInstance): Promise<void> {
+      //theme.global.name.value = value // NOTE: change theme options instance
+      console.log(theme)
       this._skin = value
-      theme.global.name.value = value // NOTE: change theme options instance
       await browser.storage.local.set({sSkin: value})
     },
     async storageIntoStore(theme: ThemeInstance): Promise<void> {

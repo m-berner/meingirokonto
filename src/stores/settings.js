@@ -18,8 +18,8 @@ export const useSettingsStore = defineStore('settings', {
     },
     actions: {
         async setSkin(value, theme) {
+            console.log(theme);
             this._skin = value;
-            theme.global.name.value = value;
             await browser.storage.local.set({ sSkin: value });
         },
         async storageIntoStore(theme) {

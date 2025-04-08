@@ -65,5 +65,5 @@ onMounted(() => {
   state._theme_keys = Object.keys(toRaw(theme.themes.value))
 })
 
-console.log('--- OptionsPage.vue setup ---')
+console.info('--- OptionsPage.vue setup ---', window.location.href)
 </script>

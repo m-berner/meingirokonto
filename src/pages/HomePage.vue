@@ -24,7 +24,7 @@
     v-bind:items="records.getBookingsPerAccount() as IBooking[]"
     v-bind:items-per-page="settings.itemsPerPageTransfers"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="t('booking.itemsPerPageText')"
+    v-bind:items-per-page-text="t('bookingTable.itemsPerPageText')"
     v-bind:no-data-text="t('bookingTable.noDataText')"
     v-bind:search="state.search"
     v-on:update:items-per-page="
@@ -110,5 +110,5 @@ const options: Record<string, string>[] = tm('bookingTable.menuItems')
 //state.bookings_per_account = records.getBookingsPerAccount()
 //})
 
-console.log('--- HomePage.vue setup ---')
+console.info('--- HomePage.vue setup ---', window.location.href)
 </script>

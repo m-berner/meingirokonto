@@ -40,9 +40,11 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {CONS} from '@/background'
 
+const settings = useSettingsStore()
 const {t} = useI18n()
 const {notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
@@ -95,6 +97,7 @@ defineExpose({ok, title})
 onMounted(() => {
   console.log('ADD_ACCOUNT: onMounted', formRef)
   formRef.value!.reset()
+  console.error(settings)
 })
 
 console.log('--- AddAccount.vue setup ---')

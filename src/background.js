@@ -314,7 +314,7 @@ export const CONS = Object.freeze({
 const useBackground = () => {
     const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}*` };
     const onClick = async () => {
-        console.log('BACKGROUND: onClick');
+        console.log('BACKGROUND: onClick', browser.storage.onChanged);
         const start = async () => {
             console.log('BACKGROUND: onClick: start');
             const foundTabs = await browser.tabs.query(appUrls);
@@ -336,7 +336,7 @@ const useBackground = () => {
     const onInstall = () => {
         console.log('BACKGROUND: onInstall');
         const onSuccess = (ev) => {
-            console.log('BACKGROUND: onInstall: onSuccess', ev);
+            console.log('BACKGROUND: onInstall: onSuccess');
             if (ev.target instanceof IDBRequest) {
                 ev.target.result.close();
             }

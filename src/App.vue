@@ -22,12 +22,10 @@ import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {CONS} from '@/background'
-//import {useApp} from '@/composables/useApp'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const theme = useTheme()
-//const {debug} = useApp()
 
 onBeforeMount(async (): Promise<void> => {
     console.log('APP: onBeforeMount')
@@ -47,13 +45,14 @@ onBeforeMount(async (): Promise<void> => {
       if (storageLocal.sDebug === undefined) {
         await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
       }
-      return 'BACKGROUND: browser.storage.local initialized'
+      return 'APP: browser.storage.local initialized'
     }
-    const onStorageChange = async (change: Record<string, browser.storage.StorageChange>): Promise<void> => {
-      console.info('APP: onStorageChange', change)
+    const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
+      console.info('APP: onStorageChange', area)
       switch (true) {
-        case change.skin?.oldValue !== undefined:
-          theme.global.name.value = change.skin.newValue
+        case changes.sSkin?.oldValue !== undefined:
+          theme.global.name.value = changes.sSkin.newValue
+          console.error('sdfsfa------', changes.sSkin.newValue)
           break
         default:
       }
@@ -87,19 +86,24 @@ onBeforeMount(async (): Promise<void> => {
       keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
     }
 
-    const msg = await initStorageLocal()
-    console.log('APP: ', msg)
-    if (!browser.storage.onChanged.hasListener(onStorageChange)) {
-      browser.storage.onChanged.addListener(onStorageChange)
-    }
-    window.addEventListener('keydown', onKeyDown, false)
-    window.addEventListener('keyup', onKeyUp, false)
-    window.addEventListener('beforeunload', onBeforeUnload, {once: true})
+    if (!window.location.href.includes('options')) {
+    //  console.log('APP: onBeforeMount options')
+      const msg = await initStorageLocal()
+      console.info('APP: ', msg, browser.storage.onChanged.hasListener(onStorageChange))
+      if (!browser.storage.onChanged.hasListener(onStorageChange)) {
+        browser.storage.onChanged.addListener(onStorageChange)
+      }
+    console.info('APP: ', browser.storage.onChanged.hasListener(onStorageChange))
+      window.addEventListener('keydown', onKeyDown, false)
+      window.addEventListener('keyup', onKeyUp, false)
+      window.addEventListener('beforeunload', onBeforeUnload, {once: true})
 
-    await records.openDatabase()
-    await records.databaseIntoStore()
-    await settings.storageIntoStore(theme)
-    await records.storageIntoStore()
+      await records.openDatabase()
+      await records.databaseIntoStore()
+      //await settings.storageIntoStore(theme)
+      await records.storageIntoStore()
+    }
+  await settings.storageIntoStore(theme)
   }
 )
 
