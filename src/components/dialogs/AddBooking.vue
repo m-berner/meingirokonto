@@ -59,7 +59,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import CurrencyInput from '@/components/CurrencyInput.vue'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
 const {notice, VALIDATORS} = useApp()

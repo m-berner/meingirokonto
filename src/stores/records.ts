@@ -8,7 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 //import {toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 //import type {ThemeInstance} from 'vuetify'
 
 interface IRecordsStore {

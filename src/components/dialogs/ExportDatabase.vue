@@ -22,7 +22,7 @@ import {useRecordsStore} from '@/stores/records'
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 interface IExportDatabase {
   _file_name: string

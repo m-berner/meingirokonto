@@ -227,11 +227,11 @@
 </template>
 
 <script lang="ts" setup>
-import {COMPONENT_NAMES} from '@/app'
+import {COMPONENT_NAMES} from '@/pages/app'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
 import {onUpdated, reactive, useTemplateRef} from 'vue'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
 const runtime = useRuntimeStore()

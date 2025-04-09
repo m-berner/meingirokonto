@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 import {createI18n, type I18n} from 'vue-i18n'
 import {createVuetify} from 'vuetify'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'

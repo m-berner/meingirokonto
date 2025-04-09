@@ -9,65 +9,65 @@ import zipPack from 'vite-plugin-zip-pack'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vuetify(),
-    VueI18nPlugin({
-      runtimeOnly: true,
-      compositionOnly: true,
-      include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**')
-    }),
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'manifest.json',
-          dest: '../meingirokonto@gmx.de/',
-          overwrite: true
-        },
-        {
-          src: '../meingirokonto@gmx.de',
-          dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
-          overwrite: true
+    plugins: [
+        vue(),
+        vuetify(),
+        VueI18nPlugin({
+            runtimeOnly: true,
+            compositionOnly: true,
+            include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**')
+        }),
+        viteStaticCopy({
+            targets: [
+                {
+                    src: 'manifest.json',
+                    dest: '../meingirokonto@gmx.de/',
+                    overwrite: true
+                },
+                {
+                    src: '../meingirokonto@gmx.de',
+                    dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
+                    overwrite: true
+                }
+            ]
+        }),
+        zipPack({
+            inDir: './meingirokonto@gmx.de',
+            outDir: 'C:/Users/Martin/Projekte/Privat/meingirokonto/releases/firefox',
+            outFileName: 'meingirokonto@gmx.de.xpi'
+        })
+    ],
+    root: './src',
+    base: './',
+    resolve: {
+        alias: [
+            {
+                find: '@',
+                replacement: fileURLToPath(new URL('./src', import.meta.url))
+            }
+        ]
+    },
+    build: {
+        minify: false,
+        cssMinify: false,
+        target: ['es2022', 'firefox132'],
+        assetsDir: 'assets',
+        assetsInlineLimit: 0,
+        emptyOutDir: false,
+        outDir: '../meingirokonto@gmx.de',
+        modulePreload: false,
+        rollupOptions: {
+            input: {
+                background: 'src/pages/background.js',
+                app: 'src/pages/app.html',
+                options: 'src/pages/options.html'
+            },
+            output: {
+                entryFileNames: 'pages/[name].js',
+                chunkFileNames: '[name].js',
+                assetFileNames: 'assets/[name].[ext]',
+                format: 'es'
+            }
         }
-      ]
-    }),
-    zipPack({
-      inDir: './meingirokonto@gmx.de',
-      outDir: 'C:/Users/Martin/Projekte/Privat/meingirokonto/releases/firefox',
-      outFileName: 'meingirokonto@gmx.de.xpi'
-    })
-  ],
-  root: './src',
-  base: './',
-  resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: fileURLToPath(new URL('./src', import.meta.url))
-      }
-    ]
-  },
-  build: {
-    minify: false,
-    cssMinify: false,
-    target: ['es2022', 'firefox132'],
-    assetsDir: 'assets',
-    assetsInlineLimit: 0,
-    emptyOutDir: false,
-    outDir: '../meingirokonto@gmx.de',
-    modulePreload: false,
-    rollupOptions: {
-      input: {
-        background: 'src/background.js',
-        app: 'src/app.html',
-        options: 'src/options.html'
-      },
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-        assetFileNames: 'assets/[name].[ext]',
-        format: 'es'
-      }
     }
-  }
 })

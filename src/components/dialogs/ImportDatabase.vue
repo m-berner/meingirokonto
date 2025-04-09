@@ -24,7 +24,7 @@ import {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 interface IImportDatabase {
   _choosen_file: Blob | null

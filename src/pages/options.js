@@ -1,4 +1,4 @@
-import OptionsIndex from '@/OptionsIndex.vue';
+import OptionsIndex from '@/pages/OptionsIndex.vue';
 import { createApp } from 'vue';
 import 'vuetify/styles';
 import { useApp } from '@/composables/useApp';

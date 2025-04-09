@@ -7,7 +7,7 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 interface ISettingsStore {
   _skin: string

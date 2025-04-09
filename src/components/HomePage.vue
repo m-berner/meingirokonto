@@ -70,7 +70,7 @@ import {reactive} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 const {d, n, rt, t, tm} = useI18n()
 const {utcDate} = useApp()

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
-import { CONS } from '@/background';
+import { CONS } from '@/pages/background';
 const { notice } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
@@ -167,7 +167,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         async databaseIntoStore() {
-            console.info('RECORDS: databaseIntoStore');
+            console.log('RECORDS: databaseIntoStore');
             this._account.all.splice(0, this._account.all.length);
             this._booking_type.all.splice(0, this._booking_type.all.length);
             this._booking.all.splice(0, this._booking.all.length);

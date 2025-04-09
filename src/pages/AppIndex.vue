@@ -21,7 +21,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()

@@ -34,7 +34,7 @@
 //import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-import {CONS} from '@/background'
+import {CONS} from '@/pages/background'
 
 const {rt} = useI18n()
 //const records = useRecordsStore()

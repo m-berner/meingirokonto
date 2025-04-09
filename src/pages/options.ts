@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-import OptionsIndex from '@/OptionsIndex.vue'
+import OptionsIndex from '@/pages/OptionsIndex.vue'
 import {createApp} from 'vue'
 import 'vuetify/styles'
 import {useApp} from '@/composables/useApp'

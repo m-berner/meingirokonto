@@ -1,4 +1,4 @@
-import { CONS } from '@/background';
+import { CONS } from '@/pages/background';
 import { createI18n } from 'vue-i18n';
 import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
