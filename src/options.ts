@@ -5,13 +5,11 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
-import HomePage from '@/components/HomePage.vue'
-import AppIndex from '@/AppIndex.vue'
-import {createPinia} from 'pinia'
-import {createRouter, createWebHashHistory} from 'vue-router'
+import OptionsIndex from '@/OptionsIndex.vue'
 import {createApp} from 'vue'
 import {createI18n} from 'vue-i18n'
 import {createVuetify} from 'vuetify'
+//import {createPinia} from 'pinia'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
@@ -55,54 +53,8 @@ import {
 } from '@mdi/js'
 import messages from '@intlify/unplugin-vue-i18n/messages'
 import {useApp} from '@/composables/useApp'
-import HelpPage from '@/components/HelpPage.vue'
-import PrivacyPage from '@/components/PrivacyPage.vue'
-import TitleBar from '@/components/TitleBar.vue'
-import HeaderBar from '@/components/HeaderBar.vue'
-import FooterBar from '@/components/FooterBar.vue'
-import AddAccount from '@/components/dialogs/AddAccount.vue'
-import AddBookingType from '@/components/dialogs/AddBookingType.vue'
-import AddBooking from '@/components/dialogs/AddBooking.vue'
-import ingd from '@/components/logos/ingd.vue'
-import byla from '@/components/logos/byla.vue'
-import nologo from '@/components/logos/nologo.vue'
 
 const {getUI} = useApp()
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      components: {
-        default: HomePage,
-        title: TitleBar,
-        header: HeaderBar,
-        footer: FooterBar
-      }
-    },
-    {
-      path: '/help',
-      name: 'help',
-      components: {
-        default: HelpPage,
-        title: TitleBar,
-        header: HeaderBar,
-        footer: FooterBar
-      }
-    },
-    {
-      path: '/privacy',
-      name: 'privacy',
-      components: {
-        default: PrivacyPage,
-        title: TitleBar,
-        header: HeaderBar,
-        footer: FooterBar
-      }
-    }
-  ]
-})
 const vuetify = createVuetify({
   theme: {
     defaultTheme: 'ocean',
@@ -358,33 +310,17 @@ const i18n = createI18n({
     }
   }
 })
-const pinia = createPinia()
-const app = createApp(AppIndex)
-app.config.errorHandler = (err: unknown) => {
+//const pinia = createPinia()
+const op = createApp(OptionsIndex)
+op.config.errorHandler = (err: unknown) => {
   console.error(err)
 }
-app.config.warnHandler = (msg: string) => {
+op.config.warnHandler = (msg: string) => {
   console.warn(msg)
 }
-export const COMPONENT_NAMES = Object.freeze({
-  ADD_ACCOUNT: 'AddAccount',
-  ADD_BOOKING: 'AddBooking',
-  ADD_BOOKING_TYPE: 'AddBookingType',
-  NO_LOGO: 'Nologo',
-  INGD: 'ingd',
-  BYLA: 'byla'
-})
-// NOTE: register dynamic components globally
-app.component(COMPONENT_NAMES.ADD_ACCOUNT, AddAccount)
-app.component(COMPONENT_NAMES.ADD_BOOKING_TYPE, AddBookingType)
-app.component(COMPONENT_NAMES.ADD_BOOKING, AddBooking)
-app.component(COMPONENT_NAMES.NO_LOGO, nologo)
-app.component(COMPONENT_NAMES.INGD, ingd)
-app.component(COMPONENT_NAMES.BYLA, byla)
-app.use(router)
-app.use(vuetify)
-app.use(i18n)
-app.use(pinia)
-app.mount('#app')
+op.use(vuetify)
+op.use(i18n)
+//op.use(pinia)
+op.mount('#options')
 
-console.log('--- app.js ---')
+console.log('--- options.js ---')

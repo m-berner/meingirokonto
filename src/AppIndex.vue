@@ -107,5 +107,5 @@ onBeforeMount(async (): Promise<void> => {
   }
 )
 
-console.log('--- App.vue setup ---')
+console.log('--- AppIndex.vue setup ---')
 </script>
