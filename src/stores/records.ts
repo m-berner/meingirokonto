@@ -469,7 +469,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     async databaseIntoStore(): Promise<string> {
-      console.info('RECORDS: databaseIntoStore')
+      console.log('RECORDS: databaseIntoStore')
       // const runtime = useRuntimeStore()
       this._account.all.splice(0, this._account.all.length)
       this._booking_type.all.splice(0, this._booking_type.all.length)

@@ -43,7 +43,6 @@
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onMounted, reactive, toRaw} from 'vue'
-//import {useSettingsStore} from '@/stores/settings'
 
 interface IOptionsPage {
   _tab: number
@@ -55,7 +54,7 @@ interface IOptionsPage {
 const {t, tm} = useI18n()
 /* NOTE: the destructured variables are reactive! */
 const theme = useTheme()
-//const settings = useSettingsStore()
+
 const state: IOptionsPage = reactive({
   _tab: 0,
   _tabs_length: 0,
