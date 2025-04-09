@@ -6,8 +6,99 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {CONS} from '@/background'
+import {createI18n, type I18n} from 'vue-i18n'
+import {createVuetify} from 'vuetify'
+import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
+import {
+  mdiBankPlus,
+  mdiBankRemove,
+  mdiBasketFill,
+  mdiBasketMinus,
+  mdiBasketPlus,
+  mdiCalculator,
+  mdiCashMinus,
+  mdiCashPlus,
+  mdiChartTimelineVariant,
+  mdiChartTimelineVariantShimmer,
+  mdiCheck,
+  mdiClose,
+  mdiCog,
+  mdiCopyright,
+  mdiCurrencyEur,
+  mdiDatabaseExport,
+  mdiDatabaseImport,
+  mdiDelete,
+  mdiDomain,
+  mdiDomainPlus,
+  mdiDomainRemove,
+  mdiDotsVertical,
+  mdiEmail,
+  mdiFileCog,
+  mdiFileDocumentEdit,
+  mdiFileDocumentMinus,
+  mdiFilterCog,
+  mdiFilterPlus,
+  mdiFilterRemove,
+  mdiGiftOutline,
+  mdiHandshake,
+  mdiHelpCircle,
+  mdiHome,
+  mdiImage,
+  mdiInfinity,
+  mdiMagnify,
+  mdiPlus,
+  mdiReload,
+  mdiShieldAccount,
+  mdiTableLargeRemove,
+  mdiTransfer
+} from '@mdi/js'
+import messages from '@intlify/unplugin-vue-i18n/messages'
+import {type ObjectPlugin} from 'vue'
+
+interface IUseApp {
+  VALIDATORS: Readonly<{
+    ibanRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    nameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    swiftRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
+  }>
+  vuetify: ObjectPlugin<[]>
+  i18n: I18n
+  utcDate: (iso: string) => Date
+  notice: (messages: string[]) => Promise<void>
+  getUI: () => Record<string, string>
+  group: (count: number, size?: number) => number[]
+  offset: () => number
+  isoDatePlusSeconds: (iso: string | number | Date) => number
+  toNumber: (str: string | boolean | number | undefined | null) => number
+  mean: (nar: number[]) => number
+  dateToISO: (value: number) => string
+  emptyFunction: () => void
+  log: (text: string, logLevel: number, debug: boolean, obj?: unknown) => void
+}
 
 export const useApp = (): IUseApp => {
+  const getUI = () => {
+    const result: Record<string, string> = {
+      lang: '',
+      region: '',
+      locale: ''
+    }
+    const uiLang: string =
+      browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
+    if (uiLang.includes('-')) {
+      result.lang = uiLang.split('-')[0]
+      result.region = uiLang.split('-')[1].toUpperCase()
+      result.locale = uiLang
+    } else {
+      result.lang = uiLang
+      result.region = uiLang.toUpperCase()
+      result.locale = uiLang + '-' + uiLang.toUpperCase()
+    }
+    return result
+  }
   return {
     VALIDATORS: Object.freeze({
       ibanRules: msgs => {
@@ -49,6 +140,261 @@ export const useApp = (): IUseApp => {
         ]
       }
     }),
+    vuetify: createVuetify({
+      theme: {
+        defaultTheme: 'ocean',
+        themes: {
+          light: {
+            dark: false,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#eeeeee',
+              surface: '#eeeeee',
+              secondary: '#e0e0e0',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          },
+          dark: {
+            dark: true,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#23222B',
+              surface: '#23222B',
+              secondary: '#e0e0e0',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          },
+          sky: {
+            dark: false,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#3282f6',
+              surface: '#3282f6',
+              secondary: '#e0e0e0',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          },
+          ocean: {
+            dark: false,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#194f7d',
+              surface: '#194f7d',
+              secondary: '#e0e0e0',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          },
+          earth: {
+            dark: false,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#780e12',
+              surface: '#780e12',
+              secondary: '#e0e0e0',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          },
+          meadow: {
+            dark: false,
+            colors: {
+              background: '#e0e0e0',
+              primary: '#378222',
+              surface: '#378D22',
+              secondary: '#e0e0e0',
+              topbar: '#37bb22',
+              warning: 'orange',
+              error: 'orange',
+              info: 'yellow',
+              success: 'green'
+            }
+          }
+        }
+      },
+      icons: {
+        sets: {
+          mdi
+        },
+        defaultSet: 'mdi',
+        aliases: {
+          ...aliases,
+          sm: mdiImage,
+          home: mdiHome,
+          euro: mdiCurrencyEur,
+          reload: mdiReload,
+          addBooking: mdiDomainPlus,
+          addBookingType: mdiFilterPlus,
+          editBookingType: mdiFilterCog,
+          deleteBookingType: mdiFilterRemove,
+          account: mdiDomainPlus,
+          deleteStock: mdiDomainRemove,
+          fadeinStock: mdiDomain,
+          cashPlus: mdiCashPlus,
+          cashMinus: mdiCashMinus,
+          dailyChanges: mdiChartTimelineVariant,
+          dailyChangesAll: mdiChartTimelineVariantShimmer,
+          exportDatabase: mdiDatabaseExport,
+          importDatabase: mdiDatabaseImport,
+          transfersTable: mdiTransfer,
+          showAccounting: mdiCalculator,
+          settings: mdiCog,
+          copyright: mdiCopyright,
+          buyStock: mdiBasketPlus,
+          sellStock: mdiBasketMinus,
+          addDividend: mdiBasketFill,
+          showDividend: mdiGiftOutline,
+          configs: mdiFileCog,
+          link: mdiInfinity,
+          close: mdiClose,
+          add: mdiPlus,
+          remove: mdiDelete,
+          check: mdiCheck,
+          dots: mdiDotsVertical,
+          tableRemove: mdiTableLargeRemove,
+          removeDocument: mdiFileDocumentMinus,
+          editDocument: mdiFileDocumentEdit,
+          help: mdiHelpCircle,
+          privacy: mdiShieldAccount,
+          partner: mdiHandshake,
+          mail: mdiEmail,
+          magnify: mdiMagnify,
+          addAccount: mdiBankPlus,
+          deleteAccount: mdiBankRemove
+        }
+      }
+    }),
+    i18n: createI18n({
+      locale: getUI().locale,
+      fallbackLocale: 'en-US',
+      mode: 'composition',
+      globalInjection: true,
+      messages,
+      datetimeFormats: {
+        'de-DE': {
+          numeric: {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+          },
+          short: {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          },
+          long: {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            weekday: 'short',
+            hour: 'numeric',
+            minute: 'numeric'
+          }
+        },
+        'en-US': {
+          numeric: {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+          },
+          short: {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          },
+          long: {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            weekday: 'short',
+            hour: 'numeric',
+            minute: 'numeric'
+          }
+        }
+      },
+      numberFormats: {
+        'de-DE': {
+          currency5: {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 5,
+            maximumFractionDigits: 5,
+            notation: 'standard'
+          },
+          currency3: {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3,
+            notation: 'standard'
+          },
+          currency: {
+            style: 'currency',
+            currency: 'EUR',
+            notation: 'standard'
+          },
+          currencyUSD: {
+            style: 'currency',
+            currency: 'USD',
+            notation: 'standard'
+          },
+          decimal: {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          },
+          decimal3: {
+            style: 'decimal',
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+          },
+          integer: {
+            style: 'decimal',
+            maximumFractionDigits: 0
+          },
+          year: {
+            style: 'decimal',
+            maximumFractionDigits: 0,
+            useGrouping: false
+          },
+          percent: {
+            style: 'percent',
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 2,
+            useGrouping: false
+          }
+        },
+        'en-US': {
+          currency: {
+            style: 'currency',
+            currency: 'USD',
+            notation: 'standard'
+          },
+          decimal: {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          },
+          percent: {
+            style: 'percent',
+            useGrouping: false
+          }
+        }
+      }
+    }),
     utcDate: (iso) => {
       const tzo = new Date().getTimezoneOffset() / 60
       let result = ''
@@ -74,25 +420,7 @@ export const useApp = (): IUseApp => {
         }
       await browser.notifications.create(notificationOption)
     },
-    getUI: () => {
-      const result: Record<string, string> = {
-        lang: '',
-        region: '',
-        locale: ''
-      }
-      const uiLang: string =
-        browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
-      if (uiLang.includes('-')) {
-        result.lang = uiLang.split('-')[0]
-        result.region = uiLang.split('-')[1].toUpperCase()
-        result.locale = uiLang
-      } else {
-        result.lang = uiLang
-        result.region = uiLang.toUpperCase()
-        result.locale = uiLang + '-' + uiLang.toUpperCase()
-      }
-      return result
-    },
+    getUI: getUI,
     group: (count, size = 2) => {
       const ar: number[] = []
       const isOdd = count % 2 === 1

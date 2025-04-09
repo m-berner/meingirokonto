@@ -314,7 +314,7 @@ export const CONS = Object.freeze({
 const useBackground = () => {
     const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}*` };
     const onClick = async () => {
-        console.log('BACKGROUND: onClick', browser.storage.onChanged);
+        console.log('BACKGROUND: onClick');
         const start = async () => {
             console.log('BACKGROUND: onClick: start');
             const foundTabs = await browser.tabs.query(appUrls);
@@ -374,8 +374,6 @@ const useBackground = () => {
                     createDB();
                 }
                 else {
-                    await browser.storage.local
-                        .remove(CONS.SYSTEM.STORAGE_OLD);
                 }
             }
         };

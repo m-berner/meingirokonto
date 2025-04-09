@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, toRaw, useTemplateRef} from 'vue'
+import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 //import {useRecordsStore} from '@/stores/records'
 //import {useApp} from '@/composables/useApp'
@@ -67,8 +67,6 @@ onMounted(() => {
 const ok = async (): Promise<void> => {
   console.log('EDIT_BOOKING_TYPE: ok')
   //const records = useRecordsStore()
-
-  console.error(toRaw(state.selected))
   // const verify = records.booking.all.filter(() => {
   //   return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
   // })

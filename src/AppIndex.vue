@@ -28,10 +28,10 @@ const records = useRecordsStore()
 const theme = useTheme()
 
 onBeforeMount(async (): Promise<void> => {
-    console.log('APP: onBeforeMount')
+    console.log('APPINDEX: onBeforeMount')
     const keyStrokeController: string[] = []
     const initStorageLocal = async () => {
-      console.log('APP: initStorageLocal')
+      console.log('APPINDEX: initStorageLocal')
       const storageLocal: IStorageLocal = await browser.storage.local.get()
       if (storageLocal.sSkin === undefined) {
         await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
@@ -45,20 +45,19 @@ onBeforeMount(async (): Promise<void> => {
       if (storageLocal.sDebug === undefined) {
         await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
       }
-      return 'APP: browser.storage.local initialized'
+      return 'browser.storage.local initialized'
     }
     const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
-      console.info('APP: onStorageChange', area)
+      console.info('APPINDEX: onStorageChange', area)
       switch (true) {
         case changes.sSkin?.oldValue !== undefined:
           theme.global.name.value = changes.sSkin.newValue
-          console.error('sdfsfa------', changes.sSkin.newValue)
           break
         default:
       }
     }
     const onBeforeUnload = async (): Promise<void> => {
-      console.log('APP: onBeforeUnload')
+      console.log('APPINDEX: onBeforeUnload')
       const foundTabs = await browser.tabs.query({url: 'about:addons'})
       if (foundTabs.length > 0) {
         await browser.tabs.remove(foundTabs[0].id ?? 0)
@@ -85,25 +84,23 @@ onBeforeMount(async (): Promise<void> => {
     const onKeyUp = (ev: KeyboardEvent): void => {
       keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
     }
-
-    if (!window.location.href.includes('options')) {
-    //  console.log('APP: onBeforeMount options')
-      const msg = await initStorageLocal()
-      console.info('APP: ', msg, browser.storage.onChanged.hasListener(onStorageChange))
-      if (!browser.storage.onChanged.hasListener(onStorageChange)) {
-        browser.storage.onChanged.addListener(onStorageChange)
-      }
-    console.info('APP: ', browser.storage.onChanged.hasListener(onStorageChange))
-      window.addEventListener('keydown', onKeyDown, false)
-      window.addEventListener('keyup', onKeyUp, false)
-      window.addEventListener('beforeunload', onBeforeUnload, {once: true})
-
-      await records.openDatabase()
-      await records.databaseIntoStore()
-      //await settings.storageIntoStore(theme)
-      await records.storageIntoStore()
+    //if (!window.location.href.includes('options')) {
+    //  console.log('APPINDEX: onBeforeMount options')
+    const msg = await initStorageLocal()
+    console.info('APPINDEX: ', msg)
+    if (!browser.storage.onChanged.hasListener(onStorageChange)) {
+      browser.storage.onChanged.addListener(onStorageChange)
     }
-  await settings.storageIntoStore(theme)
+    window.addEventListener('keydown', onKeyDown, false)
+    window.addEventListener('keyup', onKeyUp, false)
+    window.addEventListener('beforeunload', onBeforeUnload, {once: true})
+
+    await records.openDatabase()
+    await records.databaseIntoStore()
+    //await settings.storageIntoStore(theme)
+    await records.storageIntoStore()
+    // }
+    await settings.storageIntoStore(theme)
   }
 )
 

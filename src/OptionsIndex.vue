@@ -71,12 +71,11 @@ onMounted(async () => {
   console.log('OPTIONSPAGE: onMounted')
   const labelsOptionsPage: Record<string, string> = tm('optionsPage')
   const skin = await browser.storage.local.get(['sSkin'])
-  console.error(skin)
   state._tab = 1
   state._tabs_length = labelsOptionsPage.tabs.length
   state._theme_keys = Object.keys(toRaw(theme.themes.value))
   state._skin = skin.sSkin
 })
 
-console.info('--- OptionsIndex.vue setup ---', window.location.href)
+console.log('--- OptionsIndex.vue setup ---', window.location.href)
 </script>

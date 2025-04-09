@@ -110,5 +110,5 @@ const options: Record<string, string>[] = tm('bookingTable.menuItems')
 //state.bookings_per_account = records.getBookingsPerAccount()
 //})
 
-console.info('--- HomePage.vue setup ---', window.location.href)
+console.log('--- HomePage.vue setup ---')
 </script>

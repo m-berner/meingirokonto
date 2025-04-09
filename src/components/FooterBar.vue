@@ -24,7 +24,7 @@
       <div>{{ t('footer.mail') }}</div>
     </v-btn>
     <v-btn color="white" v-bind:disabled="true">
-      <v-icon icon="$copyright"></v-icon>
+      <v-icon icon="$mdiCopyright"></v-icon>
       <div class="nowrap">{{ CONS.SYSTEM.COPYRIGHT }}</div>
     </v-btn>
   </v-bottom-navigation>

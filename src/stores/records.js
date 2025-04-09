@@ -56,14 +56,12 @@ export const useRecordsStore = defineStore('records', {
             this._booking.all.push(booking);
         },
         getAccountIndexById(ident) {
-            console.error('ID', ident, this._account.all);
             return this._account.all.findIndex((account) => {
                 return account.cID === ident;
             });
         },
         getBookingsPerAccount() {
             const activeAccountIndex = this.getAccountIndexById(this._account.active_id);
-            console.error('TTT', activeAccountIndex);
             if (activeAccountIndex === -1) {
                 return [];
             }

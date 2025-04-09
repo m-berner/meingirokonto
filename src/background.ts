@@ -50,28 +50,6 @@ declare global {
     sDebug?: boolean
     sSkin?: string
   }
-
-  interface IUseApp {
-    VALIDATORS: Readonly<{
-      ibanRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      nameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      swiftRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
-      requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
-    }>
-    utcDate: (iso: string) => Date
-    notice: (messages: string[]) => Promise<void>
-    getUI: () => Record<string, string>
-    group: (count: number, size?: number) => number[]
-    offset: () => number
-    isoDatePlusSeconds: (iso: string | number | Date) => number
-    toNumber: (str: string | boolean | number | undefined | null) => number
-    mean: (nar: number[]) => number
-    dateToISO: (value: number) => string
-    emptyFunction: () => void
-    log: (text: string, logLevel: number, debug: boolean, obj?: unknown) => void
-  }
 }
 
 type TCons = Readonly<{
@@ -626,7 +604,7 @@ export const CONS: TCons = Object.freeze({
 const useBackground = (): IUseBackground => {
   const appUrls = {url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}*`}
   const onClick = async () => {
-    console.log('BACKGROUND: onClick', browser.storage.onChanged)
+    console.log('BACKGROUND: onClick')
     const start = async (): Promise<void> => {
       console.log('BACKGROUND: onClick: start')
       const foundTabs = await browser.tabs.query(appUrls)
@@ -646,7 +624,7 @@ const useBackground = (): IUseBackground => {
     await start()
   }
   // NOTE: onInstall runs at addon install, addon update and firefox update
-  const onInstall = () => {
+  const onInstall = (): void => {
     console.log('BACKGROUND: onInstall')
     const onSuccess = (ev: Event): void => {
       console.log('BACKGROUND: onInstall: onSuccess')
@@ -657,9 +635,7 @@ const useBackground = (): IUseBackground => {
     const onError = (ev: Event): void => {
       console.error('BACKGROUND: onError: ', ev)
     }
-    const onUpgradeNeeded = async (
-      ev: Event
-    ): Promise<void> => {
+    const onUpgradeNeeded = async (ev: Event): Promise<void> => {
       if (ev instanceof IDBVersionChangeEvent) {
         console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion)
         const createDB = (): void => {
@@ -802,9 +778,9 @@ const useBackground = (): IUseBackground => {
           createDB()
         } else {
           // updateDB()
-          // remove historical values
-          await browser.storage.local
-            .remove(CONS.SYSTEM.STORAGE_OLD)
+          // remove historical values TODO move into updateDB...
+          //await browser.storage.local
+          //  .remove(CONS.SYSTEM.STORAGE_OLD)
         }
         //await updateStorageLocal()
       }

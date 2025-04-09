@@ -123,14 +123,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //   })
     // },
     getAccountIndexById(ident: number): number {
-      console.error('ID', ident, this._account.all)
       return this._account.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
     },
     getBookingsPerAccount(): IBooking[] {
       const activeAccountIndex = this.getAccountIndexById(this._account.active_id)
-      console.error('TTT', activeAccountIndex)
       if (activeAccountIndex === -1) {
         return []
       }

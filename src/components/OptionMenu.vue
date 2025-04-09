@@ -51,7 +51,6 @@ const selectOption = (optionIndex = -1): void => {
   console.info('OPTIONMENU selectOption', optionIndex)
     switch (optionIndex) {
       case 0:
-        console.error('DELETE DSFSFSFSFSDFDSFDS-------------', _props.recordID)
         runtime.toggleVisibility(CONS.DIALOGS.DELETESTOCK)
         break
       case 1:
