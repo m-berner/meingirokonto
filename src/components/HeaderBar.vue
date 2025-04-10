@@ -123,7 +123,7 @@
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
+          v-on:click="onIconClick"
         >
           <v-icon class="put-into-background" icon="$showAccounting"></v-icon
           >
@@ -189,13 +189,11 @@
 
 <script lang="ts" setup>
 import {COMPONENT_NAMES} from '@/pages/app'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
 import {onUpdated, reactive, useTemplateRef} from 'vue'
 import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
-const runtime = useRuntimeStore()
 
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 

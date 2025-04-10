@@ -46,4 +46,4 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
   }
 })
 
-console.log('--- settings.js ---')
+console.log('--- STORE settings.js ---')

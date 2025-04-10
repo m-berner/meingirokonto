@@ -13,9 +13,9 @@ import {CONS} from '@/pages/background'
 
 interface IRecordsStore {
   _dbi: IDBDatabase | null
-  _account: IRecordStoreAccount
-  _booking: IRecordStoreBooking
-  _booking_type: IRecordStoreBookingType
+  _accounts: IRecordStoreAccount
+  _bookings: IRecordStoreBooking
+  _booking_types: IRecordStoreBookingType
   _bkup_object: IBackup
 }
 
@@ -41,16 +41,16 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
   state: (): IRecordsStore => {
     return {
       _dbi: null,
-      _account: {
+      _accounts: {
         all: [],
         selected_index: -1,
         active_id: -1
       },
-      _booking: {
+      _bookings: {
         all: [],
         selected_index: -1
       },
-      _booking_type: {
+      _booking_types: {
         all: [],
         selected_index: -1
       },
@@ -60,21 +60,21 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           cDBVersion: 0,
           cEngine: ''
         },
-        account: [],
-        booking: [],
-        booking_type: []
+        accounts: [],
+        bookings: [],
+        booking_types: []
       }
     }
   },
   getters: {
-    account(state: IRecordsStore): IRecordStoreAccount {
-      return state._account
+    accounts(state: IRecordsStore): IRecordStoreAccount {
+      return state._accounts
     },
-    bookingType(state: IRecordsStore): IRecordStoreBookingType {
-      return state._booking_type
+    bookingTypes(state: IRecordsStore): IRecordStoreBookingType {
+      return state._booking_types
     },
-    booking(state: IRecordsStore): IRecordStoreBooking {
-      return state._booking
+    bookings(state: IRecordsStore): IRecordStoreBooking {
+      return state._bookings
     },
     dbi(state: IRecordsStore): IDBDatabase | null {
       return state._dbi
@@ -82,7 +82,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
   },
   actions: {
     _loadAccountIntoStore(account: IAccount): void {
-      this._account.all.push(account)
+      this._accounts.all.push(account)
       // if (memRecord.cFadeOut === 1) {
       //   this._stocks.passive.push(memRecord)
       // } else if (memRecord.cFadeOut === 0) {
@@ -91,7 +91,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     _loadBookingTypeIntoStore(bookingType: IBookingType): void {
       // const memRecord = { ...account }
-      this._booking_type.all.push(bookingType)
+      this._booking_types.all.push(bookingType)
       // if (memRecord.cFadeOut === 1) {
       //   this._stocks.passive.push(memRecord)
       // } else if (memRecord.cFadeOut === 0) {
@@ -109,7 +109,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       // } else {
       //   transfer.mCompany = ''
       // }
-      this._booking.all.push(booking)
+      this._bookings.all.push(booking)
     },
     // _sortActiveStocks(): void {
     //   this._stocks.active.sort((a: IStock, b: IStock): number => {
@@ -123,17 +123,17 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //   })
     // },
     getAccountIndexById(ident: number): number {
-      return this._account.all.findIndex((account: IAccount) => {
+      return this._accounts.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
     },
     getBookingsPerAccount(): IBooking[] {
-      const activeAccountIndex = this.getAccountIndexById(this._account.active_id)
+      const activeAccountIndex = this.getAccountIndexById(this._accounts.active_id)
       if (activeAccountIndex === -1) {
         return []
       }
-      const bookings_per_account = this._booking.all.filter((rec: IBooking) => {
-        return rec.cAccountNumber === this._account.all[activeAccountIndex].cNumber
+      const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
+        return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber
       })
       bookings_per_account.sort((a: IBooking, b: IBooking) => {
         const A = new Date(a.cDate).getTime()
@@ -179,16 +179,16 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     //   }
     // },
     setBkupObject(value: IBackup) {
-      this._bkup_object = {
-        sm: {
-          cVersion: 0,
-          cDBVersion: 0,
-          cEngine: ''
-        },
-        account: [],
-        booking_type: [],
-        booking: []
-      }
+      // this._bkup_object = {
+      //   sm: {
+      //     cVersion: 0,
+      //     cDBVersion: 0,
+      //     cEngine: ''
+      //   },
+      //   account: [],
+      //   booking_type: [],
+      //   booking: []
+      // }
       this._bkup_object = value
     },
     // setActiveStocksPage(value: number): void {
@@ -329,14 +329,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       let account: IAccount
       let booking: IBooking
       let bookingType: IBookingType
-      for (account of this._bkup_object.account) {
+      for (account of this._bkup_object.accounts) {
         // addAccount = migrateStock({...stock})
         this._loadAccountIntoStore(account)
       }
-      for (bookingType of this._bkup_object.booking_type) {
+      for (bookingType of this._bkup_object.booking_types) {
         this._loadBookingTypeIntoStore(bookingType)
       }
-      for (booking of this._bkup_object.booking) {
+      for (booking of this._bkup_object.bookings) {
         this._loadBookingIntoStore(booking)
       }
       // this.evaluateTransfers()
@@ -408,17 +408,17 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       console.log('RECORDS: storageIntoStore')
       const response: IStorageLocal = await browser.storage.local.get()
       if (response.sAccountActiveId != null) {
-        this._account.active_id = response.sAccountActiveId
+        this._accounts.active_id = response.sAccountActiveId
       }
     },
     async cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
-      this._booking.all.splice(0, this._booking.all.length)
-      this._booking_type.all.splice(0, this._booking_type.all.length)
-      this._account.all.splice(0, this._account.all.length)
-      this._booking.selected_index = 0
-      this._booking_type.selected_index = 0
-      this._booking_type.selected_index = 0
+      this._bookings.all.splice(0, this._bookings.all.length)
+      this._booking_types.all.splice(0, this._booking_types.all.length)
+      this._accounts.all.splice(0, this._accounts.all.length)
+      this._bookings.selected_index = 0
+      this._booking_types.selected_index = 0
+      this._booking_types.selected_index = 0
       return new Promise((resolve, reject) => {
         if (this._dbi != null) {
           const onError = (ev: Event): void => {
@@ -471,12 +471,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     async databaseIntoStore(): Promise<string> {
       console.log('RECORDS: databaseIntoStore')
       // const runtime = useRuntimeStore()
-      this._account.all.splice(0, this._account.all.length)
-      this._booking_type.all.splice(0, this._booking_type.all.length)
-      this._booking.all.splice(0, this._booking.all.length)
-      this._booking.selected_index = 0
-      this._booking_type.selected_index = 0
-      this._account.selected_index = 0
+      this._accounts.all.splice(0, this._accounts.all.length)
+      this._booking_types.all.splice(0, this._booking_types.all.length)
+      this._bookings.all.splice(0, this._bookings.all.length)
+      this._bookings.selected_index = 0
+      this._booking_types.selected_index = 0
+      this._accounts.selected_index = 0
       return new Promise((resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = async (): Promise<void> => {
@@ -537,14 +537,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-          for (let i = 0; i < this._account.all.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...this._account.all[i]})
+          for (let i = 0; i < this._accounts.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...this._accounts.all[i]})
           }
-          for (let i = 0; i < this._booking_type.all.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...this._booking_type.all[i]})
+          for (let i = 0; i < this._booking_types.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...this._booking_types.all[i]})
           }
-          for (let i = 0; i < this._booking.all.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...this._booking.all[i]})
+          for (let i = 0; i < this._bookings.all.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...this._bookings.all[i]})
           }
         }
       })
@@ -558,8 +558,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 ...record,
                 cID: ev.target.result
               }
-              this._account.all.push(memRecord)
-              this._account.active_id = ev.target.result
+              this._accounts.all.push(memRecord)
+              this._accounts.active_id = ev.target.result
               await browser.storage.local.set({sAccountActiveId: ev.target.result})
               resolve(CONS.RESULTS.SUCCESS)
             } else {
@@ -601,14 +601,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     async deleteAccount(ident: number): Promise<string> {
-      const indexOfAccount = this._account.all.findIndex((account: IAccount) => {
+      const indexOfAccount = this._accounts.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
       return new Promise((resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-            this._account.all.splice(indexOfAccount, 1)
+            this._accounts.all.splice(indexOfAccount, 1)
             resolve('Account deleted')
           }
           const onError = (ev: Event): void => {
@@ -633,7 +633,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 ...record,
                 cID: ev.target.result
               }
-              this._booking_type.all.push(memRecord)
+              this._booking_types.all.push(memRecord)
               resolve(CONS.RESULTS.SUCCESS)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -671,13 +671,13 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     async deleteBookingType(ident: number): Promise<string> {
-      const indexOfBookingType = this._booking_type.all.findIndex((bookingType: IBookingType) => {
+      const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
         return bookingType.cID === ident
       })
       return new Promise((resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
-            this._booking_type.all.splice(indexOfBookingType, 1)
+            this._booking_types.all.splice(indexOfBookingType, 1)
             resolve('Booking type deleted')
           }
           const onError = (ev: Event): void => {
@@ -700,7 +700,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 ...record,
                 cID: ev.target.result
               }
-              this._booking.all.push(memRecord)
+              this._bookings.all.push(memRecord)
               resolve(CONS.RESULTS.SUCCESS)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -738,13 +738,13 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     async deleteBooking(ident: number): Promise<string> {
-      const indexOfBooking = this._booking.all.findIndex((booking: IBooking) => {
+      const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         return booking.cID === ident
       })
       return new Promise((resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
-            this._booking.all.splice(indexOfBooking, 1)
+            this._bookings.all.splice(indexOfBooking, 1)
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {
@@ -761,4 +761,4 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
   }
 })
 
-console.log('--- records.js ---')
+console.log('--- STORE records.js ---')

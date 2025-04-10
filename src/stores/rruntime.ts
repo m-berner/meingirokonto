@@ -210,4 +210,4 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
   }
 })
 
-console.log('--- runtime.js ---')
+console.log('--- STORE runtime.js ---')

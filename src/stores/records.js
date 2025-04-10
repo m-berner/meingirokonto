@@ -6,16 +6,16 @@ export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
             _dbi: null,
-            _account: {
+            _accounts: {
                 all: [],
                 selected_index: -1,
                 active_id: -1
             },
-            _booking: {
+            _bookings: {
                 all: [],
                 selected_index: -1
             },
-            _booking_type: {
+            _booking_types: {
                 all: [],
                 selected_index: -1
             },
@@ -25,21 +25,21 @@ export const useRecordsStore = defineStore('records', {
                     cDBVersion: 0,
                     cEngine: ''
                 },
-                account: [],
-                booking: [],
-                booking_type: []
+                accounts: [],
+                bookings: [],
+                booking_types: []
             }
         };
     },
     getters: {
-        account(state) {
-            return state._account;
+        accounts(state) {
+            return state._accounts;
         },
-        bookingType(state) {
-            return state._booking_type;
+        bookingTypes(state) {
+            return state._booking_types;
         },
-        booking(state) {
-            return state._booking;
+        bookings(state) {
+            return state._bookings;
         },
         dbi(state) {
             return state._dbi;
@@ -47,26 +47,26 @@ export const useRecordsStore = defineStore('records', {
     },
     actions: {
         _loadAccountIntoStore(account) {
-            this._account.all.push(account);
+            this._accounts.all.push(account);
         },
         _loadBookingTypeIntoStore(bookingType) {
-            this._booking_type.all.push(bookingType);
+            this._booking_types.all.push(bookingType);
         },
         _loadBookingIntoStore(booking) {
-            this._booking.all.push(booking);
+            this._bookings.all.push(booking);
         },
         getAccountIndexById(ident) {
-            return this._account.all.findIndex((account) => {
+            return this._accounts.all.findIndex((account) => {
                 return account.cID === ident;
             });
         },
         getBookingsPerAccount() {
-            const activeAccountIndex = this.getAccountIndexById(this._account.active_id);
+            const activeAccountIndex = this.getAccountIndexById(this._accounts.active_id);
             if (activeAccountIndex === -1) {
                 return [];
             }
-            const bookings_per_account = this._booking.all.filter((rec) => {
-                return rec.cAccountNumber === this._account.all[activeAccountIndex].cNumber;
+            const bookings_per_account = this._bookings.all.filter((rec) => {
+                return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber;
             });
             bookings_per_account.sort((a, b) => {
                 const A = new Date(a.cDate).getTime();
@@ -76,16 +76,6 @@ export const useRecordsStore = defineStore('records', {
             return bookings_per_account;
         },
         setBkupObject(value) {
-            this._bkup_object = {
-                sm: {
-                    cVersion: 0,
-                    cDBVersion: 0,
-                    cEngine: ''
-                },
-                account: [],
-                booking_type: [],
-                booking: []
-            };
             this._bkup_object = value;
         },
         loadBkupObjectIntoStore() {
@@ -93,13 +83,13 @@ export const useRecordsStore = defineStore('records', {
             let account;
             let booking;
             let bookingType;
-            for (account of this._bkup_object.account) {
+            for (account of this._bkup_object.accounts) {
                 this._loadAccountIntoStore(account);
             }
-            for (bookingType of this._bkup_object.booking_type) {
+            for (bookingType of this._bkup_object.booking_types) {
                 this._loadBookingTypeIntoStore(bookingType);
             }
-            for (booking of this._bkup_object.booking) {
+            for (booking of this._bkup_object.bookings) {
                 this._loadBookingIntoStore(booking);
             }
         },
@@ -107,17 +97,17 @@ export const useRecordsStore = defineStore('records', {
             console.log('RECORDS: storageIntoStore');
             const response = await browser.storage.local.get();
             if (response.sAccountActiveId != null) {
-                this._account.active_id = response.sAccountActiveId;
+                this._accounts.active_id = response.sAccountActiveId;
             }
         },
         async cleanStoreAndDatabase() {
             console.log('RECORDS: cleanStoreAndDatabase');
-            this._booking.all.splice(0, this._booking.all.length);
-            this._booking_type.all.splice(0, this._booking_type.all.length);
-            this._account.all.splice(0, this._account.all.length);
-            this._booking.selected_index = 0;
-            this._booking_type.selected_index = 0;
-            this._booking_type.selected_index = 0;
+            this._bookings.all.splice(0, this._bookings.all.length);
+            this._booking_types.all.splice(0, this._booking_types.all.length);
+            this._accounts.all.splice(0, this._accounts.all.length);
+            this._bookings.selected_index = 0;
+            this._booking_types.selected_index = 0;
+            this._booking_types.selected_index = 0;
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onError = (ev) => {
@@ -168,12 +158,12 @@ export const useRecordsStore = defineStore('records', {
         },
         async databaseIntoStore() {
             console.log('RECORDS: databaseIntoStore');
-            this._account.all.splice(0, this._account.all.length);
-            this._booking_type.all.splice(0, this._booking_type.all.length);
-            this._booking.all.splice(0, this._booking.all.length);
-            this._booking.selected_index = 0;
-            this._booking_type.selected_index = 0;
-            this._account.selected_index = 0;
+            this._accounts.all.splice(0, this._accounts.all.length);
+            this._booking_types.all.splice(0, this._booking_types.all.length);
+            this._bookings.all.splice(0, this._bookings.all.length);
+            this._bookings.selected_index = 0;
+            this._booking_types.selected_index = 0;
+            this._accounts.selected_index = 0;
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = async () => {
@@ -233,14 +223,14 @@ export const useRecordsStore = defineStore('records', {
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    for (let i = 0; i < this._account.all.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...this._account.all[i] });
+                    for (let i = 0; i < this._accounts.all.length; i++) {
+                        requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...this._accounts.all[i] });
                     }
-                    for (let i = 0; i < this._booking_type.all.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...this._booking_type.all[i] });
+                    for (let i = 0; i < this._booking_types.all.length; i++) {
+                        requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...this._booking_types.all[i] });
                     }
-                    for (let i = 0; i < this._booking.all.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...this._booking.all[i] });
+                    for (let i = 0; i < this._bookings.all.length; i++) {
+                        requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...this._bookings.all[i] });
                     }
                 }
             });
@@ -254,8 +244,8 @@ export const useRecordsStore = defineStore('records', {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            this._account.all.push(memRecord);
-                            this._account.active_id = ev.target.result;
+                            this._accounts.all.push(memRecord);
+                            this._accounts.active_id = ev.target.result;
                             await browser.storage.local.set({ sAccountActiveId: ev.target.result });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
@@ -298,14 +288,14 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         async deleteAccount(ident) {
-            const indexOfAccount = this._account.all.findIndex((account) => {
+            const indexOfAccount = this._accounts.all.findIndex((account) => {
                 return account.cID === ident;
             });
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
-                        this._account.all.splice(indexOfAccount, 1);
+                        this._accounts.all.splice(indexOfAccount, 1);
                         resolve('Account deleted');
                     };
                     const onError = (ev) => {
@@ -330,7 +320,7 @@ export const useRecordsStore = defineStore('records', {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            this._booking_type.all.push(memRecord);
+                            this._booking_types.all.push(memRecord);
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -369,13 +359,13 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         async deleteBookingType(ident) {
-            const indexOfBookingType = this._booking_type.all.findIndex((bookingType) => {
+            const indexOfBookingType = this._booking_types.all.findIndex((bookingType) => {
                 return bookingType.cID === ident;
             });
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
-                        this._booking_type.all.splice(indexOfBookingType, 1);
+                        this._booking_types.all.splice(indexOfBookingType, 1);
                         resolve('Booking type deleted');
                     };
                     const onError = (ev) => {
@@ -398,7 +388,7 @@ export const useRecordsStore = defineStore('records', {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            this._booking.all.push(memRecord);
+                            this._bookings.all.push(memRecord);
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -437,13 +427,13 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         async deleteBooking(ident) {
-            const indexOfBooking = this._booking.all.findIndex((booking) => {
+            const indexOfBooking = this._bookings.all.findIndex((booking) => {
                 return booking.cID === ident;
             });
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
-                        this._booking.all.splice(indexOfBooking, 1);
+                        this._bookings.all.splice(indexOfBooking, 1);
                         resolve('Booking deleted');
                     };
                     const onError = (ev) => {
@@ -459,4 +449,4 @@ export const useRecordsStore = defineStore('records', {
         }
     }
 });
-console.log('--- records.js ---');
+console.log('--- STORE records.js ---');

@@ -80,7 +80,7 @@ const ok = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const records = useRecordsStore()
-      const aNumber = records.account.all[records.getAccountIndexById(records.account.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+      const aNumber = records.accounts.all[records.getAccountIndexById(records.accounts.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
       const result = await records.addBooking({
         cDate: state.cDate,
         cCredit: state.cCredit,

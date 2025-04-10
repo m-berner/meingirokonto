@@ -12,13 +12,13 @@
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-select
-      v-if="records.account.all.length > 0"
-      v-model="records.account.active_id"
+      v-if="records.accounts.all.length > 0"
+      v-model="records.accounts.active_id"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       label="IBAN"
       max-width="300"
-      v-bind:items="records.account.all"
+      v-bind:items="records.accounts.all"
     ></v-select>
   </v-app-bar>
 </template>
@@ -40,10 +40,10 @@ const state = reactive({
 })
 // TODO calculate booking sums cCredit + cDebit
 watchEffect(() => {
-  const accountIndex = records.getAccountIndexById(records.account.active_id)
+  const accountIndex = records.getAccountIndexById(records.accounts.active_id)
   if (accountIndex === -1) { return }
-  state.logo = records.account.all[accountIndex].cSwift.substring(0,4).toLowerCase()
-  browser.storage.local.set({ sAccountActiveId: records.account.all[accountIndex].cID })
+  state.logo = records.accounts.all[accountIndex].cSwift.substring(0,4).toLowerCase()
+  browser.storage.local.set({ sAccountActiveId: records.accounts.all[accountIndex].cID })
 })
 
 console.log('--- TitleBar.vue setup ---')

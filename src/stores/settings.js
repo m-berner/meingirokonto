@@ -26,4 +26,4 @@ export const useSettingsStore = defineStore('settings', {
         }
     }
 });
-console.log('--- settings.js ---');
+console.log('--- STORE settings.js ---');

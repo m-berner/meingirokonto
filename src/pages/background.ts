@@ -39,9 +39,9 @@ declare global {
 
   interface IBackup {
     sm: IBackupSm
-    account: IAccount[]
-    booking: IBooking[]
-    booking_type: IBookingType[]
+    accounts: IAccount[]
+    bookings: IBooking[]
+    booking_types: IBookingType[]
   }
 
   interface IStorageLocal {

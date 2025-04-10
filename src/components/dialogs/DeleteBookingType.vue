@@ -25,11 +25,11 @@ import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 //import {useRecordsStore} from '@/stores/records'
 //import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
+//import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 //const {notice} = useApp()
-const runtime = useRuntimeStore()
+//const runtime = useRuntimeStore()
 const formRef = useTemplateRef('form-ref')
 
 const state = reactive({
@@ -57,7 +57,7 @@ onMounted(() => {
   console.log('booking: onMounted', formRef)
   formRef.value?.reset()
   // state._auto = true
-  runtime.setIsOk(true)
+  //runtime.setIsOk(true)
   // if (!browser.runtime.onMessage.hasListener(onMessageAddCompany)) {
   //   // noinspection JSDeprecatedSymbols
   //   browser.runtime.onMessage.addListener(onMessageAddCompany)

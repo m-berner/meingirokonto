@@ -17,7 +17,6 @@
   </v-form>
 </template>
 <script lang="ts" setup>
-//import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -34,7 +33,6 @@ const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
 const state: IExportDatabase = reactive({
   _file_name: fn
 })
-//const runtime = useRuntimeStore()
 
 const ok = () => {
   console.log('EXPORTDATABASE: ok')
@@ -44,14 +42,14 @@ const ok = () => {
     let buffer: string
     let i: number
     buffer = '"accounts":[\n'
-    for (i = 0; i < records.account.all.length; i++) {
+    for (i = 0; i < records.accounts.all.length; i++) {
       buffer += JSON.stringify({
-        cSwift: records.account.all[i].cSwift,
-        cNumber: records.account.all[i].cNumber,
-        cCurrency: records.account.all[i].cCurrency,
-        cID: records.account.all[i].cID
+        cSwift: records.accounts.all[i].cSwift,
+        cNumber: records.accounts.all[i].cNumber,
+        cCurrency: records.accounts.all[i].cCurrency,
+        cID: records.accounts.all[i].cID
       })
-      if (i === records.account.all.length - 1) {
+      if (i === records.accounts.all.length - 1) {
         buffer += '\n],\n'
       } else {
         buffer += ',\n'
@@ -59,30 +57,30 @@ const ok = () => {
     }
     buffer += i === 0 ? '],\n' : ''
     buffer += '"booking_types":[\n'
-    for (i = 0; i < records.bookingType.all.length; i++) {
+    for (i = 0; i < records.bookingTypes.all.length; i++) {
       buffer += JSON.stringify({
-        cID: records.bookingType.all[i].cID,
-        cName: records.bookingType.all[i].cName,
+        cID: records.bookingTypes.all[i].cID,
+        cName: records.bookingTypes.all[i].cName,
       })
-      if (i === records.bookingType.all.length - 1) {
-        buffer += '\n]\n'
+      if (i === records.bookingTypes.all.length - 1) {
+        buffer += '\n],\n'
       } else {
         buffer += ',\n'
       }
     }
     buffer += i === 0 ? '],\n' : ''
     buffer += '"bookings":[\n'
-    for (i = 0; i < records.booking.all.length; i++) {
+    for (i = 0; i < records.bookings.all.length; i++) {
       buffer += JSON.stringify({
-        cID: records.booking.all[i].cID,
-        cDate: records.booking.all[i].cDate,
-        cDebit: records.booking.all[i].cDebit,
-        cCredit: records.booking.all[i].cCredit,
-        cDescription: records.booking.all[i].cDescription,
-        cType: records.booking.all[i].cType,
-        cAccountNumber: records.booking.all[i].cAccountNumber
+        cID: records.bookings.all[i].cID,
+        cDate: records.bookings.all[i].cDate,
+        cDebit: records.bookings.all[i].cDebit,
+        cCredit: records.bookings.all[i].cCredit,
+        cDescription: records.bookings.all[i].cDescription,
+        cType: records.bookings.all[i].cType,
+        cAccountNumber: records.bookings.all[i].cAccountNumber
       })
-      if (i === records.booking.all.length - 1) {
+      if (i === records.bookings.all.length - 1) {
         buffer += '\n]\n'
       } else {
         buffer += ',\n'
@@ -119,20 +117,15 @@ const ok = () => {
     .download(op)
     .then(() => {
       console.log('HEADERBAR: onExportDatabase', 'Download started')
+      notice(['Database exporting ...'])
     })
     .catch((err: Error) => {
       notice([err.message])
     })
-  //runtime.toggleVisibility()
 }
 const title = t('dialogs.exportDatabase.title')
 
 defineExpose({ok, title})
-
-// onMounted(() => {
-//   console.log('EXPORTDATABASE: onMounted')
-//   //runtime.setIsOk(true)
-// })
 
 console.log('--- ExportDatabase.vue setup ---')
 </script>

@@ -23,7 +23,7 @@ import {useRecordsStore} from '@/stores/records'
 // {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
+//import {useRuntimeStore} from '@/stores/runtime'
 import {CONS} from '@/pages/background'
 
 interface IImportDatabase {
@@ -35,7 +35,7 @@ interface EventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const runtime = useRuntimeStore()
+//const runtime = useRuntimeStore()
 const state: IImportDatabase = {
   _choosen_file: null
 }
@@ -54,18 +54,18 @@ const ok = async (): Promise<void> => {
       reject(ev)
     }
     const onLoadBackup = (): void => {
-      console.log('HEADERBAR: onLoadBackup')
+      console.log('IMPORTDATABASE: onLoadBackup')
       if (typeof fr.result === 'string') {
         const bkupObject: IBackup = JSON.parse(fr.result)
         if (bkupObject.sm.cDBVersion < CONS.DB.MINVERSION) {
-          notice(['HEADERBAR:onLoadBackup', 'Invalid backup file version'])
+          notice(['IMPORTDATABASE:onLoadBackup', 'Invalid backup file version'])
           reject(new Error('Invalid backup file version'))
         } else {
           records.setBkupObject(bkupObject)
           resolve('Backup file loaded successfully!')
         }
       } else {
-        notice(['HOMEPAGE:onLoadBackup', 'Could not read backup file'])
+        notice(['IMPORTDATABASE:onLoadBackup', 'Could not read backup file'])
         reject(new Error('Could not read backup file!'))
       }
     }
@@ -77,12 +77,10 @@ const ok = async (): Promise<void> => {
     }
   })
   records.loadBkupObjectIntoStore()
-  records.setActiveStocksPage(1)
-  await records.updateWrapper()
   const result = await records.storeIntoDatabase()
   if (result !== '') {
     console.info('IMPORTDATABASE: onLoad', result)
-    runtime.toggleVisibility()
+    //runtime.toggleVisibility()
     return Promise.resolve()
   } else {
     await notice(['IMPORTDATABASE: onLoad', result])
@@ -92,11 +90,6 @@ const ok = async (): Promise<void> => {
 const title = t('dialogs.importDatabase.title')
 
 defineExpose({ok, title})
-
-// onMounted(() => {
-//   console.log('IMPORTDATABASE: onMounted')
-//   runtime.setIsOk(true)
-// })
 
 console.log('--- ImportDatabase.vue setup ---')
 </script>
