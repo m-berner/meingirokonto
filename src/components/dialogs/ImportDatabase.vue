@@ -20,7 +20,7 @@
 </template>
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
-import {onMounted} from 'vue'
+// {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -89,18 +89,14 @@ const ok = async (): Promise<void> => {
     return Promise.reject('ERROR: database could not be loaded!')
   }
 }
-const title = () => {
-  return t('dialogs.importDatabase.title')
-}
-const classes = () => {
-  return ''
-}
-defineExpose({ok, title, classes})
+const title = t('dialogs.importDatabase.title')
 
-onMounted(() => {
-  console.log('IMPORTDATABASE: onMounted')
-  runtime.setIsOk(true)
-})
+defineExpose({ok, title})
+
+// onMounted(() => {
+//   console.log('IMPORTDATABASE: onMounted')
+//   runtime.setIsOk(true)
+// })
 
 console.log('--- ImportDatabase.vue setup ---')
 </script>

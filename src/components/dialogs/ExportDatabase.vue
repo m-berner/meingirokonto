@@ -17,9 +17,9 @@
   </v-form>
 </template>
 <script lang="ts" setup>
-import {useRuntimeStore} from '@/stores/runtime'
+//import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {onMounted, reactive} from 'vue'
+import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {CONS} from '@/pages/background'
@@ -34,55 +34,55 @@ const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
 const state: IExportDatabase = reactive({
   _file_name: fn
 })
-const runtime = useRuntimeStore()
+//const runtime = useRuntimeStore()
 
 const ok = () => {
   console.log('EXPORTDATABASE: ok')
   const records = useRecordsStore()
-  const {notice, offset} = useApp()
+  const {notice} = useApp()
   const stringifyDB = (): string => {
     let buffer: string
     let i: number
-    buffer = '"stocks":[\n'
-    for (i = 0; i < records.stocks.all.length; i++) {
+    buffer = '"accounts":[\n'
+    for (i = 0; i < records.account.all.length; i++) {
       buffer += JSON.stringify({
-        cCompany: records.stocks.all[i].cCompany,
-        cISIN: records.stocks.all[i].cISIN,
-        cWKN: records.stocks.all[i].cWKN,
-        cSym: records.stocks.all[i].cSym,
-        cQuarterDay: records.stocks.all[i].cQuarterDay > 0 ? records.stocks.all[i].cQuarterDay + offset() : 0,
-        cMeetingDay: records.stocks.all[i].cMeetingDay > 0 ? records.stocks.all[i].cMeetingDay + offset() : 0,
-        cFadeOut: records.stocks.all[i].cFadeOut,
-        cFirstPage: records.stocks.all[i].cFirstPage,
-        cURL: records.stocks.all[i].cURL,
-        cID: records.stocks.all[i].cID
+        cSwift: records.account.all[i].cSwift,
+        cNumber: records.account.all[i].cNumber,
+        cCurrency: records.account.all[i].cCurrency,
+        cID: records.account.all[i].cID
       })
-      if (i === records.stocks.all.length - 1) {
+      if (i === records.account.all.length - 1) {
         buffer += '\n],\n'
       } else {
         buffer += ',\n'
       }
     }
     buffer += i === 0 ? '],\n' : ''
-    buffer += '"transfers":[\n'
-    for (i = 0; i < records.transfers.all.length; i++) {
+    buffer += '"booking_types":[\n'
+    for (i = 0; i < records.bookingType.all.length; i++) {
       buffer += JSON.stringify({
-        cStockID: records.transfers.all[i].cStockID ?? 0,
-        cDate: records.transfers.all[i].cDate > 0 ? records.transfers.all[i].cDate + offset() : 0,
-        cUnitQuotation: records.transfers.all[i].cUnitQuotation,
-        cAmount: records.transfers.all[i].cAmount ?? 0,
-        cCount: records.transfers.all[i].cCount ?? 0,
-        cFees: records.transfers.all[i].cFees ?? 0,
-        cSTax: records.transfers.all[i].cSTax ?? 0,
-        cFTax: records.transfers.all[i].cFTax ?? 0,
-        cTax: records.transfers.all[i].cTax ?? 0,
-        cSoli: records.transfers.all[i].cSoli ?? 0,
-        cExDay: records.transfers.all[i].cExDay > 0 ? records.transfers.all[i].cExDay + offset() : 0,
-        cMarketPlace: records.transfers.all[i].cMarketPlace,
-        cDescription: records.transfers.all[i].cDescription,
-        cType: records.transfers.all[i].cType ?? 0
+        cID: records.bookingType.all[i].cID,
+        cName: records.bookingType.all[i].cName,
       })
-      if (i === records.transfers.all.length - 1) {
+      if (i === records.bookingType.all.length - 1) {
+        buffer += '\n]\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    buffer += i === 0 ? '],\n' : ''
+    buffer += '"bookings":[\n'
+    for (i = 0; i < records.booking.all.length; i++) {
+      buffer += JSON.stringify({
+        cID: records.booking.all[i].cID,
+        cDate: records.booking.all[i].cDate,
+        cDebit: records.booking.all[i].cDebit,
+        cCredit: records.booking.all[i].cCredit,
+        cDescription: records.booking.all[i].cDescription,
+        cType: records.booking.all[i].cType,
+        cAccountNumber: records.booking.all[i].cAccountNumber
+      })
+      if (i === records.booking.all.length - 1) {
         buffer += '\n]\n'
       } else {
         buffer += ',\n'
@@ -123,20 +123,16 @@ const ok = () => {
     .catch((err: Error) => {
       notice([err.message])
     })
-  runtime.toggleVisibility()
+  //runtime.toggleVisibility()
 }
-const title = () => {
-  return t('dialogs.exportDatabase.title')
-}
-const classes = () => {
-  return ''
-}
-defineExpose({ok, title, classes})
+const title = t('dialogs.exportDatabase.title')
 
-onMounted(() => {
-  console.log('EXPORTDATABASE: onMounted')
-  runtime.setIsOk(true)
-})
+defineExpose({ok, title})
+
+// onMounted(() => {
+//   console.log('EXPORTDATABASE: onMounted')
+//   //runtime.setIsOk(true)
+// })
 
 console.log('--- ExportDatabase.vue setup ---')
 </script>

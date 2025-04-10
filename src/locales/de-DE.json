@@ -121,65 +121,25 @@
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
+    "deleteAccount": {
+      "title": "Bankkonto hinzufügen",
+      "swiftLabel": "BIC/SWIFT Code",
+      "currencyLabel": "Währungscode",
+      "accountNumberLabel": "Kontonummer",
+      "currencyPlaceholder": "z. B. EUR",
+      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "success": "Konto wurde hinzugefügt",
+      "error": "Konto existiert bereits"
+    },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
       "label": "Buchungstyp",
       "success": "Buchungstyp wurde hinzugefügt",
       "error": "Buchungstyp existiert bereits"
     },
-    "editBookingType": {
+    "deleteBookingType": {
       "title": "Buchungstyp bearbeiten",
       "label": "Buchungstyp"
-    },
-    "fadeinStock": {
-      "title": "Ausgeblendetes Unternehmen einblenden",
-      "company": "Unternehmen"
-    },
-    "addDeposit": {
-      "title": "Einzahlung",
-      "amount": "Betrag",
-      "date": "Datum",
-      "description": "Bemerkung",
-      "types": {
-        "transfer": "Transfer",
-        "fee": "Gebühr",
-        "stax": "Quellensteuer",
-        "ftax": "Transaktionssteuer",
-        "tax": "Steuer",
-        "soli": "Solidaritätszuschlag"
-      }
-    },
-    "addWithdrawal": {
-      "title": "Auszahlung",
-      "amount": "Betrag",
-      "date": "Datum",
-      "description": "Bemerkung",
-      "types": {
-        "transfer": "Transfer",
-        "fee": "Gebühr",
-        "stax": "Quellensteuer",
-        "ftax": "Transaktionssteuer",
-        "tax": "Steuer",
-        "soli": "Solidaritätszuschlag"
-      }
-    },
-    "showAccounting": {
-      "title": "Jahres-Rechnung",
-      "returnRate": "Rendite",
-      "efficiency": "Effizienz",
-      "year": "Jahr",
-      "deposits": "Einzahlung",
-      "withdrawals": "Auszahlung",
-      "dividends": "Dividende",
-      "taxes": "Steuern/Soli",
-      "fees": "Gebühren",
-      "earnings": "Aktien-Erlös"
-    },
-    "dailyChanges": {
-      "title": "Tagesveränderungen"
-    },
-    "dailyChangesAll": {
-      "title": "Alle Tagesveränderungen"
     },
     "exportDatabase": {
       "title": "Datenbank exportieren",
@@ -189,64 +149,6 @@
       "title": "Datenbank importieren",
       "filename": "Dateiname",
       "label": "aus Datei"
-    },
-    "deleteTransfer": {
-      "title": "Buchung löschen",
-      "message": [
-        "Soll die Buchung vom",
-        "wirklich gelöscht werden?",
-        "Es kann nur die erste Buchung gelöscht werden."
-      ]
-    },
-    "updateTransfer": {
-      "title": "Buchung bearbeiten",
-      "bookDay": "Buchungstag",
-      "exDay": "Ex-Tag",
-      "unitQuotation": "Preis",
-      "amount": "Betrag",
-      "number": "Anzahl",
-      "fees": "Gebühren",
-      "sTax": "Quellensteuer",
-      "fTax": "Transaktionssteuer",
-      "tax": "Steuer",
-      "soli": "Solidaritätszuschlag",
-      "marketPlace": "Handelsplatz",
-      "description": "Bemerkung",
-      "validationError": "Die Buchung kann nicht validiert werden."
-    },
-    "deleteStock": {
-      "title": "Unternehmen löschen",
-      "messageA": "Soll das Unternehmen {company} wirklich gelöscht werden?",
-      "messageB": "Es gibt Buchungen von {company}. {company} kann nicht gelöscht werden.",
-      "msgPortfolio": "Die Aktie ist im Portfolio enthalten und kann nicht ausgeblendet werden."
-    },
-    "addDividend": {
-      "title": "Neue Dividende - {company}",
-      "bookDay": "Buchungstag",
-      "exDay": "Ex-Tag",
-      "count": "Anzahl",
-      "unitQuotation": "Preis",
-      "stax": "Quellensteuer",
-      "tax": "Steuern",
-      "soli": "Solidaritätszuschlag",
-      "description": "Bemerkung",
-      "validationError": "Die Dividende kann nicht validiert werden."
-    },
-    "viewDividend": {
-      "title": "Dividenden Übersicht - {company}"
-    },
-    "sellStock": {
-      "title": "Aktien verkaufen - {company}",
-      "bookDay": "Buchungstag",
-      "count": "Anzahl",
-      "unitQuotation": "Preis",
-      "fees": "Gebühren",
-      "stax": "Quellensteuer",
-      "tax": "Steuern",
-      "soli": "Soli",
-      "marketplace": "Handelsplatz",
-      "validationError": "Die Aktie kann nicht validiert werden.",
-      "loss": "mit Verlust"
     },
     "configStock": {
       "title": "Aktie konfigurieren - {company}",
@@ -261,20 +163,7 @@
       "url": "Link zur Aktienseite",
       "validationError": "Die Konfiguration kann nicht validiert werden."
     },
-    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - Heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden).",
-    "buyStock": {
-      "title": "Aktien kaufen - {company}",
-      "bookDay": "Buchungstag",
-      "count": "Anzahl",
-      "unitQuotation": "Preis",
-      "fees": "Gebühren",
-      "ftax": "Transaktionssteuer",
-      "tax": "Steuern",
-      "soli": "Solidaritätszuschlag",
-      "marketplace": "Handelsplatz",
-      "validationError": "Die Aktie kann nicht validiert werden.",
-      "hint": "Angabe ist erforderlich"
-    }
+    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - Heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
   },
   "footer": {
     "help": "Hilfe",
