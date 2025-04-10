@@ -84,8 +84,6 @@ onBeforeMount(async (): Promise<void> => {
     const onKeyUp = (ev: KeyboardEvent): void => {
       keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
     }
-    //if (!window.location.href.includes('options')) {
-    //  console.log('APPINDEX: onBeforeMount options')
     const msg = await initStorageLocal()
     console.info('APPINDEX: ', msg)
     if (!browser.storage.onChanged.hasListener(onStorageChange)) {
@@ -97,9 +95,7 @@ onBeforeMount(async (): Promise<void> => {
 
     await records.openDatabase()
     await records.databaseIntoStore()
-    //await settings.storageIntoStore(theme)
     await records.storageIntoStore()
-    // }
     await settings.storageIntoStore(theme)
   }
 )

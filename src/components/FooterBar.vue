@@ -31,12 +31,9 @@
 </template>
 
 <script lang="ts" setup>
-// import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
 import {CONS} from '@/pages/background'
-
 const {t} = useI18n()
-// const runtime = useRuntimeStore()
 
 console.log('--- FooterBar.vue setup ---')
 </script>

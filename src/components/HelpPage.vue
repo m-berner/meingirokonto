@@ -76,6 +76,7 @@
 import {useI18n} from 'vue-i18n'
 
 const {rt, t, tm} = useI18n()
+
 const helpPageRequests: Record<string, string>[] = tm('helpPage.requests')
 const helpPageToolbar: Record<string, string>[] = tm('helpPage.toolBar')
 const helpPageCompanybar: Record<string, string>[] = tm('helpPage.companyBar')

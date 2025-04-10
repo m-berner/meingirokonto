@@ -14,7 +14,7 @@
   },
   "background": {
     "scripts": [
-      "background.js"
+      "pages/background.js"
     ]
   },
   "permissions": [
@@ -25,7 +25,7 @@
   "options_ui": {
     "browser_style": false,
     "open_in_tab": false,
-    "page": "options.html"
+    "page": "pages/options.html"
   },
   "browser_specific_settings": {
     "gecko": {

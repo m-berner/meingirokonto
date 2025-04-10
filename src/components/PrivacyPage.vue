@@ -42,6 +42,7 @@
 import {useI18n} from 'vue-i18n'
 
 const {rt, t, tm} = useI18n()
+
 const dataList: string[] = tm('privacyPage.connections.dataList')
 
 console.log('--- PrivacyDocument.vue setup ---')

@@ -21,33 +21,6 @@
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
-    <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
-      <template v-slot:activator="{ props }">
-        <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
-          <v-icon icon="$addAccount"></v-icon>
-        </v-app-bar-nav-icon>
-      </template>
-    </v-tooltip>
-    <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
-      <template v-slot:activator="{ props }">
-        <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
-          <v-icon icon="$addBookingType"></v-icon>
-        </v-app-bar-nav-icon>
-      </template>
-    </v-tooltip>
-    <v-spacer></v-spacer>
     <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -62,63 +35,55 @@
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.cashPlus')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$cashPlus"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon icon="$addAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.cashMinus')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.DIALOGS.DELETE_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$cashMinus"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon icon="$deleteAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.dailyChanges')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$dailyChanges"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon icon="$addBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.dailyChangesAll')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.DIALOGS.DELETE_BOOKING_TYPE"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$dailyChangesAll"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon icon="$deleteBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -127,14 +92,12 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.exportDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.EXPORTDB"
+          v-bind:id="CONS.DIALOGS.EXPORT_DB"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$exportDatabase"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon class="put-into-background" icon="$exportDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -142,14 +105,12 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.IMPORTDB"
+          v-bind:id="CONS.DIALOGS.IMPORT_DB"
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="runtime.toggleVisibility"
-        >
-          <v-icon class="put-into-background" icon="$importDatabase"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon class="put-into-background" icon="$importDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -262,13 +223,33 @@ const onIconClick = async (ev: Event): Promise<void> => {
         state.showOkButton = true
         state.showDialog = true
         break
+      case CONS.DIALOGS.DELETE_ACCOUNT:
+        state.dialogName = COMPONENT_NAMES.DELETE_ACCOUNT
+        state.showOkButton = true
+        state.showDialog = true
+        break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
         state.dialogName = COMPONENT_NAMES.ADD_BOOKING_TYPE
         state.showOkButton = true
         state.showDialog = true
         break
+      case CONS.DIALOGS.DELETE_BOOKING_TYPE:
+        state.dialogName = COMPONENT_NAMES.DELETE_BOOKING_TYPE
+        state.showOkButton = true
+        state.showDialog = true
+        break
       case CONS.DIALOGS.ADD_BOOKING:
         state.dialogName = COMPONENT_NAMES.ADD_BOOKING
+        state.showOkButton = true
+        state.showDialog = true
+        break
+      case CONS.DIALOGS.EXPORT_DB:
+        state.dialogName = COMPONENT_NAMES.EXPORT_DB
+        state.showOkButton = true
+        state.showDialog = true
+        break
+      case CONS.DIALOGS.IMPORT_DB:
+        state.dialogName = COMPONENT_NAMES.IMPORT_DB
         state.showOkButton = true
         state.showDialog = true
         break
