@@ -146,110 +146,87 @@
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
-  <Teleport to="body">
-    <v-dialog v-model="state.showDialog" v-bind:persistent="true" width="500">
-      <v-card>
-        <v-card-title class="text-center">
-          {{ state.childTitle }}
-        </v-card-title>
-        <v-card-text class="pa-5">
-          <component v-bind:is="state.dialogName" ref="dialog-ref"></component>
-        </v-card-text>
-        <v-card-actions class="pa-5">
-          <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-if="state.showOkButton"
-                class="ml-auto"
-                icon="$check"
-                type="submit"
-                v-bind="props"
-                variant="outlined"
-                v-on:click="state.childOk"
-              ></v-btn>
-            </template>
-          </v-tooltip>
-          <v-spacer></v-spacer>
-          <v-tooltip location="bottom" v-bind:text="t('dialogs.cancel')">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                class="ml-auto"
-                icon="$close"
-                v-bind="props"
-                variant="outlined"
-                v-on:click="resetState"
-              ></v-btn>
-            </template>
-          </v-tooltip>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </Teleport>
+  <DialogPort></DialogPort>
 </template>
 
 <script lang="ts" setup>
 import {COMPONENT_NAMES} from '@/pages/app'
 import {useI18n} from 'vue-i18n'
-import {onUpdated, reactive, useTemplateRef} from 'vue'
 import {CONS} from '@/pages/background'
+import DialogPort from '@/components/dialogs/DialogPort.vue'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
+const runtime = useRuntimeStore()
 
-const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
-
-const state = reactive({
-  dialogName: '',
-  childTitle: '',
-  childOk: null,
-  showOkButton: true,
-  showDialog: false
-})
-const resetState = () => {
-  state.dialogName = ''
-  state.childTitle = ''
-  state.childOk = null
-  state.showOkButton = true
-  state.showDialog = false
-}
 const onIconClick = async (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
-        state.dialogName = COMPONENT_NAMES.ADD_ACCOUNT
-        state.showOkButton = true
-        state.showDialog = true
+        console.error(loop)
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.ADD_ACCOUNT,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
-        state.dialogName = COMPONENT_NAMES.DELETE_ACCOUNT
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.DELETE_ACCOUNT,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
-        state.dialogName = COMPONENT_NAMES.ADD_BOOKING_TYPE
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.ADD_BOOKING_TYPE,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
-        state.dialogName = COMPONENT_NAMES.DELETE_BOOKING_TYPE
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.DELETE_BOOKING_TYPE,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.ADD_BOOKING:
-        state.dialogName = COMPONENT_NAMES.ADD_BOOKING
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.ADD_BOOKING,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.EXPORT_DB:
-        state.dialogName = COMPONENT_NAMES.EXPORT_DB
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.EXPORT_DB,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.IMPORT_DB:
-        state.dialogName = COMPONENT_NAMES.IMPORT_DB
-        state.showOkButton = true
-        state.showDialog = true
+        runtime.setTeleport({
+          dialogName: COMPONENT_NAMES.IMPORT_DB,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
         break
       case CONS.DIALOGS.SETTING:
         await browser.runtime.openOptionsPage()
@@ -263,13 +240,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
     await parse(ev.target)
   }
 }
-
-onUpdated(() => {
-  if (dialogRef.value!.title !== undefined) {
-    state.childTitle = dialogRef.value!.title
-    state.childOk = dialogRef.value!.ok
-  }
-})
 
 console.log('--- HeaderBar.vue setup ---')
 </script>
