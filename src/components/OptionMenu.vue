@@ -61,42 +61,7 @@ const setId = (optionIndex = -1): string => {
   }
   return resultId
 }
-// const selectOption = (optionIndex = -1): void => {
-//   console.info('OPTIONMENU selectOption', optionIndex)
-//     switch (optionIndex) {
-//       case 0:
-//         runtime.toggleVisibility(CONS.DIALOGS.DELETESTOCK)
-//         break
-//       case 1:
-//         runtime.toggleVisibility(CONS.DIALOGS.BUYSTOCK)
-//         break
-//       case 2:
-//         runtime.toggleVisibility(CONS.DIALOGS.SELLSTOCK)
-//         break
-//       case 3:
-//         runtime.toggleVisibility(CONS.DIALOGS.ADDDIVIDEND)
-//         break
-//       case 4:
-//         runtime.toggleVisibility(CONS.DIALOGS.SHOWDIVIDEND)
-//         break
-//       default:
-//         break
-//
-//   }
-// }
-// const setId = (optionIndex = -1): string => {
-//   let resultId: string = ''
-//     switch (optionIndex) {
-//       case 0:
-//         resultId = CONS.DIALOGS.DELETE_BOOKING
-//         break
-//       case 1:
-//         resultId = CONS.DIALOGS.BUYSTOCK
-//         break
-//       default:
-//   }
-//   return resultId
-// }
+
 const onIconClick = async (ev: Event): Promise<void> => {
   console.info('OPTIONMENU: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {

@@ -49,25 +49,25 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-//import {onUpdated, useTemplateRef} from 'vue'
+import {useTemplateRef, watchEffect} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const runtime = useRuntimeStore()
-//const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
+const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
-// onUpdated(() => {
-//   console.info('DIALOG_PORT: onUpdated', dialogRef.value)
-//   if (dialogRef.value!.title !== undefined) {
-//     runtime.setTeleport({
-//       dialogName: runtime.teleport.dialogName,
-//       childTitle: dialogRef.value!.title,
-//       childOk: dialogRef.value!.ok,
-//       showOkButton: runtime.teleport.showOkButton,
-//       showDialog: runtime.teleport.showDialog
-//     })
-//   }
-// })
+watchEffect(() => {
+  console.info('DIALOG_PORT: watchEffect', dialogRef.value)
+  if (dialogRef.value !== null && dialogRef.value!.title !== undefined) {
+    runtime.setTeleport({
+      dialogName: runtime.teleport.dialogName,
+      childTitle: dialogRef.value!.title,
+      childOk: dialogRef.value!.ok,
+      showOkButton: runtime.teleport.showOkButton,
+      showDialog: runtime.teleport.showDialog
+    })
+  }
+})
 
 console.log('--- DialogPort.vue setup ---')
 </script>

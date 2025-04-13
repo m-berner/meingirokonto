@@ -165,7 +165,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
-        console.error(loop)
         runtime.setTeleport({
           dialogName: COMPONENT_NAMES.ADD_ACCOUNT,
           childOk: runtime.teleport.childOk,
