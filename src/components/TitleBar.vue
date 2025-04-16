@@ -14,10 +14,10 @@
     <v-select
       v-if="records.accounts.all.length > 0"
       v-model="records.accounts.active_id"
-      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
-      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       label="IBAN"
       max-width="300"
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts.all"
     ></v-select>
   </v-app-bar>
@@ -34,16 +34,23 @@ const {t} = useI18n()
 const records = useRecordsStore()
 
 const state = reactive({
-  logo: 'nologo'
+  logo: 'DefaultSvg'
   // DE12 5001 0517 5419 2996 72 INGDEFFXXX
   // DE13 1203 0000 1064 5069 99 BYLADEM1001
 })
 // TODO calculate booking sums cCredit + cDebit
 watchEffect(() => {
   const accountIndex = records.getAccountIndexById(records.accounts.active_id)
-  if (accountIndex === -1) { return }
-  state.logo = records.accounts.all[accountIndex].cSwift.substring(0,4).toLowerCase()
-  browser.storage.local.set({ sAccountActiveId: records.accounts.all[accountIndex].cID })
+  if (accountIndex > -1) {
+    const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
+    if (Object.keys(CONS.LOGOS).includes(lName.toUpperCase())) {
+      state.logo = lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'
+    } else {
+      state.logo = 'DefaultSvg'
+    }
+    console.info('TITLEBAR: watchEffect', state.logo)
+    browser.storage.local.set({sAccountActiveId: records.accounts.all[accountIndex].cID})
+  }
 })
 
 console.log('--- TitleBar.vue setup ---')

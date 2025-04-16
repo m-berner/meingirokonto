@@ -7,9 +7,10 @@ import DeleteBookingType from '@/components/dialogs/DeleteBookingType.vue';
 import AddBooking from '@/components/dialogs/AddBooking.vue';
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
-import nologo from '@/components/logos/nologo.vue';
-import ingd from '@/components/logos/ingd.vue';
-import byla from '@/components/logos/byla.vue';
+import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
+import DefaultSvg from '@/components/logos/DefaultSvg.vue';
+import IngdSvg from '@/components/logos/IngdSvg.vue';
+import BylaSvg from '@/components/logos/BylaSvg.vue';
 export default {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount);
@@ -17,11 +18,12 @@ export default {
         app.component(CONS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType);
         app.component(CONS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType);
         app.component(CONS.DIALOGS.ADD_BOOKING, AddBooking);
-        app.component(CONS.DIALOGS.EXPORT_DB, ExportDatabase);
-        app.component(CONS.DIALOGS.IMPORT_DB, ImportDatabase);
-        app.component(CONS.DIALOGS.NO_LOGO, nologo);
-        app.component(CONS.DIALOGS.INGD, ingd);
-        app.component(CONS.DIALOGS.BYLA, byla);
+        app.component(CONS.DIALOGS.EXPORT_DATABASE, ExportDatabase);
+        app.component(CONS.DIALOGS.IMPORT_DATABASE, ImportDatabase);
+        app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting);
+        app.component(CONS.LOGOS.NO_LOGO, DefaultSvg);
+        app.component(CONS.LOGOS.INGD, IngdSvg);
+        app.component(CONS.LOGOS.BYLA, BylaSvg);
     }
 };
 console.log('--- PLUGINS components.js ---');

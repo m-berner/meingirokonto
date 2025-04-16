@@ -131,6 +131,15 @@
       "title": "Buchungstyp bearbeiten",
       "label": "Buchungstyp"
     },
+    "showAccounting": {
+      "title": "Buchung hinzufügen",
+      "dateLabel": "Buchungstag",
+      "descriptionLabel": "Bemerkung",
+      "creditLabel": "Einnahme",
+      "debitLabel": "Ausgabe",
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
+    },
     "exportDatabase": {
       "title": "Datenbank exportieren",
       "filename": "Dateiname"

@@ -120,10 +120,12 @@ type TCons = Readonly<{
     ADD_BOOKING: string;
     DELETE_BOOKING: string;
     DELETE_BOOKING_TYPE: string;
-    EXPORT_DB: string;
-    IMPORT_DB: string;
-    ACCOUNTING: string;
+    EXPORT_DATABASE: string;
+    IMPORT_DATABASE: string;
+    SHOW_ACCOUNTING: string;
     SETTING: string;
+  }
+  LOGOS: {
     NO_LOGO: string;
     INGD: string;
     BYLA: string;
@@ -436,13 +438,15 @@ export const CONS: TCons = Object.freeze({
     DELETE_BOOKING_TYPE: 'DeleteBookingType',
     ADD_BOOKING: 'AddBooking',
     DELETE_BOOKING: 'DeleteBooking',
-    EXPORT_DB: 'ExportDatabase',
-    IMPORT_DB: 'ImportDatabase',
-    ACCOUNTING: 'Accounting',
-    SETTING: 'setting',
-    NO_LOGO: 'Nologo',
-    INGD: 'ingd',
-    BYLA: 'byla'
+    EXPORT_DATABASE: 'ExportDatabase',
+    IMPORT_DATABASE: 'ImportDatabase',
+    SHOW_ACCOUNTING: 'ShowAccounting',
+    SETTING: 'setting'
+  },
+  LOGOS: {
+    NO_LOGO: 'DefaultSvg',
+    INGD: 'IngdSvg',
+    BYLA: 'BylaSvg'
   },
   EVENTS: {
     ABORT: 'abort',

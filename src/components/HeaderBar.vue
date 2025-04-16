@@ -92,7 +92,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.exportDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.EXPORT_DB"
+          v-bind:id="CONS.DIALOGS.EXPORT_DATABASE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -105,7 +105,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.IMPORT_DB"
+          v-bind:id="CONS.DIALOGS.IMPORT_DATABASE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -119,7 +119,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ACCOUNTING"
+          v-bind:id="CONS.DIALOGS.SHOW_ACCOUNTING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -208,27 +208,27 @@ const onIconClick = async (ev: Event): Promise<void> => {
           showDialog: true
         })
         break
-      case CONS.DIALOGS.EXPORT_DB:
+      case CONS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.EXPORT_DB,
+          dialogName: CONS.DIALOGS.EXPORT_DATABASE,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
           showDialog: true
         })
         break
-      case CONS.DIALOGS.IMPORT_DB:
+      case CONS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.IMPORT_DB,
+          dialogName: CONS.DIALOGS.IMPORT_DATABASE,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
           showDialog: true
         })
         break
-      case CONS.DIALOGS.ACCOUNTING:
+      case CONS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ACCOUNTING,
+          dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
