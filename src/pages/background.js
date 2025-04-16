@@ -142,6 +142,7 @@ export const CONS = Object.freeze({
         DELETE_BOOKING: 'DeleteBooking',
         EXPORT_DB: 'ExportDatabase',
         IMPORT_DB: 'ImportDatabase',
+        ACCOUNTING: 'Accounting',
         SETTING: 'setting',
         NO_LOGO: 'Nologo',
         INGD: 'ingd',

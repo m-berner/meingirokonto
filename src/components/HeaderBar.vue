@@ -119,7 +119,7 @@
     <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.DIALOGS.ACCOUNTING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -220,6 +220,15 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.DIALOGS.IMPORT_DB:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DB,
+          childOk: runtime.teleport.childOk,
+          childTitle: runtime.teleport.childTitle,
+          showOkButton: true,
+          showDialog: true
+        })
+        break
+      case CONS.DIALOGS.ACCOUNTING:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ACCOUNTING,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,

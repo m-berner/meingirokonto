@@ -122,6 +122,7 @@ type TCons = Readonly<{
     DELETE_BOOKING_TYPE: string;
     EXPORT_DB: string;
     IMPORT_DB: string;
+    ACCOUNTING: string;
     SETTING: string;
     NO_LOGO: string;
     INGD: string;
@@ -437,6 +438,7 @@ export const CONS: TCons = Object.freeze({
     DELETE_BOOKING: 'DeleteBooking',
     EXPORT_DB: 'ExportDatabase',
     IMPORT_DB: 'ImportDatabase',
+    ACCOUNTING: 'Accounting',
     SETTING: 'setting',
     NO_LOGO: 'Nologo',
     INGD: 'ingd',

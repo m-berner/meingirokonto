@@ -2,7 +2,7 @@ import {} from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBankPlus, mdiBankRemove, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
+import { mdiBankPlus, mdiBankRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
 export default {
     vuetify: createVuetify({
         theme: {
@@ -108,6 +108,7 @@ export default {
                 deleteStock: mdiDomainRemove,
                 exportDatabase: mdiDatabaseExport,
                 importDatabase: mdiDatabaseImport,
+                showAccounting: mdiCalculator,
                 settings: mdiCog,
                 copyright: mdiCopyright,
                 link: mdiInfinity,

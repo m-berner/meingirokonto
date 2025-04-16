@@ -12,6 +12,7 @@ import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
   mdiBankPlus,
   mdiBankRemove,
+  mdiCalculator,
   mdiCheck,
   mdiClose,
   mdiCog,
@@ -149,6 +150,7 @@ export default<IVuetify> {
         deleteStock: mdiDomainRemove,
         exportDatabase: mdiDatabaseExport,
         importDatabase: mdiDatabaseImport,
+        showAccounting: mdiCalculator,
         settings: mdiCog,
         copyright: mdiCopyright,
         link: mdiInfinity,
