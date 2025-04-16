@@ -7,10 +7,8 @@
  */
 import OptionsIndex from '@/pages/OptionsIndex.vue'
 import {createApp} from 'vue'
-import 'vuetify/styles'
-import {useApp} from '@/composables/useApp'
-
-const {vuetify, i18n} = useApp()
+import vuetifyPlugin from '@/plugins/vuetify'
+import i18nPlugin from '@/plugins/i18n'
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
   console.error(err)
@@ -18,8 +16,8 @@ op.config.errorHandler = (err: unknown) => {
 op.config.warnHandler = (msg: string) => {
   console.warn(msg)
 }
-op.use(vuetify)
-op.use(i18n)
+op.use(vuetifyPlugin.vuetify)
+op.use(i18nPlugin.i18n)
 op.mount('#options')
 
 console.log('--- options.js ---')

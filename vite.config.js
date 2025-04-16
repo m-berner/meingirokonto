@@ -11,7 +11,7 @@ import zipPack from 'vite-plugin-zip-pack'
 export default defineConfig({
     plugins: [
         vue(),
-        vuetify(),
+        vuetify({ autoImport: true }),
         VueI18nPlugin({
             runtimeOnly: true,
             compositionOnly: true,

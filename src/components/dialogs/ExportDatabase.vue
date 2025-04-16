@@ -20,7 +20,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useApp} from '@/pages/background'
 import {CONS} from '@/pages/background'
 
 interface IExportDatabase {

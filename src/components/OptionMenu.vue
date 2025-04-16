@@ -35,7 +35,6 @@
 import {useI18n} from 'vue-i18n'
 import DialogPort from '@/components/dialogs/DialogPort.vue'
 import {CONS} from '@/pages/background'
-import {COMPONENT_NAMES} from '@/pages/app'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface PropsOptionMenu {
@@ -69,7 +68,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.ADD_ACCOUNT,
+          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -78,7 +77,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.DELETE_ACCOUNT,
+          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,

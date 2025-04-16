@@ -7,16 +7,13 @@
   -->
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
-    <v-combobox
+    <v-select
       v-model="state.selected"
-      :items="state.data"
-      autofocus
-      item-title="cName"
-      item-value="cID"
-      label="Buchungstyp"
+      v-bind:label="t('dialogs.deleteBookingType.label')"
+      density="compact"
       required
       variant="outlined"
-    ></v-combobox>
+    ></v-select>
   </v-form>
 </template>
 
@@ -24,7 +21,7 @@
 import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 //import {useRecordsStore} from '@/stores/records'
-//import {useApp} from '@/composables/useApp'
+//import {useApp} from '@/pages/background'
 //import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()

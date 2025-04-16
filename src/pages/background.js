@@ -140,17 +140,12 @@ export const CONS = Object.freeze({
         DELETE_BOOKING_TYPE: 'DeleteBookingType',
         ADD_BOOKING: 'AddBooking',
         DELETE_BOOKING: 'DeleteBooking',
-        EXPORT_DB: 'exportdb',
-        IMPORT_DB: 'importdb',
-        DELETETRANSFER: 'deletetransfer',
-        UPDATETRANSFER: 'updatetransfer',
-        DELETESTOCK: 'deletestock',
-        BUYSTOCK: 'buystock',
-        SELLSTOCK: 'sellstock',
-        ADDDIVIDEND: 'adddividend',
-        SHOWDIVIDEND: 'showdividend',
-        CONFIGSTOCK: 'configstock',
-        SETTING: 'setting'
+        EXPORT_DB: 'ExportDatabase',
+        IMPORT_DB: 'ImportDatabase',
+        SETTING: 'setting',
+        NO_LOGO: 'Nologo',
+        INGD: 'ingd',
+        BYLA: 'byla'
     },
     EVENTS: {
         ABORT: 'abort',
@@ -313,81 +308,167 @@ export const CONS = Object.freeze({
         }
     }
 });
+export const getUI = () => {
+    const result = {
+        lang: '',
+        region: '',
+        locale: ''
+    };
+    const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
+    if (uiLang.includes('-')) {
+        result.lang = uiLang.split('-')[0];
+        result.region = uiLang.split('-')[1].toUpperCase();
+        result.locale = uiLang;
+    }
+    else {
+        result.lang = uiLang;
+        result.region = uiLang.toUpperCase();
+        result.locale = uiLang + '-' + uiLang.toUpperCase();
+    }
+    return result;
+};
+export const useApp = () => {
+    return {
+        VALIDATORS: Object.freeze({
+            ibanRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length < 37) || msgs[1],
+                    v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgs[2]
+                ];
+            },
+            nameRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length < 16) || msgs[1],
+                    v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+                ];
+            },
+            swiftRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length < 13) || msgs[1],
+                    v => v.match(/[^a-zA-Z0-9]/g) === null || msgs[2]
+                ];
+            },
+            dateRules: msgs => {
+                return [
+                    v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+                ];
+            },
+            currencyCodeRules: msgs => {
+                return [
+                    v => v !== null || msgs[0],
+                    v => (v !== null && v.length === 3) || msgs[1],
+                    v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+                ];
+            },
+            requiredRule: msgs => {
+                return [
+                    v => v !== null || msgs[0]
+                ];
+            }
+        }),
+        utcDate: (iso) => {
+            const tzo = new Date().getTimezoneOffset() / 60;
+            let result = '';
+            if (tzo < 0 && tzo > -10) {
+                result = `+0${-tzo}`;
+            }
+            else if (tzo < 0) {
+                result = `+${-tzo}`;
+            }
+            else if (tzo >= 0 && tzo < 10) {
+                result = `-0${tzo}`;
+            }
+            else if (tzo > 9) {
+                result = `-${tzo}`;
+            }
+            return new Date(`${iso}T00:00:00.000${result}:00`);
+        },
+        notice: async (messages) => {
+            const msg = messages.join('\n');
+            const notificationOption = {
+                type: 'basic',
+                iconUrl: '_assets/icon16.png',
+                title: 'MeinGiroKonto',
+                message: msg
+            };
+            await browser.notifications.create(notificationOption);
+        }
+    };
+};
 if (window.location.href.includes('_generated_background_page.html')) {
-    const useBackground = () => {
-        const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` };
-        const onClick = async () => {
-            console.log('BACKGROUND: onClick');
-            const start = async () => {
-                console.log('BACKGROUND: onClick: start');
-                const foundTabs = await browser.tabs.query(appUrls);
-                if (foundTabs.length === 0) {
-                    await browser.tabs.create({
-                        url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
-                        active: true
+    const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` };
+    const onClick = async () => {
+        console.log('BACKGROUND: onClick');
+        const start = async () => {
+            console.log('BACKGROUND: onClick: start');
+            const foundTabs = await browser.tabs.query(appUrls);
+            if (foundTabs.length === 0) {
+                await browser.tabs.create({
+                    url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+                    active: true
+                });
+            }
+            else {
+                await browser.windows.update(foundTabs[0].windowId ?? 0, {
+                    focused: true
+                });
+                await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
+            }
+        };
+        await start();
+    };
+    const onInstall = () => {
+        console.log('BACKGROUND: onInstall');
+        const onSuccess = (ev) => {
+            console.log('BACKGROUND: onInstall: onSuccess');
+            if (ev.target instanceof IDBRequest) {
+                ev.target.result.close();
+            }
+        };
+        const onError = (ev) => {
+            console.error('BACKGROUND: onError: ', ev);
+        };
+        const onUpgradeNeeded = async (ev) => {
+            if (ev instanceof IDBVersionChangeEvent) {
+                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
+                const createDB = () => {
+                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                    const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
+                        keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                        autoIncrement: true
                     });
+                    const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
+                };
+                if (ev.oldVersion === 0) {
+                    createDB();
                 }
                 else {
-                    await browser.windows.update(foundTabs[0].windowId ?? 0, {
-                        focused: true
-                    });
-                    await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
                 }
-            };
-            await start();
+            }
         };
-        const onInstall = () => {
-            console.log('BACKGROUND: onInstall');
-            const onSuccess = (ev) => {
-                console.log('BACKGROUND: onInstall: onSuccess');
-                if (ev.target instanceof IDBRequest) {
-                    ev.target.result.close();
-                }
-            };
-            const onError = (ev) => {
-                console.error('BACKGROUND: onError: ', ev);
-            };
-            const onUpgradeNeeded = async (ev) => {
-                if (ev instanceof IDBVersionChangeEvent) {
-                    console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
-                    const createDB = () => {
-                        console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
-                        const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
-                            keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                            keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                            keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
-                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
-                    };
-                    if (ev.oldVersion === 0) {
-                        createDB();
-                    }
-                    else {
-                    }
-                }
-            };
-            const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
-            dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-            dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
-        };
-        return { onClick, onInstall };
+        const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
+        dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+        dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+        dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
     };
-    const { onClick, onInstall } = useBackground();
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
 }

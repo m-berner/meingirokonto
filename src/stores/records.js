@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/composables/useApp';
 import { CONS } from '@/pages/background';
-const { notice } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -171,7 +169,6 @@ export const useRecordsStore = defineStore('records', {
                         resolve('RECORDS: databaseIntoStore: all database records loaded into memory!');
                     };
                     const onAbort = () => {
-                        notice(['RECORDS: databaseIntoStore: transaction aborted!']);
                         reject(requestTransaction.error);
                     };
                     const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly');
@@ -209,11 +206,9 @@ export const useRecordsStore = defineStore('records', {
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = () => {
-                        notice(['All memory records are added to the database!']);
                         resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!');
                     };
                     const onAbort = () => {
-                        notice(['Transaction aborted!']);
                         reject(requestTransaction.error);
                     };
                     const onError = (ev) => {
@@ -270,7 +265,6 @@ export const useRecordsStore = defineStore('records', {
                     const onSuccess = () => {
                         requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
                         if (msg) {
-                            notice(['sm_msg_updaterecord']);
                         }
                         resolve('Account updated');
                     };
@@ -343,7 +337,6 @@ export const useRecordsStore = defineStore('records', {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         if (msg) {
-                            notice(['sm_msg_updaterecord']);
                         }
                         resolve('Account type updated');
                     };
@@ -411,7 +404,6 @@ export const useRecordsStore = defineStore('records', {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         if (msg) {
-                            notice(['sm_msg_updaterecord']);
                         }
                         resolve('Booking updated');
                     };

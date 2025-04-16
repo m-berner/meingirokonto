@@ -5,17 +5,12 @@
   },
   "headerBar": {
     "home": "Startseite",
-    "transfersTable": "Buchungen",
     "reload": "Kurse aktualisieren",
     "addBookingType": "Buchungstyp hinzufügen",
+    "deleteBookingType": "Buchungstyp entfernen",
     "addAccount": "Bankkonto hinzufügen",
+    "deleteAccount": "Bankkonto entfernen",
     "addBooking": "Buchung hinzufügen",
-    "deleteStock": "Unternehmen entfernen",
-    "fadeinStock": "Unternehmen einblenden",
-    "cashPlus": "Einzahlung",
-    "cashMinus": "Auszahlung",
-    "dailyChanges": "Tagesveränderungen",
-    "dailyChangesAll": "Tagesveränderungen (alle)",
     "exportDatabase": "Datenbank exportieren",
     "importDatabase": "Datenbank importieren",
     "showAccounting": "Jahres-Berechnungen",
@@ -122,14 +117,9 @@
       "error": "Konto existiert bereits"
     },
     "deleteAccount": {
-      "title": "Bankkonto hinzufügen",
-      "swiftLabel": "BIC/SWIFT Code",
-      "currencyLabel": "Währungscode",
+      "title": "Bankkonto entfernen",
       "accountNumberLabel": "Kontonummer",
-      "currencyPlaceholder": "z. B. EUR",
-      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "success": "Konto wurde hinzugefügt",
-      "error": "Konto existiert bereits"
+      "success": "Konto wurde entfernt"
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",

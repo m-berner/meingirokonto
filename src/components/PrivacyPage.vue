@@ -45,5 +45,5 @@ const {rt, t, tm} = useI18n()
 
 const dataList: string[] = tm('privacyPage.connections.dataList')
 
-console.log('--- PrivacyDocument.vue setup ---')
+console.log('--- PrivacyPage.vue setup ---')
 </script>

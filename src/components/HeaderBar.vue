@@ -150,7 +150,6 @@
 </template>
 
 <script lang="ts" setup>
-import {COMPONENT_NAMES} from '@/pages/app'
 import {useI18n} from 'vue-i18n'
 import {CONS} from '@/pages/background'
 import DialogPort from '@/components/dialogs/DialogPort.vue'
@@ -166,7 +165,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.ADD_ACCOUNT,
+          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -175,7 +174,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.DELETE_ACCOUNT,
+          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -184,7 +183,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.ADD_BOOKING_TYPE,
+          dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -193,7 +192,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.DELETE_BOOKING_TYPE,
+          dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -202,7 +201,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.ADD_BOOKING,
+          dialogName: CONS.DIALOGS.ADD_BOOKING,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -211,7 +210,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.EXPORT_DB:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.EXPORT_DB,
+          dialogName: CONS.DIALOGS.EXPORT_DB,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
@@ -220,7 +219,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.DIALOGS.IMPORT_DB:
         runtime.setTeleport({
-          dialogName: COMPONENT_NAMES.IMPORT_DB,
+          dialogName: CONS.DIALOGS.IMPORT_DB,
           childOk: runtime.teleport.childOk,
           childTitle: runtime.teleport.childTitle,
           showOkButton: true,
