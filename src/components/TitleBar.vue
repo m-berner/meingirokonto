@@ -40,6 +40,7 @@ const state = reactive({
 })
 // TODO calculate booking sums cCredit + cDebit
 watchEffect(() => {
+  console.log('TITLEBAR: watchEffect')
   const accountIndex = records.getAccountIndexById(records.accounts.active_id)
   if (accountIndex > -1) {
     const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
@@ -48,8 +49,10 @@ watchEffect(() => {
     } else {
       state.logo = 'DefaultSvg'
     }
-    console.info('TITLEBAR: watchEffect', state.logo)
     browser.storage.local.set({sAccountActiveId: records.accounts.all[accountIndex].cID})
+  } else {
+    state.logo = 'DefaultSvg'
+    browser.storage.local.set({sAccountActiveId: -1})
   }
 })
 

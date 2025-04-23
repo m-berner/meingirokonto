@@ -34,7 +34,7 @@ const records = useRecordsStore()
 const state = reactive({
   selected: null
 })
-// TODO titlebar logo...
+
 const ok = async (): Promise<void> => {
   console.log('DELETE_ACCOUNT: ok')
     try {
