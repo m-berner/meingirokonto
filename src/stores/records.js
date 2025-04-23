@@ -288,20 +288,17 @@ export const useRecordsStore = defineStore('records', {
             return new Promise((resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
-                        requestTransaction.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
                         this._accounts.all.splice(indexOfAccount, 1);
                         resolve('Account deleted');
                     };
                     const onError = (ev) => {
-                        requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                        requestDelete.removeEventListener(CONS.EVENTS.ERR, onError, false);
                         reject(ev);
                     };
                     const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                     const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
-                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, false);
-                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
+                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                 }
             });
         },

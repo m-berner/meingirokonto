@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import DialogPort from '@/components/dialogs/DialogPort.vue'
+import DialogPort from '@/components/helper/DialogPort.vue'
 import {CONS} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 

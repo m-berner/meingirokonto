@@ -27,7 +27,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {reactive, watchEffect} from 'vue'
-import CustomLogo from '@/components/logos/CustomLogo.vue'
+import CustomLogo from '@/components/helper/CustomLogo.vue'
 import {CONS} from '@/pages/background'
 
 const {t} = useI18n()

@@ -6,13 +6,16 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-form ref="form-ref" validate-on="submit">
+  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="records.accounts.all.cNumber"
+      v-model="state.selected"
       density="compact"
       required
       v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
       variant="outlined"
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
+      v-bind:items="records.accounts.all"
     ></v-select>
   </v-form>
 </template>
@@ -21,35 +24,29 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/pages/background'
-import {CONS} from '@/pages/background'
+import {CONS, useApp} from '@/pages/background'
 
 const {t} = useI18n()
 const {notice} = useApp()
 const formRef = useTemplateRef('form-ref')
-const state: Omit<IAccount, 'cID' | 'cSwift' | 'cCurrency'> = reactive({
-  cNumber: ''
-})
 const records = useRecordsStore()
 
+const state = reactive({
+  selected: null
+})
+// TODO titlebar logo...
 const ok = async (): Promise<void> => {
   console.log('DELETE_ACCOUNT: ok')
-  const formIs = await formRef.value!.validate()
-  if (formIs.valid) {
     try {
-      const records = useRecordsStore()
-      const result = await records.addAccount({
-        cNumber: state.cNumber.replace(/\s/g, '')
-      })
-      if (result === CONS.RESULTS.SUCCESS) {
+      const result = await records.deleteAccount(state.selected)
+      if (result === 'Account deleted') {
+        formRef.value?.reset()
         await notice([t('dialogs.deleteAccount.success')])
-        formRef.value!.reset()
       }
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.deleteAccount.error')])
     }
-  }
 }
 const title = t('dialogs.deleteAccount.title')
 
@@ -57,7 +54,7 @@ defineExpose({ok, title})
 
 onMounted(() => {
   console.log('DELETE_ACCOUNT: onMounted', formRef)
-  formRef.value!.reset()
+  formRef.value?.reset()
 })
 
 console.log('--- DeleteAccount.vue setup ---')

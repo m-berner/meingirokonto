@@ -152,7 +152,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {CONS} from '@/pages/background'
-import DialogPort from '@/components/dialogs/DialogPort.vue'
+import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()

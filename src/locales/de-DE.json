@@ -119,7 +119,8 @@
     "deleteAccount": {
       "title": "Bankkonto entfernen",
       "accountNumberLabel": "Kontonummer",
-      "success": "Konto wurde entfernt"
+      "success": "Konto wurde entfernt",
+      "error": "Konto wurde nicht entfernt?"
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
@@ -128,8 +129,10 @@
       "error": "Buchungstyp existiert bereits"
     },
     "deleteBookingType": {
-      "title": "Buchungstyp bearbeiten",
-      "label": "Buchungstyp"
+      "title": "Buchungstyp löschen",
+      "label": "Buchungstyp",
+      "success": "Buchungstyp wurde entfernt",
+      "error": "Buchungstyp wurde nicht entfernt"
     },
     "showAccounting": {
       "title": "Buchung hinzufügen",

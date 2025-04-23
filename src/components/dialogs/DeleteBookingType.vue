@@ -9,9 +9,12 @@
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
       v-model="state.selected"
-      v-bind:label="t('dialogs.deleteBookingType.label')"
       density="compact"
       required
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+      v-bind:items="records.bookingTypes.all"
+      v-bind:label="t('dialogs.deleteBookingType.label')"
       variant="outlined"
     ></v-select>
   </v-form>
@@ -20,67 +23,39 @@
 <script lang="ts" setup>
 import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-//import {useRecordsStore} from '@/stores/records'
-//import {useApp} from '@/pages/background'
-//import {useRuntimeStore} from '@/stores/runtime'
+import {CONS, useApp} from '@/pages/background'
+import {useRecordsStore} from '@/stores/records'
 
 const {t} = useI18n()
-//const {notice} = useApp()
-//const runtime = useRuntimeStore()
+const {notice} = useApp()
+const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 
 const state = reactive({
-  selected: null,
-  data: [{cID: 1, cName: 'Garage'}, {cID: 2, cName: 'Bargeld'}]
-})
-
-// const selected = ref('')
-// const onMessageAddCompany = async (ev: MessageEvent): Promise<void> => {
-//   console.info('addAccount: onMessageAddCompany', ev)
-//   if (ev.data === undefined) {
-//     notice(['Sorry, no data arrived'])
-//   } else {
-//     switch (ev.type) {
-//       case CONS.FETCH_API.ANSWER__COMPANY_DATA:
-//         state._company = ev.data.company
-//         state._wkn = ev.data.wkn.toUpperCase()
-//         state._sym = ev.data.symbol.toUpperCase()
-//         break
-//     }
-//   }
-// }
-
-onMounted(() => {
-  console.log('booking: onMounted', formRef)
-  formRef.value?.reset()
-  // state._auto = true
-  //runtime.setIsOk(true)
-  // if (!browser.runtime.onMessage.hasListener(onMessageAddCompany)) {
-  //   // noinspection JSDeprecatedSymbols
-  //   browser.runtime.onMessage.addListener(onMessageAddCompany)
-  // }
+  selected: null
 })
 
 const ok = async (): Promise<void> => {
-  console.log('EDIT_BOOKING_TYPE: ok')
-  //const records = useRecordsStore()
-  // const verify = records.booking.all.filter(() => {
-  //   return 0 //state._isin.toUpperCase() === rec.cName.toUpperCase()
-  // })
-  // if (verify.length > 0) {
-  //   notice(['booking ERROR: booking exists already'])
-  // } else {
-  //   await records.bookingType(booking)
-  //   //runtime.toggleVisibility(CONS.DIALOGS.BOOKING)
-  // }
+  console.log('DELETE_BOOKING_TYPE: ok')
+  try {
+    const result = await records.deleteBookingType(state.selected)
+    if (result === 'Booking type deleted') {
+      formRef.value?.reset()
+      await notice([t('dialogs.deleteBookingType.success')])
+    }
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.deleteBookingType.error')])
+  }
 }
-const title = () => {
-  return t('dialogs.editBookingType.title')
-}
-const classes = () => {
-  return ''
-}
-defineExpose({ok, title, classes})
+const title = t('dialogs.deleteBookingType.title')
 
-console.log('--- booking.vue setup ---')
+defineExpose({ok, title})
+
+onMounted(() => {
+  console.log('DELETE_BOOKING_TYPE: onMounted', formRef)
+  formRef.value?.reset()
+})
+
+console.log('--- DeleteBookingType.vue setup ---')
 </script>
