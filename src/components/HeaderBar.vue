@@ -21,20 +21,6 @@
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
-      <template v-slot:activator="{ props }">
-        <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
-          <v-icon icon="$addBooking"></v-icon>
-        </v-app-bar-nav-icon>
-      </template>
-    </v-tooltip>
-    <v-spacer></v-spacer>
-    <v-spacer></v-spacer>
     <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -57,6 +43,20 @@
           variant="tonal"
           v-on:click="onIconClick">
           <v-icon icon="$deleteAccount"></v-icon>
+        </v-app-bar-nav-icon>
+      </template>
+    </v-tooltip>
+    <v-spacer></v-spacer>
+    <v-spacer></v-spacer>
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon
+          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          size="large"
+          v-bind="props"
+          variant="tonal"
+          v-on:click="onIconClick">
+          <v-icon icon="$addBooking"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>

@@ -76,15 +76,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     }
   },
   actions: {
-    _loadAccountIntoStore(account: IAccount): void {
-      this._accounts.all.push(account)
-    },
-    _loadBookingTypeIntoStore(bookingType: IBookingType): void {
-      this._booking_types.all.push(bookingType)
-    },
-    _loadBookingIntoStore(booking: IBooking): void {
-      this._bookings.all.push(booking)
-    },
     getAccountIndexById(ident: number): number {
       return this._accounts.all.findIndex((account: IAccount) => {
         return account.cID === ident
@@ -124,21 +115,13 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       let booking: IBooking
       let bookingType: IBookingType
       for (account of this._bkup_object.accounts) {
-        // addAccount = migrateStock({...stock})
-        this._loadAccountIntoStore(account)
+        this._accounts.all.push(account)
       }
       for (bookingType of this._bkup_object.booking_types) {
-        this._loadBookingTypeIntoStore(bookingType)
+        this._booking_types.all.push(bookingType)
       }
       for (booking of this._bkup_object.bookings) {
-        this._loadBookingIntoStore(booking)
-      }
-    },
-    async storageIntoStore(): Promise<void> {
-      console.log('RECORDS: storageIntoStore')
-      const response: IStorageLocal = await browser.storage.local.get()
-      if (response.sAccountActiveId != null) {
-        this._accounts.active_id = response.sAccountActiveId
+        this._bookings.all.push(booking)
       }
     },
     async cleanStoreAndDatabase(): Promise<string> {
@@ -222,19 +205,19 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
           const onSuccessAccountOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-              this._loadAccountIntoStore(ev.target.result.value)
+              this._accounts.all.push(ev.target.result.value)
               ev.target.result.continue()
             }
           }
           const onSuccessAccountTypeOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-              this._loadBookingTypeIntoStore(ev.target.result.value)
+              this._booking_types.all.push(ev.target.result.value)
               ev.target.result.continue()
             }
           }
           const onSuccessBookingOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-              this._loadBookingIntoStore(ev.target.result.value)
+              this._bookings.all.push(ev.target.result.value)
               ev.target.result.continue()
             }
           }
@@ -290,8 +273,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
               }
               this._accounts.all.push(memRecord)
               this._accounts.active_id = ev.target.result
-              await browser.storage.local.set({sAccountActiveId: ev.target.result})
-              resolve(CONS.RESULTS.SUCCESS)
+              await browser.storage.local.set({sActiveAccountId: ev.target.result})
+              resolve(ev.target.result)
             } else {
               reject(CONS.RESULTS.ERROR)
             }

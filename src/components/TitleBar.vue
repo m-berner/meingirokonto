@@ -8,53 +8,37 @@
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <CustomLogo v-bind:name="state.logo"></CustomLogo>
+      <CustomLogo v-bind:name="logo"></CustomLogo>
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-select
       v-if="records.accounts.all.length > 0"
-      v-model="records.accounts.active_id"
+      v-model="activeAccountId"
       label="IBAN"
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts.all"
+      v-on:update:modelValue="settings.onUpdateAccount"
     ></v-select>
   </v-app-bar>
 </template>
 
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
-import {reactive, watchEffect} from 'vue'
 import CustomLogo from '@/components/helper/CustomLogo.vue'
 import {CONS} from '@/pages/background'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const records = useRecordsStore()
+const settings = useSettingsStore()
 
-const state = reactive({
-  logo: 'DefaultSvg'
-  // DE12 5001 0517 5419 2996 72 INGDEFFXXX
-  // DE13 1203 0000 1064 5069 99 BYLADEM1001
-})
+const {logo, activeAccountId} = storeToRefs(settings)
+
 // TODO calculate booking sums cCredit + cDebit
-watchEffect(() => {
-  console.log('TITLEBAR: watchEffect')
-  const accountIndex = records.getAccountIndexById(records.accounts.active_id)
-  if (accountIndex > -1) {
-    const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
-    if (Object.keys(CONS.LOGOS).includes(lName.toUpperCase())) {
-      state.logo = lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'
-    } else {
-      state.logo = 'DefaultSvg'
-    }
-    browser.storage.local.set({sAccountActiveId: records.accounts.all[accountIndex].cID})
-  } else {
-    state.logo = 'DefaultSvg'
-    browser.storage.local.set({sAccountActiveId: -1})
-  }
-})
 
 console.log('--- TitleBar.vue setup ---')
 </script>

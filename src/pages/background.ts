@@ -45,9 +45,10 @@ declare global {
   }
 
   interface IStorageLocal {
-    sAccountActiveId?: number
+    sActiveAccountId?: number
     sBookingsPerPage?: number
     sDebug?: boolean
+    sLogo?: string
     sSkin?: string
   }
 }
@@ -107,9 +108,10 @@ type TCons = Readonly<{
     LOCALE: string
     YEAR: number
     STORAGE: {
-      ACCOUNT_ACTIVE_ID: number
+      ACTIVE_ACCOUNT_ID: number
       BOOKINGS_PER_PAGE: number
       DEBUG: boolean
+      LOGO: string
       SKIN: string
     };
   }
@@ -275,6 +277,14 @@ type TCons = Readonly<{
   }
 }>
 
+type TSettings = {
+  skin: string
+  logo: string
+  activeAccountId: number
+  bookingsPerPage: number
+  debug: boolean
+}
+
 interface IBrowserUI {
   lang: string
   region: string
@@ -290,6 +300,7 @@ interface IUseApp {
     currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
     requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
   }>
+  getUI: () => IBrowserUI
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
 }
@@ -425,9 +436,10 @@ export const CONS: TCons = Object.freeze({
     LOCALE: 'de-DE',
     YEAR: 9999,
     STORAGE: {
-      ACCOUNT_ACTIVE_ID: -1,
+      ACTIVE_ACCOUNT_ID: -1,
       BOOKINGS_PER_PAGE: 9,
       DEBUG: false,
+      LOGO: 'DefaultSvg',
       SKIN: 'ocean'
     }
   },
@@ -615,25 +627,6 @@ export const CONS: TCons = Object.freeze({
   }
 })
 
-export const getUI = (): IBrowserUI => {
-  const result = {
-    lang: '',
-    region: '',
-    locale: ''
-  }
-  const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
-  if (uiLang.includes('-')) {
-    result.lang = uiLang.split('-')[0]
-    result.region = uiLang.split('-')[1].toUpperCase()
-    result.locale = uiLang
-  } else {
-    result.lang = uiLang
-    result.region = uiLang.toUpperCase()
-    result.locale = uiLang + '-' + uiLang.toUpperCase()
-  }
-  return result
-}
-
 export const useApp = (): IUseApp => {
   return {
     VALIDATORS: Object.freeze({
@@ -676,6 +669,24 @@ export const useApp = (): IUseApp => {
         ]
       }
     }),
+    getUI: () => {
+      const result = {
+        lang: '',
+        region: '',
+        locale: ''
+      }
+      const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
+      if (uiLang.includes('-')) {
+        result.lang = uiLang.split('-')[0]
+        result.region = uiLang.split('-')[1].toUpperCase()
+        result.locale = uiLang
+      } else {
+        result.lang = uiLang
+        result.region = uiLang.toUpperCase()
+        result.locale = uiLang + '-' + uiLang.toUpperCase()
+      }
+      return result
+    },
     utcDate: (iso) => {
       const tzo = new Date().getTimezoneOffset() / 60
       let result = ''
@@ -701,119 +712,44 @@ export const useApp = (): IUseApp => {
         }
       await browser.notifications.create(notificationOption)
     }
-    //const group = (count: number, size = 2) => {
-    //   const ar: number[] = []
-    //   const isOdd = count % 2 === 1
-    //   const part = Math.ceil(count / size)
-    //   for (let i = 0; i < size; i++) {
-    //     if (isOdd && i === size - 1) {
-    //       ar.push(part - 1)
-    //     } else {
-    //       ar.push(part)
-    //     }
-    //   }
-    //   return ar
-    // }
-    // const offset = () => {
-    //   return new Date().getTimezoneOffset() * 60000
-    //   // - 7.200.000 we are UTC/GMT + 2
-    //   // DB to store -offset
-    //   // Store to DB +offset
-    // }
-    // const isoDatePlusSeconds = (iso: string): number => {
-    //   return new Date(iso).getTime() + (Date.now() % 86400)
-    // }
-    // const toNumber = (str: string): number => {
-    //   let result = 0
-    //   if (str !== null && str !== undefined) {
-    //     const a = str.toString().replace(/,$/g, '')
-    //     const b = a.split(',')
-    //     if (b.length === 2) {
-    //       const tmp2 = a
-    //         .trim()
-    //         .replace(/\s|\.|\t|%/g, '')
-    //         .replace(',', '.')
-    //       result = Number.isNaN(Number.parseFloat(tmp2))
-    //         ? 0
-    //         : Number.parseFloat(tmp2)
-    //     } else if (b.length > 2) {
-    //       let tmp: string = ''
-    //       for (let i = b.length - 1; i > 0; i--) {
-    //         tmp += b[i]
-    //       }
-    //       const tmp2 = tmp + '.' + b[0]
-    //       result = Number.isNaN(Number.parseFloat(tmp2))
-    //         ? 0
-    //         : Number.parseFloat(tmp2)
-    //     } else {
-    //       result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
-    //     }
-    //   }
-    //   return result
-    // }
-    // const mean = (nar: number[]): number => {
-    //   let sum = 0
-    //   let len: number = nar.length
-    //   let n: number
-    //   for (n of nar) {
-    //     if (n !== 0 && !Number.isNaN(n)) {
-    //       sum += n
-    //     } else {
-    //       len--
-    //     }
-    //   }
-    //   return len > 0 ? sum / len : 0
-    // }
-    // const dateToISO = (value: Date): string => {
-    //   return new Date(value).toISOString().substring(0, 10)
-    // }
-    // const emptyFunction = (): void => {
-    // }
-    // const log = (text: string, logLevel = 0, debug = false, obj: unknown): void => {
-    //   if (debug && obj === undefined) {
-    //     switch (logLevel) {
-    //       case 0:
-    //         console.log(text)
-    //         break
-    //       case 1:
-    //         console.info(text)
-    //         break
-    //       case 2:
-    //         console.warn(text)
-    //         break
-    //       case 3:
-    //         console.error(text)
-    //         break
-    //       default:
-    //     }
-    //   } else if (debug && obj !== undefined) {
-    //     switch (logLevel) {
-    //       case 0:
-    //         console.log(text, obj)
-    //         break
-    //       case 1:
-    //         console.info(text, obj)
-    //         break
-    //       case 2:
-    //         console.warn(text, obj)
-    //         break
-    //       case 3:
-    //         console.error(text, obj)
-    //         break
-    //       default:
-    //     }
-    //   }
-    // }
   }
 }
 
+const startSettings = (): Promise<TSettings> => {
+  return new Promise(async (resolve) => {
+    const storageLocal: IStorageLocal = await browser.storage.local.get()
+    const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
+    const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO
+    const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
+    const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
+    const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
+    console.info('BACKGROUND: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug)
+    resolve({
+      skin,
+      logo,
+      activeAccountId,
+      bookingsPerPage,
+      debug
+    })
+  })
+}
+
 if (window.location.href.includes('_generated_background_page.html')) {
-  const appUrls = {url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`}
-  const onClick = async (): Promise<void> => {
+  console.log('BACKGROUND: listener attached')
+  const onSettings = (data: {type: string}): Promise<TSettings | void> => {
+    console.info('BACKGROUND: onSettings', data.type)
+    return new Promise(async (resolve): Promise<TSettings | void> => {
+      if (data.type === 'GET_SETTINGS') {
+        resolve(await startSettings())
+      } else {
+        resolve()
+      }
+    })
+  }
+  const onClick = (): Promise<void> => {
     console.log('BACKGROUND: onClick')
-    const start = async (): Promise<void> => {
-      console.log('BACKGROUND: onClick: start')
-      const foundTabs = await browser.tabs.query(appUrls)
+    return new Promise(async (resolve) => {
+      const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
       // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
       if (foundTabs.length === 0) {
         await browser.tabs.create({
@@ -826,180 +762,197 @@ if (window.location.href.includes('_generated_background_page.html')) {
         })
         await browser.tabs.update(foundTabs[0].id ?? 0, {active: true})
       }
-    }
-    await start()
+      resolve()
+    })
   }
   // NOTE: onInstall runs at addon install, addon update and firefox update
-  const onInstall = (): void => {
+  const onInstall = (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
-    const onSuccess = (ev: Event): void => {
-      console.log('BACKGROUND: onInstall: onSuccess')
-      if (ev.target instanceof IDBRequest) {
-        ev.target.result.close()
-      }
-    }
-    const onError = (ev: Event): void => {
-      console.error('BACKGROUND: onError: ', ev)
-    }
-    const onUpgradeNeeded = async (ev: Event): Promise<void> => {
-      if (ev instanceof IDBVersionChangeEvent) {
-        console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion)
-        const createDB = (): void => {
-          console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
-          const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
-            CONS.DB.STORES.ACCOUNTS.NAME,
-            {
-              keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-              autoIncrement: true
-            })
-          const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
-            CONS.DB.STORES.BOOKINGS.NAME,
-            {
-              keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-              autoIncrement: true
-            }
-          )
-          const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
-            CONS.DB.STORES.BOOKING_TYPES.NAME,
-            {
-              keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-              autoIncrement: true
-            }
-          )
-          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
-          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, {unique: true})
-          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
-          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, {unique: true})
-          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
-          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, {unique: false})
-          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, {unique: false})
-          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, {unique: false})
+    return new Promise(async (resolve): Promise<void> => {
+      const storageLocal: IStorageLocal = await browser.storage.local.get()
+      const onSuccess = (ev: Event): void => {
+        console.log('BACKGROUND: onInstall: onSuccess')
+        if (ev.target instanceof IDBRequest) {
+          ev.target.result.close()
         }
-        // const updateDB = (): void => {
-        //   console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
-        //   // const optFalse: IDBIndexParameters = {unique: false}
-        //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
-        //   //   console.log(
-        //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
-        //   //   )
-        //   //   const cursor: IDBCursorWithValue | null = ev.target.result
-        //   //   if (cursor !== null) {
-        //   //     const stock: IStock = cursor.value
-        //   //     cursor.update(migrateStock({...stock}))
-        //   //     cursor.continue()
-        //   //   } else {
-        //   //     stocksOpenCursorRequest?.removeEventListener(
-        //   //       CONS.EVENTS.SUC,
-        //   //       onSuccessStocks,
-        //   //       false
-        //   //     )
-        //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
-        //   //       console.log(
-        //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
-        //   //       )
-        //   //       const cursor: IDBCursorWithValue | null = ev.target.result
-        //   //       if (cursor !== null) {
-        //   //         const transfer: ITransfer = cursor.value
-        //   //         cursor.update(migrateTransfer({...transfer}))
-        //   //         cursor.continue()
-        //   //       } else {
-        //   //         stocksOpenCursorRequest?.removeEventListener(
-        //   //           CONS.EVENTS.SUC,
-        //   //           onSuccessTransfers,
-        //   //           false
-        //   //         )
-        //   //       }
-        //   //     }
-        //   //     if (dbOpenRequest?.transaction === null) {
-        //   //       console.error('BACKGROUND: open database error')
-        //   //     } else if (
-        //   //       !dbOpenRequest.transaction
-        //   //         ?.objectStore(CONS.DB.STORES.S)
-        //   //         .indexNames.contains('stocks_k2')
-        //   //     ) {
-        //   //       dbOpenRequest.transaction
-        //   //         ?.objectStore(CONS.DB.STORES.S)
-        //   //         .createIndex('stocks_k2', 'cFadeOut', optFalse)
-        //   //     }
-        //   //     const requestTransfersOpenCursor:
-        //   //       | IDBRequest<IDBCursorWithValue | null>
-        //   //       | undefined = dbOpenRequest.transaction?.objectStore(CONS.DB.STORES.T).openCursor()
-        //   //     requestTransfersOpenCursor?.addEventListener(
-        //   //       CONS.EVENTS.SUC,
-        //   //       onSuccessTransfers,
-        //   //       false
-        //   //     )
-        //   //   }
-        //   // }
-        //   // const onErrorStocks = (err: ErrorEvent): void => {
-        //   //   stocksOpenCursorRequest?.removeEventListener(
-        //   //     CONS.EVENTS.ERR,
-        //   //     onError,
-        //   //     false
-        //   //   )
-        //   //   console.error(err.message)
-        //   // }
-        //   // const stocksOpenCursorRequest:
-        //   //   | IDBRequest<IDBCursorWithValue | null>
-        //   //   | undefined = dbOpenRequest?.transaction?.objectStore(CONS.DB.STORES.S).openCursor()
-        //   // stocksOpenCursorRequest?.addEventListener(
-        //   //   CONS.EVENTS.ERR,
-        //   //   onErrorStocks,
-        //   //   false
-        //   // )
-        //   // stocksOpenCursorRequest?.addEventListener(
-        //   //   CONS.EVENTS.SUC,
-        //   //   onSuccessStocks,
-        //   //   false
-        //   // )
-        //   // for (
-        //   //   let i = 0;
-        //   //   i < dbOpenRequest.result.objectStoreNames.length;
-        //   //   i++
-        //   // ) {
-        //   //   if (
-        //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.S &&
-        //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.T
-        //   //   ) {
-        //   //     dbOpenRequest.result.deleteObjectStore(
-        //   //       dbOpenRequest.result.objectStoreNames[i]
-        //   //     )
-        //   //   }
-        //   // }
-        // }
-        // const updateStorageLocal = async () => {
-        //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
-        //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
-        //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
-        //   for (let i = 0; i < storageKeys.length; i++) {
-        //     if (storage[storageKeys[i]] === undefined) {
-        //       await browser.storage.local.set({
-        //         [storageKeys[i]]: storageValues[i]
-        //       })
-        //     }
-        //   }
-        // }
-        //
-        if (ev.oldVersion === 0) {
-          createDB()
-        } else {
-          // updateDB()
-          // remove historical values TODO move into updateDB...
-          //await browser.storage.local
-          //  .remove(CONS.SYSTEM.STORAGE_OLD)
-        }
-        //await updateStorageLocal()
       }
-    }
+      const onError = (ev: Event): void => {
+        console.error('BACKGROUND: onError: ', ev)
+      }
+      const onUpgradeNeeded = async (ev: Event): Promise<void> => {
+        if (ev instanceof IDBVersionChangeEvent) {
+          console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion)
+          const createDB = (): void => {
+            console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+            const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
+              CONS.DB.STORES.ACCOUNTS.NAME,
+              {
+                keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                autoIncrement: true
+              })
+            const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
+              CONS.DB.STORES.BOOKINGS.NAME,
+              {
+                keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                autoIncrement: true
+              }
+            )
+            const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
+              CONS.DB.STORES.BOOKING_TYPES.NAME,
+              {
+                keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                autoIncrement: true
+              }
+            )
+            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
+            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, {unique: true})
+            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
+            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, {unique: true})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, {unique: false})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, {unique: false})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, {unique: false})
+          }
+          // const updateDB = (): void => {
+          //   console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
+          //   // const optFalse: IDBIndexParameters = {unique: false}
+          //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
+          //   //   console.log(
+          //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
+          //   //   )
+          //   //   const cursor: IDBCursorWithValue | null = ev.target.result
+          //   //   if (cursor !== null) {
+          //   //     const stock: IStock = cursor.value
+          //   //     cursor.update(migrateStock({...stock}))
+          //   //     cursor.continue()
+          //   //   } else {
+          //   //     stocksOpenCursorRequest?.removeEventListener(
+          //   //       CONS.EVENTS.SUC,
+          //   //       onSuccessStocks,
+          //   //       false
+          //   //     )
+          //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
+          //   //       console.log(
+          //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
+          //   //       )
+          //   //       const cursor: IDBCursorWithValue | null = ev.target.result
+          //   //       if (cursor !== null) {
+          //   //         const transfer: ITransfer = cursor.value
+          //   //         cursor.update(migrateTransfer({...transfer}))
+          //   //         cursor.continue()
+          //   //       } else {
+          //   //         stocksOpenCursorRequest?.removeEventListener(
+          //   //           CONS.EVENTS.SUC,
+          //   //           onSuccessTransfers,
+          //   //           false
+          //   //         )
+          //   //       }
+          //   //     }
+          //   //     if (dbOpenRequest?.transaction === null) {
+          //   //       console.error('BACKGROUND: open database error')
+          //   //     } else if (
+          //   //       !dbOpenRequest.transaction
+          //   //         ?.objectStore(CONS.DB.STORES.S)
+          //   //         .indexNames.contains('stocks_k2')
+          //   //     ) {
+          //   //       dbOpenRequest.transaction
+          //   //         ?.objectStore(CONS.DB.STORES.S)
+          //   //         .createIndex('stocks_k2', 'cFadeOut', optFalse)
+          //   //     }
+          //   //     const requestTransfersOpenCursor:
+          //   //       | IDBRequest<IDBCursorWithValue | null>
+          //   //       | undefined = dbOpenRequest.transaction?.objectStore(CONS.DB.STORES.T).openCursor()
+          //   //     requestTransfersOpenCursor?.addEventListener(
+          //   //       CONS.EVENTS.SUC,
+          //   //       onSuccessTransfers,
+          //   //       false
+          //   //     )
+          //   //   }
+          //   // }
+          //   // const onErrorStocks = (err: ErrorEvent): void => {
+          //   //   stocksOpenCursorRequest?.removeEventListener(
+          //   //     CONS.EVENTS.ERR,
+          //   //     onError,
+          //   //     false
+          //   //   )
+          //   //   console.error(err.message)
+          //   // }
+          //   // const stocksOpenCursorRequest:
+          //   //   | IDBRequest<IDBCursorWithValue | null>
+          //   //   | undefined = dbOpenRequest?.transaction?.objectStore(CONS.DB.STORES.S).openCursor()
+          //   // stocksOpenCursorRequest?.addEventListener(
+          //   //   CONS.EVENTS.ERR,
+          //   //   onErrorStocks,
+          //   //   false
+          //   // )
+          //   // stocksOpenCursorRequest?.addEventListener(
+          //   //   CONS.EVENTS.SUC,
+          //   //   onSuccessStocks,
+          //   //   false
+          //   // )
+          //   // for (
+          //   //   let i = 0;
+          //   //   i < dbOpenRequest.result.objectStoreNames.length;
+          //   //   i++
+          //   // ) {
+          //   //   if (
+          //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.S &&
+          //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.T
+          //   //   ) {
+          //   //     dbOpenRequest.result.deleteObjectStore(
+          //   //       dbOpenRequest.result.objectStoreNames[i]
+          //   //     )
+          //   //   }
+          //   // }
+          // }
+          // const updateStorageLocal = async () => {
+          //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
+          //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
+          //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
+          //   for (let i = 0; i < storageKeys.length; i++) {
+          //     if (storage[storageKeys[i]] === undefined) {
+          //       await browser.storage.local.set({
+          //         [storageKeys[i]]: storageValues[i]
+          //       })
+          //     }
+          //   }
+          // }
+          //
+          if (ev.oldVersion === 0) {
+            createDB()
+          } else {
+            // updateDB()
+            // remove historical values TODO move into updateDB...
+            //await browser.storage.local
+            //  .remove(CONS.SYSTEM.STORAGE_OLD)
+          }
+          //
+          if (storageLocal.sSkin === undefined) {
+            await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
+          }
+          if (storageLocal.sActiveAccountId === undefined) {
+            await browser.storage.local.set({sActiveAccountId: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
+          }
+          if (storageLocal.sBookingsPerPage === undefined) {
+            await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+          }
+          if (storageLocal.sDebug === undefined) {
+            await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
+          }
+        }
+      }
 
-    const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
-    dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-    dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-    dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
+      const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
+      dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+      dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+      dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
+
+      resolve()
+    })
   }
-  //
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
+  browser.runtime.onMessage.addListener(onSettings)
 }
 
 console.info('--- background.js ---', window.location.href)

@@ -127,9 +127,10 @@ export const CONS = Object.freeze({
         LOCALE: 'de-DE',
         YEAR: 9999,
         STORAGE: {
-            ACCOUNT_ACTIVE_ID: -1,
+            ACTIVE_ACCOUNT_ID: -1,
             BOOKINGS_PER_PAGE: 9,
             DEBUG: false,
+            LOGO: 'DefaultSvg',
             SKIN: 'ocean'
         }
     },
@@ -311,25 +312,6 @@ export const CONS = Object.freeze({
         }
     }
 });
-export const getUI = () => {
-    const result = {
-        lang: '',
-        region: '',
-        locale: ''
-    };
-    const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
-    if (uiLang.includes('-')) {
-        result.lang = uiLang.split('-')[0];
-        result.region = uiLang.split('-')[1].toUpperCase();
-        result.locale = uiLang;
-    }
-    else {
-        result.lang = uiLang;
-        result.region = uiLang.toUpperCase();
-        result.locale = uiLang + '-' + uiLang.toUpperCase();
-    }
-    return result;
-};
 export const useApp = () => {
     return {
         VALIDATORS: Object.freeze({
@@ -372,6 +354,25 @@ export const useApp = () => {
                 ];
             }
         }),
+        getUI: () => {
+            const result = {
+                lang: '',
+                region: '',
+                locale: ''
+            };
+            const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
+            if (uiLang.includes('-')) {
+                result.lang = uiLang.split('-')[0];
+                result.region = uiLang.split('-')[1].toUpperCase();
+                result.locale = uiLang;
+            }
+            else {
+                result.lang = uiLang;
+                result.region = uiLang.toUpperCase();
+                result.locale = uiLang + '-' + uiLang.toUpperCase();
+            }
+            return result;
+        },
         utcDate: (iso) => {
             const tzo = new Date().getTimezoneOffset() / 60;
             let result = '';
@@ -401,13 +402,41 @@ export const useApp = () => {
         }
     };
 };
+const startSettings = () => {
+    return new Promise(async (resolve) => {
+        const storageLocal = await browser.storage.local.get();
+        const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN;
+        const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO;
+        const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID;
+        const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE;
+        const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG;
+        console.info('BACKGROUND: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug);
+        resolve({
+            skin,
+            logo,
+            activeAccountId,
+            bookingsPerPage,
+            debug
+        });
+    });
+};
 if (window.location.href.includes('_generated_background_page.html')) {
-    const appUrls = { url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` };
-    const onClick = async () => {
+    console.log('BACKGROUND: listener attached');
+    const onSettings = (data) => {
+        console.info('BACKGROUND: onSettings', data.type);
+        return new Promise(async (resolve) => {
+            if (data.type === 'GET_SETTINGS') {
+                resolve(await startSettings());
+            }
+            else {
+                resolve();
+            }
+        });
+    };
+    const onClick = () => {
         console.log('BACKGROUND: onClick');
-        const start = async () => {
-            console.log('BACKGROUND: onClick: start');
-            const foundTabs = await browser.tabs.query(appUrls);
+        return new Promise(async (resolve) => {
+            const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
             if (foundTabs.length === 0) {
                 await browser.tabs.create({
                     url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
@@ -420,59 +449,76 @@ if (window.location.href.includes('_generated_background_page.html')) {
                 });
                 await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
             }
-        };
-        await start();
+            resolve();
+        });
     };
     const onInstall = () => {
         console.log('BACKGROUND: onInstall');
-        const onSuccess = (ev) => {
-            console.log('BACKGROUND: onInstall: onSuccess');
-            if (ev.target instanceof IDBRequest) {
-                ev.target.result.close();
-            }
-        };
-        const onError = (ev) => {
-            console.error('BACKGROUND: onError: ', ev);
-        };
-        const onUpgradeNeeded = async (ev) => {
-            if (ev instanceof IDBVersionChangeEvent) {
-                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
-                const createDB = () => {
-                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
-                    const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
-                        keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-                        autoIncrement: true
-                    });
-                    const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                        keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-                        autoIncrement: true
-                    });
-                    const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                        keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-                        autoIncrement: true
-                    });
-                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
-                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
-                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
-                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
-                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
-                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
-                };
-                if (ev.oldVersion === 0) {
-                    createDB();
+        return new Promise(async (resolve) => {
+            const storageLocal = await browser.storage.local.get();
+            const onSuccess = (ev) => {
+                console.log('BACKGROUND: onInstall: onSuccess');
+                if (ev.target instanceof IDBRequest) {
+                    ev.target.result.close();
                 }
-                else {
+            };
+            const onError = (ev) => {
+                console.error('BACKGROUND: onError: ', ev);
+            };
+            const onUpgradeNeeded = async (ev) => {
+                if (ev instanceof IDBVersionChangeEvent) {
+                    console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
+                    const createDB = () => {
+                        console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                        const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
+                            keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                            autoIncrement: true
+                        });
+                        const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
+                            keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                            autoIncrement: true
+                        });
+                        const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
+                            keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                            autoIncrement: true
+                        });
+                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
+                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
+                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
+                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
+                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
+                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
+                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
+                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
+                    };
+                    if (ev.oldVersion === 0) {
+                        createDB();
+                    }
+                    else {
+                    }
+                    if (storageLocal.sSkin === undefined) {
+                        await browser.storage.local.set({ sSkin: CONS.DEFAULTS.STORAGE.SKIN });
+                    }
+                    if (storageLocal.sActiveAccountId === undefined) {
+                        await browser.storage.local.set({ sActiveAccountId: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID });
+                    }
+                    if (storageLocal.sBookingsPerPage === undefined) {
+                        await browser.storage.local.set({ sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
+                    }
+                    if (storageLocal.sDebug === undefined) {
+                        await browser.storage.local.set({ sDebug: CONS.DEFAULTS.STORAGE.DEBUG });
+                    }
                 }
-            }
-        };
-        const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
-        dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-        dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-        dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
+            };
+            const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
+            dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+            dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+            dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
+            resolve();
+        });
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
+    browser.runtime.onMessage.addListener(onSettings);
 }
 console.info('--- background.js ---', window.location.href);

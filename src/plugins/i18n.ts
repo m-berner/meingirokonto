@@ -7,11 +7,13 @@
  */
 import {createI18n, type I18n} from 'vue-i18n'
 import messages from '@intlify/unplugin-vue-i18n/messages'
-import {getUI} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface II18n {
   i18n: I18n
 }
+
+const {getUI} = useApp()
 
 export default<II18n> {
   i18n: createI18n({

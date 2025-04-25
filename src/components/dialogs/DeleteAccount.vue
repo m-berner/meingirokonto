@@ -11,11 +11,11 @@
       v-model="state.selected"
       density="compact"
       required
-      v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
-      variant="outlined"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts.all"
+      v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
+      variant="outlined"
     ></v-select>
   </v-form>
 </template>
@@ -24,12 +24,14 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 import {CONS, useApp} from '@/pages/background'
 
 const {t} = useI18n()
 const {notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
+const settings = useSettingsStore()
 
 const state = reactive({
   selected: null
@@ -37,16 +39,20 @@ const state = reactive({
 
 const ok = async (): Promise<void> => {
   console.log('DELETE_ACCOUNT: ok')
-    try {
-      const result = await records.deleteAccount(state.selected)
-      if (result === 'Account deleted') {
-        formRef.value?.reset()
-        await notice([t('dialogs.deleteAccount.success')])
+  try {
+    const result = await records.deleteAccount(state.selected)
+    if (result === 'Account deleted') {
+      formRef.value?.reset()
+      if (settings.activeAccountId === state.selected && records.accounts.length > 0) {
+        settings.setActiveAccountId(records.accounts.all[0].cID)
+        await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
       }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.deleteAccount.error')])
+      await notice([t('dialogs.deleteAccount.success')])
     }
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.deleteAccount.error')])
+  }
 }
 const title = t('dialogs.deleteAccount.title')
 

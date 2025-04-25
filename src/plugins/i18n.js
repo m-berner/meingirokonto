@@ -1,6 +1,7 @@
 import { createI18n } from 'vue-i18n';
 import messages from '@intlify/unplugin-vue-i18n/messages';
-import { getUI } from '@/pages/background';
+import { useApp } from '@/pages/background';
+const { getUI } = useApp();
 export default {
     i18n: createI18n({
         locale: getUI().locale,
