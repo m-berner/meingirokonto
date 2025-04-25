@@ -68,7 +68,6 @@ const onIconClick = (ev: Event): Promise<void> => {
   console.info('OPTIONMENU: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
-    console.error('HHHHH', elem, elem.id)
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
@@ -85,6 +84,8 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       default:
+        loop += 1
+        await parse(elem!.parentElement, loop)
     }
   }
   return new Promise(async (resolve) => {
