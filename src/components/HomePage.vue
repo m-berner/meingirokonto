@@ -53,27 +53,15 @@
 </template>
 
 <script lang="ts" setup>
-// const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
-//   if (el !== null) {
-//     if (toNumber(el.textContent) < 0) {
-//       el.classList.add('color-red')
-//     } else if (toNumber(el.textContent) > 0) {
-//       el.classList.add('color-black')
-//     }
-//     el.classList.add('font-weight-bold')
-//   }
-// }
-
 import OptionMenu from '@/components/OptionMenu.vue'
 import {useI18n} from 'vue-i18n'
 import {reactive} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {CONS} from '@/pages/background'
 
 const {d, n, rt, t, tm} = useI18n()
-const {utcDate} = useApp()
+const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 

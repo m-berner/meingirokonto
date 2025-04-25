@@ -25,10 +25,10 @@ import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {CONS, useApp} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 const {t} = useI18n()
-const {notice} = useApp()
+const {CONS, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -37,22 +37,25 @@ const state = reactive({
   selected: null
 })
 
-const ok = async (): Promise<void> => {
+const ok = (): Promise<void> => {
   console.log('DELETE_ACCOUNT: ok')
-  try {
-    const result = await records.deleteAccount(state.selected)
-    if (result === 'Account deleted') {
-      formRef.value?.reset()
-      if (settings.activeAccountId === state.selected && records.accounts.length > 0) {
-        settings.setActiveAccountId(records.accounts.all[0].cID)
-        await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+  return new Promise(async (resolve): Promise<void> => {
+    try {
+      const result = await records.deleteAccount(state.selected)
+      if (result === 'Account deleted') {
+        formRef.value?.reset()
+        if (settings.activeAccountId === state.selected && records.accounts.length > 0) {
+          settings.setActiveAccountId(records.accounts.all[0].cID)
+          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+        }
+        await notice([t('dialogs.deleteAccount.success')])
+        resolve()
       }
-      await notice([t('dialogs.deleteAccount.success')])
+    } catch (e) {
+      console.error(e)
+      await notice([t('dialogs.deleteAccount.error')])
     }
-  } catch (e) {
-    console.error(e)
-    await notice([t('dialogs.deleteAccount.error')])
-  }
+  })
 }
 const title = t('dialogs.deleteAccount.title')
 

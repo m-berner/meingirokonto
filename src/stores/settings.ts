@@ -7,7 +7,7 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
-import {CONS} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 
 interface ISettingsStore {
@@ -17,6 +17,8 @@ interface ISettingsStore {
   _logo: string
   _debug: boolean
 }
+
+const {CONS} = useApp()
 
 export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = defineStore('settings', {
   state: (): ISettingsStore => {
@@ -29,27 +31,27 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     }
   },
   getters: {
-    skin(state: ISettingsStore) {
-      return state._skin
-    },
-    logo(state: ISettingsStore) {
-      return state._logo
+    activeAccountId(state: ISettingsStore) {
+      return state._active_account_id
     },
     bookingsPerPage(state: ISettingsStore) {
       return state._bookings_per_page
     },
-    activeAccountId(state: ISettingsStore) {
-      return state._active_account_id
+    logo(state: ISettingsStore) {
+      return state._logo
+    },
+    skin(state: ISettingsStore) {
+      return state._skin
     }
   },
   actions: {
-    setActiveAccountId(value: number) {
+    setActiveAccountId(value: number): void {
       this._active_account_id = value
     },
-    setLogo(value: string) {
+    setLogo(value: string): void {
       this._logo = value
     },
-    initSettingsStore(theme: ThemeInstance, settings): void {
+    initSettingsStore(theme: ThemeInstance, settings: ISettings): void {
       console.info('SETTINGS: initSettingsStore', settings)
       theme.global.name.value = settings.skin
       this._skin = settings.skin
@@ -58,7 +60,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._logo = settings.logo
       this._debug = settings.debug
     },
-    onUpdateAccount(value): Promise<void> {
+    onUpdateAccount(value: number): Promise<void> {
       console.info('SETTINGS: onUpdateAccount', value)
       const records = useRecordsStore()
       return new Promise(async (resolve) => {

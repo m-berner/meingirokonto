@@ -1,319 +1,319 @@
-export const CONS = Object.freeze({
-    CURRENCIES: {
-        EUR: 'EUR',
-        USD: 'USD',
-        CODE: new Map([
-            ['ar', 'ARS'],
-            ['at', 'EUR'],
-            ['au', 'AUD'],
-            ['be', 'EUR'],
-            ['bg', 'BGN'],
-            ['bo', 'BOB'],
-            ['br', 'BRL'],
-            ['bz', 'BZD'],
-            ['ca', 'CAD'],
-            ['ch', 'CHF'],
-            ['cl', 'CLP'],
-            ['chs', 'CNY'],
-            ['cht', 'CNY'],
-            ['co', 'COU'],
-            ['cr', 'CRC'],
-            ['cs', 'CZK'],
-            ['cy', 'EUR'],
-            ['da', 'DKK'],
-            ['de', 'EUR'],
-            ['do', 'DOP'],
-            ['ec', 'USD'],
-            ['ee', 'EUR'],
-            ['el', 'EUR'],
-            ['es', 'EUR'],
-            ['et', 'EUR'],
-            ['fi', 'EUR'],
-            ['fr', 'EUR'],
-            ['gb', 'GBP'],
-            ['gr', 'EUR'],
-            ['gt', 'GTQ'],
-            ['hk', 'HKD'],
-            ['hn', 'HNL'],
-            ['hu', 'HUF'],
-            ['ie', 'EUR'],
-            ['in', 'INR'],
-            ['is', 'ISK'],
-            ['it', 'EUR'],
-            ['ja', 'JPY'],
-            ['jm', 'JMD'],
-            ['ko', 'KRW'],
-            ['li', 'EUR'],
-            ['lt', 'EUR'],
-            ['lu', 'EUR'],
-            ['mc', 'EUR'],
-            ['mo', 'MOP'],
-            ['mt', 'EUR'],
-            ['mx', 'MXN'],
-            ['ni', 'NIO'],
-            ['nl', 'EUR'],
-            ['no', 'NOK'],
-            ['nz', 'NZD'],
-            ['pa', 'PAB'],
-            ['pe', 'PEN'],
-            ['ph', 'PHP'],
-            ['pl', 'PLN'],
-            ['pr', 'USD'],
-            ['pt', 'EUR'],
-            ['py', 'PYG'],
-            ['ro', 'RON'],
-            ['ru', 'RUB'],
-            ['se', 'SEK'],
-            ['sg', 'SGD'],
-            ['sk', 'EUR'],
-            ['sl', 'EUR'],
-            ['sp', 'RSD'],
-            ['sv', 'USD'],
-            ['tr', 'TRY'],
-            ['tt', 'TTD'],
-            ['tw', 'TWD'],
-            ['uy', 'UYU'],
-            ['ve', 'VES'],
-            ['za', 'ZAR'],
-            ['zw', 'ZWD']
-        ])
-    },
-    DATE: {
-        DEFAULT: 0,
-        DEFAULTSTR: '1.1.1970',
-        FYEAR: 1970,
-        MILLIPERDAY: 86400000,
-        MILLIPERMIN: 60000
-    },
-    DB: {
-        BKFN: 'meingirokonto.json',
-        NAME: 'meingirokonto.db',
-        STORES: {
-            ACCOUNTS: {
-                NAME: 'accounts',
-                FIELDS: {
-                    ID: 'cID',
-                    S: 'cSwift',
-                    C: 'cCurrency',
-                    N: 'cNumber'
-                }
-            },
-            BOOKINGS: {
-                NAME: 'bookings',
-                FIELDS: {
-                    ID: 'cID',
-                    DAT: 'cDate',
-                    C: 'cCredit',
-                    D: 'cDebit',
-                    DESC: 'cDescription',
-                    T: 'cType',
-                    AN: 'cAccountNumber'
-                }
-            },
-            BOOKING_TYPES: {
-                NAME: 'booking_types',
-                FIELDS: {
-                    ID: 'cID',
-                    N: 'cName',
-                }
-            }
-        },
-        VERSION: 1,
-        MINVERSION: 1
-    },
-    DEFAULTS: {
-        CURRENCY: 'EUR',
-        LANG: 'de',
-        LOCALE: 'de-DE',
-        YEAR: 9999,
-        STORAGE: {
-            ACTIVE_ACCOUNT_ID: -1,
-            BOOKINGS_PER_PAGE: 9,
-            DEBUG: false,
-            LOGO: 'DefaultSvg',
-            SKIN: 'ocean'
-        }
-    },
-    DIALOGS: {
-        ADD_ACCOUNT: 'AddAccount',
-        DELETE_ACCOUNT: 'DeleteAccount',
-        ADD_BOOKING_TYPE: 'AddBookingType',
-        DELETE_BOOKING_TYPE: 'DeleteBookingType',
-        ADD_BOOKING: 'AddBooking',
-        DELETE_BOOKING: 'DeleteBooking',
-        EXPORT_DATABASE: 'ExportDatabase',
-        IMPORT_DATABASE: 'ImportDatabase',
-        SHOW_ACCOUNTING: 'ShowAccounting',
-        SETTING: 'setting'
-    },
-    LOGOS: {
-        NO_LOGO: 'DefaultSvg',
-        INGD: 'IngdSvg',
-        BYLA: 'BylaSvg'
-    },
-    EVENTS: {
-        ABORT: 'abort',
-        BEFOREUNLOAD: 'beforeunload',
-        CHANGE: 'change',
-        CLICK: 'click',
-        COMP: 'complete',
-        DOM: 'DOMContentLoaded',
-        ERR: 'error',
-        INP: 'input',
-        KEYDOWN: 'keydown',
-        LOAD: 'load',
-        FOCUS: 'focus',
-        BLUR: 'blur',
-        SUC: 'success',
-        UPG: 'upgradeneeded'
-    },
-    SETTINGS: {
-        ITEMS_PER_PAGE_OPTIONS: [
-            {
-                value: 5,
-                title: '5'
-            },
-            {
-                value: 7,
-                title: '7'
-            },
-            {
-                value: 9,
-                title: '9'
-            },
-            {
-                value: 11,
-                title: '11'
-            }
-        ]
-    },
-    RESOURCES: {
-        SRC: 'assets',
-        OK: 'ok.png',
-        OKD: 'ok-dark.png',
-        CANCEL: 'cancel.png',
-        CANCELD: 'cancel-dark.png',
-        ICON32: 'icon32.png',
-        LOGO16: 'logo16.png',
-        LOGO256: 'logo256.png',
-        MAG: 'magnifier.png',
-        CALENDAR: 'calendar.png',
-        RENEW: 'renew.png',
-        FIRST: 'first.png',
-        NEXT: 'next.png',
-        PREV: 'previous.png',
-        LAST: 'last.png',
-        CB: 'home.png',
-        UP: 'update.png',
-        NS: 'addAccount.png',
-        DS: 'deletestock.png',
-        FI: 'fadein.png',
-        IT: 'intransfer.png',
-        OT: 'outtransfer.png',
-        CHS: 'changes.png',
-        CHB: 'allchanges.png',
-        BK: 'backup.png',
-        RE: 'restore.png',
-        OB: 'orderbook.png',
-        TB: 'transferbook.png',
-        PY: 'peryear.png',
-        CO: 'clean.png',
-        SE: 'settings.png',
-        RESET: 'reset.png',
-        ADD: 'add.png',
-        CHANGE: 'change.png',
-        DEL: 'delete.png',
-        NO: 'neworder.png',
-        BUY: 'buy.png',
-        SELL: 'sell.png',
-        ND: 'newdividend.png',
-        SD: 'showdividends.png',
-        CONF: 'config.png',
-        HTTP: 'http.png',
-        HELP: 'help.json',
-        PRIVACY: 'privacy.json',
-        LICENSE: 'license.html',
-        INDEX: 'pages/app.html',
-        ROOT: '/'
-    },
-    RESULTS: {
-        ERROR: 'ERR',
-        SUCCESS: 'SUCCESS'
-    },
-    STATES: {
-        DONE: 'complete',
-        SRV: 500,
-        SUCCESS: 200,
-        PAUSE: 'resting',
-        MUTATE: 'mutation',
-        NORENDER: 'norender'
-    },
-    SYSTEM: {
-        COPYRIGHT: '2013-2025 Martin Berner',
-        FETCHTO: 20,
-        DELAY: 600,
-        EMAIL: 'mailto:meingirokonto@gmx.de',
-        GET: 'GET',
-        HTMLENTITY: '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
-        ISINLENGTH: 12,
-        KEYS: {
-            ENTER: 'Enter',
-            TAB: 'Tab',
-            T: 'T',
-            V: 'V',
-            Z: 'Z'
-        },
-        ERRORS: {
-            CURR: 'Missing current record!',
-            ERR: 'System error!',
-            INVALID: 'Invalid Range!',
-            NOCASE: 'Missing case!',
-            NODEL: 'Deletion off memory failed!',
-            REQ: 'Request failed!',
-            SRV: 'Remote Server error!',
-            WRONGPARAM: 'Wrong parameter!',
-            SEND: 'Send message failed!'
-        },
-        NULL: 0.00001,
-        PERCENT: 100,
-        PROGRESSBAR: { MAX: 400 },
-        ROWS: 10,
-        STARTUP: 2,
-        STORAGE_OLD: [
-            'resetconfig',
-            'config',
-            'reset',
-            'itemsPerPage',
-            'cb',
-            'tb'
-        ],
-        TYPE: 599,
-        ONCE: { once: true }
-    },
-    RECORDS: {
-        CONTROLLER: {
-            TOTAL: {
-                efficiency: 0,
-                returnRate: 0,
-                buy: 0,
-                sell: 0,
-                dividends: 0,
-                deposits: 0,
-                withdrawals: 0,
-                taxes: 0,
-                fees: 0,
-                earnings: 0,
-                account: 0,
-                depot: 0,
-                winloss: 0,
-                winlossPercent: 0,
-                depotBuyValue: 0
-            }
-        }
-    }
-});
 export const useApp = () => {
     return {
+        CONS: Object.freeze({
+            CURRENCIES: {
+                EUR: 'EUR',
+                USD: 'USD',
+                CODE: new Map([
+                    ['ar', 'ARS'],
+                    ['at', 'EUR'],
+                    ['au', 'AUD'],
+                    ['be', 'EUR'],
+                    ['bg', 'BGN'],
+                    ['bo', 'BOB'],
+                    ['br', 'BRL'],
+                    ['bz', 'BZD'],
+                    ['ca', 'CAD'],
+                    ['ch', 'CHF'],
+                    ['cl', 'CLP'],
+                    ['chs', 'CNY'],
+                    ['cht', 'CNY'],
+                    ['co', 'COU'],
+                    ['cr', 'CRC'],
+                    ['cs', 'CZK'],
+                    ['cy', 'EUR'],
+                    ['da', 'DKK'],
+                    ['de', 'EUR'],
+                    ['do', 'DOP'],
+                    ['ec', 'USD'],
+                    ['ee', 'EUR'],
+                    ['el', 'EUR'],
+                    ['es', 'EUR'],
+                    ['et', 'EUR'],
+                    ['fi', 'EUR'],
+                    ['fr', 'EUR'],
+                    ['gb', 'GBP'],
+                    ['gr', 'EUR'],
+                    ['gt', 'GTQ'],
+                    ['hk', 'HKD'],
+                    ['hn', 'HNL'],
+                    ['hu', 'HUF'],
+                    ['ie', 'EUR'],
+                    ['in', 'INR'],
+                    ['is', 'ISK'],
+                    ['it', 'EUR'],
+                    ['ja', 'JPY'],
+                    ['jm', 'JMD'],
+                    ['ko', 'KRW'],
+                    ['li', 'EUR'],
+                    ['lt', 'EUR'],
+                    ['lu', 'EUR'],
+                    ['mc', 'EUR'],
+                    ['mo', 'MOP'],
+                    ['mt', 'EUR'],
+                    ['mx', 'MXN'],
+                    ['ni', 'NIO'],
+                    ['nl', 'EUR'],
+                    ['no', 'NOK'],
+                    ['nz', 'NZD'],
+                    ['pa', 'PAB'],
+                    ['pe', 'PEN'],
+                    ['ph', 'PHP'],
+                    ['pl', 'PLN'],
+                    ['pr', 'USD'],
+                    ['pt', 'EUR'],
+                    ['py', 'PYG'],
+                    ['ro', 'RON'],
+                    ['ru', 'RUB'],
+                    ['se', 'SEK'],
+                    ['sg', 'SGD'],
+                    ['sk', 'EUR'],
+                    ['sl', 'EUR'],
+                    ['sp', 'RSD'],
+                    ['sv', 'USD'],
+                    ['tr', 'TRY'],
+                    ['tt', 'TTD'],
+                    ['tw', 'TWD'],
+                    ['uy', 'UYU'],
+                    ['ve', 'VES'],
+                    ['za', 'ZAR'],
+                    ['zw', 'ZWD']
+                ])
+            },
+            DATE: {
+                DEFAULT: 0,
+                DEFAULTSTR: '1.1.1970',
+                FYEAR: 1970,
+                MILLIPERDAY: 86400000,
+                MILLIPERMIN: 60000
+            },
+            DB: {
+                BKFN: 'meingirokonto.json',
+                NAME: 'meingirokonto.db',
+                STORES: {
+                    ACCOUNTS: {
+                        NAME: 'accounts',
+                        FIELDS: {
+                            ID: 'cID',
+                            S: 'cSwift',
+                            C: 'cCurrency',
+                            N: 'cNumber'
+                        }
+                    },
+                    BOOKINGS: {
+                        NAME: 'bookings',
+                        FIELDS: {
+                            ID: 'cID',
+                            DAT: 'cDate',
+                            C: 'cCredit',
+                            D: 'cDebit',
+                            DESC: 'cDescription',
+                            T: 'cType',
+                            AN: 'cAccountNumber'
+                        }
+                    },
+                    BOOKING_TYPES: {
+                        NAME: 'booking_types',
+                        FIELDS: {
+                            ID: 'cID',
+                            N: 'cName',
+                        }
+                    }
+                },
+                VERSION: 1,
+                MINVERSION: 1
+            },
+            DEFAULTS: {
+                CURRENCY: 'EUR',
+                LANG: 'de',
+                LOCALE: 'de-DE',
+                YEAR: 9999,
+                STORAGE: {
+                    ACTIVE_ACCOUNT_ID: -1,
+                    BOOKINGS_PER_PAGE: 9,
+                    DEBUG: false,
+                    LOGO: 'DefaultSvg',
+                    SKIN: 'ocean'
+                }
+            },
+            DIALOGS: {
+                ADD_ACCOUNT: 'AddAccount',
+                DELETE_ACCOUNT: 'DeleteAccount',
+                ADD_BOOKING_TYPE: 'AddBookingType',
+                DELETE_BOOKING_TYPE: 'DeleteBookingType',
+                ADD_BOOKING: 'AddBooking',
+                DELETE_BOOKING: 'DeleteBooking',
+                EXPORT_DATABASE: 'ExportDatabase',
+                IMPORT_DATABASE: 'ImportDatabase',
+                SHOW_ACCOUNTING: 'ShowAccounting',
+                SETTING: 'setting'
+            },
+            LOGOS: {
+                NO_LOGO: 'DefaultSvg',
+                INGD: 'IngdSvg',
+                BYLA: 'BylaSvg'
+            },
+            EVENTS: {
+                ABORT: 'abort',
+                BEFOREUNLOAD: 'beforeunload',
+                CHANGE: 'change',
+                CLICK: 'click',
+                COMP: 'complete',
+                DOM: 'DOMContentLoaded',
+                ERR: 'error',
+                INP: 'input',
+                KEYDOWN: 'keydown',
+                LOAD: 'load',
+                FOCUS: 'focus',
+                BLUR: 'blur',
+                SUC: 'success',
+                UPG: 'upgradeneeded'
+            },
+            SETTINGS: {
+                ITEMS_PER_PAGE_OPTIONS: [
+                    {
+                        value: 5,
+                        title: '5'
+                    },
+                    {
+                        value: 7,
+                        title: '7'
+                    },
+                    {
+                        value: 9,
+                        title: '9'
+                    },
+                    {
+                        value: 11,
+                        title: '11'
+                    }
+                ]
+            },
+            RESOURCES: {
+                SRC: 'assets',
+                OK: 'ok.png',
+                OKD: 'ok-dark.png',
+                CANCEL: 'cancel.png',
+                CANCELD: 'cancel-dark.png',
+                ICON32: 'icon32.png',
+                LOGO16: 'logo16.png',
+                LOGO256: 'logo256.png',
+                MAG: 'magnifier.png',
+                CALENDAR: 'calendar.png',
+                RENEW: 'renew.png',
+                FIRST: 'first.png',
+                NEXT: 'next.png',
+                PREV: 'previous.png',
+                LAST: 'last.png',
+                CB: 'home.png',
+                UP: 'update.png',
+                NS: 'addAccount.png',
+                DS: 'deletestock.png',
+                FI: 'fadein.png',
+                IT: 'intransfer.png',
+                OT: 'outtransfer.png',
+                CHS: 'changes.png',
+                CHB: 'allchanges.png',
+                BK: 'backup.png',
+                RE: 'restore.png',
+                OB: 'orderbook.png',
+                TB: 'transferbook.png',
+                PY: 'peryear.png',
+                CO: 'clean.png',
+                SE: 'settings.png',
+                RESET: 'reset.png',
+                ADD: 'add.png',
+                CHANGE: 'change.png',
+                DEL: 'delete.png',
+                NO: 'neworder.png',
+                BUY: 'buy.png',
+                SELL: 'sell.png',
+                ND: 'newdividend.png',
+                SD: 'showdividends.png',
+                CONF: 'config.png',
+                HTTP: 'http.png',
+                HELP: 'help.json',
+                PRIVACY: 'privacy.json',
+                LICENSE: 'license.html',
+                INDEX: 'pages/app.html',
+                ROOT: '/'
+            },
+            RESULTS: {
+                ERROR: 'ERR',
+                SUCCESS: 'SUCCESS'
+            },
+            STATES: {
+                DONE: 'complete',
+                SRV: 500,
+                SUCCESS: 200,
+                PAUSE: 'resting',
+                MUTATE: 'mutation',
+                NORENDER: 'norender'
+            },
+            SYSTEM: {
+                COPYRIGHT: '2013-2025 Martin Berner',
+                FETCHTO: 20,
+                DELAY: 600,
+                EMAIL: 'mailto:meingirokonto@gmx.de',
+                GET: 'GET',
+                HTMLENTITY: '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
+                ISINLENGTH: 12,
+                KEYS: {
+                    ENTER: 'Enter',
+                    TAB: 'Tab',
+                    T: 'T',
+                    V: 'V',
+                    Z: 'Z'
+                },
+                ERRORS: {
+                    CURR: 'Missing current record!',
+                    ERR: 'System error!',
+                    INVALID: 'Invalid Range!',
+                    NOCASE: 'Missing case!',
+                    NODEL: 'Deletion off memory failed!',
+                    REQ: 'Request failed!',
+                    SRV: 'Remote Server error!',
+                    WRONGPARAM: 'Wrong parameter!',
+                    SEND: 'Send message failed!'
+                },
+                NULL: 0.00001,
+                PERCENT: 100,
+                PROGRESSBAR: { MAX: 400 },
+                ROWS: 10,
+                STARTUP: 2,
+                STORAGE_OLD: [
+                    'resetconfig',
+                    'config',
+                    'reset',
+                    'itemsPerPage',
+                    'cb',
+                    'tb'
+                ],
+                TYPE: 599,
+                ONCE: { once: true }
+            },
+            RECORDS: {
+                CONTROLLER: {
+                    TOTAL: {
+                        efficiency: 0,
+                        returnRate: 0,
+                        buy: 0,
+                        sell: 0,
+                        dividends: 0,
+                        deposits: 0,
+                        withdrawals: 0,
+                        taxes: 0,
+                        fees: 0,
+                        earnings: 0,
+                        account: 0,
+                        depot: 0,
+                        winloss: 0,
+                        winlossPercent: 0,
+                        depotBuyValue: 0
+                    }
+                }
+            }
+        }),
         VALIDATORS: Object.freeze({
             ibanRules: msgs => {
                 return [
@@ -354,25 +354,6 @@ export const useApp = () => {
                 ];
             }
         }),
-        getUI: () => {
-            const result = {
-                lang: '',
-                region: '',
-                locale: ''
-            };
-            const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
-            if (uiLang.includes('-')) {
-                result.lang = uiLang.split('-')[0];
-                result.region = uiLang.split('-')[1].toUpperCase();
-                result.locale = uiLang;
-            }
-            else {
-                result.lang = uiLang;
-                result.region = uiLang.toUpperCase();
-                result.locale = uiLang + '-' + uiLang.toUpperCase();
-            }
-            return result;
-        },
         utcDate: (iso) => {
             const tzo = new Date().getTimezoneOffset() / 60;
             let result = '';
@@ -402,56 +383,9 @@ export const useApp = () => {
         }
     };
 };
-const startSettings = () => {
-    return new Promise(async (resolve) => {
-        const storageLocal = await browser.storage.local.get();
-        const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN;
-        const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO;
-        const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID;
-        const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE;
-        const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG;
-        console.info('BACKGROUND: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug);
-        resolve({
-            skin,
-            logo,
-            activeAccountId,
-            bookingsPerPage,
-            debug
-        });
-    });
-};
+const { CONS } = useApp();
 if (window.location.href.includes('_generated_background_page.html')) {
     console.log('BACKGROUND: listener attached');
-    const onSettings = (data) => {
-        console.info('BACKGROUND: onSettings', data.type);
-        return new Promise(async (resolve) => {
-            if (data.type === 'GET_SETTINGS') {
-                resolve(await startSettings());
-            }
-            else {
-                resolve();
-            }
-        });
-    };
-    const onClick = () => {
-        console.log('BACKGROUND: onClick');
-        return new Promise(async (resolve) => {
-            const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
-            if (foundTabs.length === 0) {
-                await browser.tabs.create({
-                    url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
-                    active: true
-                });
-            }
-            else {
-                await browser.windows.update(foundTabs[0].windowId ?? 0, {
-                    focused: true
-                });
-                await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
-            }
-            resolve();
-        });
-    };
     const onInstall = () => {
         console.log('BACKGROUND: onInstall');
         return new Promise(async (resolve) => {
@@ -505,6 +439,9 @@ if (window.location.href.includes('_generated_background_page.html')) {
                     if (storageLocal.sBookingsPerPage === undefined) {
                         await browser.storage.local.set({ sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
                     }
+                    if (storageLocal.sLogo === undefined) {
+                        await browser.storage.local.set({ sLogo: CONS.DEFAULTS.STORAGE.LOGO });
+                    }
                     if (storageLocal.sDebug === undefined) {
                         await browser.storage.local.set({ sDebug: CONS.DEFAULTS.STORAGE.DEBUG });
                     }
@@ -515,6 +452,54 @@ if (window.location.href.includes('_generated_background_page.html')) {
             dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
             resolve();
+        });
+    };
+    const onClick = () => {
+        console.log('BACKGROUND: onClick');
+        return new Promise(async (resolve) => {
+            const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
+            if (foundTabs.length === 0) {
+                await browser.tabs.create({
+                    url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+                    active: true
+                });
+            }
+            else {
+                await browser.windows.update(foundTabs[0].windowId ?? 0, {
+                    focused: true
+                });
+                await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
+            }
+            resolve();
+        });
+    };
+    const onSettings = (data) => {
+        console.info('BACKGROUND: onSettings', data.type);
+        const startSettings = () => {
+            return new Promise(async (resolve) => {
+                const storageLocal = await browser.storage.local.get();
+                const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN;
+                const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO;
+                const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID;
+                const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE;
+                const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG;
+                console.info('BACKGROUND: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug);
+                resolve({
+                    skin,
+                    logo,
+                    activeAccountId,
+                    bookingsPerPage,
+                    debug
+                });
+            });
+        };
+        return new Promise(async (resolve) => {
+            if (data.type === 'GET_SETTINGS') {
+                resolve(await startSettings());
+            }
+            else {
+                resolve();
+            }
         });
     };
     browser.runtime.onInstalled.addListener(onInstall);

@@ -21,13 +21,13 @@ import {useRecordsStore} from '@/stores/records'
 import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {CONS} from '@/pages/background'
 
 interface IExportDatabase {
   _file_name: string
 }
 
 const {t} = useI18n()
+const {CONS} = useApp()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
 const state: IExportDatabase = reactive({

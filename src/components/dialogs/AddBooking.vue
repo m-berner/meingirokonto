@@ -59,12 +59,13 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
-import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
 const {notice, VALIDATORS} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
+const {CONS} = useApp()
+
 const state: Omit<IBooking, 'cID'> = reactive({
   cDate: '',
   cDebit: 0,
@@ -74,30 +75,33 @@ const state: Omit<IBooking, 'cID'> = reactive({
   cAccountNumber: ''
 })
 
-const ok = async (): Promise<void> => {
+const ok = (): Promise<void> => {
   console.log('ADD_BOOKING: ok', state.cType)
-  const formIs = await formRef.value!.validate()
-  if (formIs.valid) {
-    try {
-      const records = useRecordsStore()
-      const aNumber = records.accounts.all[records.getAccountIndexById(records.accounts.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
-      const result = await records.addBooking({
-        cDate: state.cDate,
-        cCredit: state.cCredit,
-        cDebit: state.cDebit,
-        cDescription: state.cDescription!.trim(),
-        cType: state.cType,
-        cAccountNumber: aNumber
-      })
-      if (result === CONS.RESULTS.SUCCESS) {
-        await notice([t('dialogs.addBooking.success')])
-        formRef.value!.reset()
+  return new Promise(async (resolve): Promise<void> => {
+    const formIs = await formRef.value!.validate()
+    if (formIs.valid) {
+      try {
+        const records = useRecordsStore()
+        const aNumber = records.accounts.all[records.getAccountIndexById(records.accounts.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        const result = await records.addBooking({
+          cDate: state.cDate,
+          cCredit: state.cCredit,
+          cDebit: state.cDebit,
+          cDescription: state.cDescription!.trim(),
+          cType: state.cType,
+          cAccountNumber: aNumber
+        })
+        if (result === CONS.RESULTS.SUCCESS) {
+          await notice([t('dialogs.addBooking.success')])
+          formRef.value!.reset()
+          resolve()
+        }
+      } catch (e) {
+        console.error(e)
+        await notice([t('dialogs.addBooking.error')])
       }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.addBooking.error')])
     }
-  }
+  })
 }
 const title = t('dialogs.addBooking.title')
 

@@ -13,7 +13,32 @@ interface II18n {
   i18n: I18n
 }
 
-const {getUI} = useApp()
+interface IBrowserUI {
+  lang: string
+  region: string
+  locale: string
+}
+
+const {CONS} = useApp()
+
+const getUI = (): IBrowserUI => {
+  const result = {
+    lang: '',
+    region: '',
+    locale: ''
+  }
+  const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
+  if (uiLang.includes('-')) {
+    result.lang = uiLang.split('-')[0]
+    result.region = uiLang.split('-')[1].toUpperCase()
+    result.locale = uiLang
+  } else {
+    result.lang = uiLang
+    result.region = uiLang.toUpperCase()
+    result.locale = uiLang + '-' + uiLang.toUpperCase()
+  }
+  return result
+}
 
 export default<II18n> {
   i18n: createI18n({

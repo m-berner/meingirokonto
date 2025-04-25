@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
-import {CONS} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IRecordsStore {
   _dbi: IDBDatabase | null
@@ -31,6 +31,8 @@ interface IRecordStoreBookingType {
   all: IBookingType[]
   selected_index: number
 }
+
+const {CONS} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
@@ -97,16 +99,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return bookings_per_account
     },
     setBkupObject(value: IBackup) {
-      // this._bkup_object = {
-      //   sm: {
-      //     cVersion: 0,
-      //     cDBVersion: 0,
-      //     cEngine: ''
-      //   },
-      //   account: [],
-      //   booking_type: [],
-      //   booking: []
-      // }
       this._bkup_object = value
     },
     loadBkupObjectIntoStore(): void {
@@ -124,7 +116,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         this._bookings.all.push(booking)
       }
     },
-    async cleanStoreAndDatabase(): Promise<string> {
+    cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
       this._bookings.all.splice(0, this._bookings.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
@@ -132,7 +124,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings.selected_index = 0
       this._booking_types.selected_index = 0
       this._booking_types.selected_index = 0
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onError = (ev: Event): void => {
             reject(ev)
@@ -165,8 +157,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async openDatabase(): Promise<string> {
-      return new Promise((resolve, reject) => {
+    openDatabase(): Promise<string> {
+      return new Promise(async (resolve, reject) => {
         const onError = (ev: Event): void => {
           reject(ev)
         }
@@ -181,7 +173,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
       })
     },
-    async databaseIntoStore(): Promise<string> {
+    databaseIntoStore(): Promise<string> {
       console.log('RECORDS: databaseIntoStore')
       // const runtime = useRuntimeStore()
       this._accounts.all.splice(0, this._accounts.all.length)
@@ -190,7 +182,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings.selected_index = 0
       this._booking_types.selected_index = 0
       this._accounts.selected_index = 0
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = async (): Promise<void> => {
             console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
@@ -230,9 +222,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async storeIntoDatabase(): Promise<string> {
+    storeIntoDatabase(): Promise<string> {
       console.log('RECORDS: storeIntoDatabase')
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = (): void => {
             // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
@@ -262,8 +254,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
-      return new Promise((resolve, reject) => {
+    addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = async (ev: Event): Promise<void> => {
             if (ev.target instanceof IDBRequest) {
@@ -289,9 +281,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
+    updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateAccount', data)
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
@@ -313,11 +305,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async deleteAccount(ident: number): Promise<string> {
+    deleteAccount(ident: number): Promise<string> {
       const indexOfAccount = this._accounts.all.findIndex((account: IAccount) => {
         return account.cID === ident
       })
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._accounts.all.splice(indexOfAccount, 1)
@@ -334,8 +326,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string> {
-      return new Promise((resolve, reject) => {
+    addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string> {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
@@ -359,9 +351,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
+    updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBookingType', data)
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             if (msg) {
@@ -380,11 +372,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async deleteBookingType(ident: number): Promise<string> {
+    deleteBookingType(ident: number): Promise<string> {
       const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
         return bookingType.cID === ident
       })
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._booking_types.all.splice(indexOfBookingType, 1)
@@ -401,8 +393,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async addBooking(record: Omit<IBooking, 'cID'>): Promise<string> {
-      return new Promise((resolve, reject) => {
+    addBooking(record: Omit<IBooking, 'cID'>): Promise<string> {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
@@ -426,9 +418,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
+    updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
       console.info('RECORDS: updateBooking', data)
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             if (msg) {
@@ -447,11 +439,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    async deleteBooking(ident: number): Promise<string> {
+    deleteBooking(ident: number): Promise<string> {
       const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         return booking.cID === ident
       })
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._bookings.all.splice(indexOfBooking, 1)

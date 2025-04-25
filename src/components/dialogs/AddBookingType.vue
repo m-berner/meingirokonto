@@ -27,10 +27,9 @@ import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
-import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
-const {notice, VALIDATORS} = useApp()
+const {CONS, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 
@@ -38,22 +37,25 @@ const state: Omit<IBookingType, 'cID'> = reactive({
   cName: ''
 })
 
-const ok = async (): Promise<void> => {
+const ok = (): Promise<void> => {
   console.log('ADD_BOOKING_TYPE: ok')
-  const formIs = await formRef.value!.validate()
-  if (formIs.valid) {
-    try {
-      const records = useRecordsStore()
-      const result = await records.addBookingType({cName: state.cName.trim()})
-      if (result === CONS.RESULTS.SUCCESS) {
-        await notice([t('dialogs.addBookingType.success')])
-        formRef.value!.reset()
+  return new Promise(async (resolve): Promise<void> => {
+    const formIs = await formRef.value!.validate()
+    if (formIs.valid) {
+      try {
+        const records = useRecordsStore()
+        const result = await records.addBookingType({cName: state.cName.trim()})
+        if (result === CONS.RESULTS.SUCCESS) {
+          await notice([t('dialogs.addBookingType.success')])
+          formRef.value!.reset()
+          resolve()
+        }
+      } catch (e) {
+        console.error(e)
+        await notice([t('dialogs.addBookingType.error')])
       }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.addBookingType.error')])
     }
-  }
+  })
 }
 const title = t('dialogs.addBookingType.title')
 

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { CONS } from '@/pages/background';
+import { useApp } from '@/pages/background';
+const { CONS } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -82,7 +83,7 @@ export const useRecordsStore = defineStore('records', {
                 this._bookings.all.push(booking);
             }
         },
-        async cleanStoreAndDatabase() {
+        cleanStoreAndDatabase() {
             console.log('RECORDS: cleanStoreAndDatabase');
             this._bookings.all.splice(0, this._bookings.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
@@ -90,7 +91,7 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.selected_index = 0;
             this._booking_types.selected_index = 0;
             this._booking_types.selected_index = 0;
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onError = (ev) => {
                         reject(ev);
@@ -122,8 +123,8 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async openDatabase() {
-            return new Promise((resolve, reject) => {
+        openDatabase() {
+            return new Promise(async (resolve, reject) => {
                 const onError = (ev) => {
                     reject(ev);
                 };
@@ -138,7 +139,7 @@ export const useRecordsStore = defineStore('records', {
                 openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
             });
         },
-        async databaseIntoStore() {
+        databaseIntoStore() {
             console.log('RECORDS: databaseIntoStore');
             this._accounts.all.splice(0, this._accounts.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
@@ -146,7 +147,7 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.selected_index = 0;
             this._booking_types.selected_index = 0;
             this._accounts.selected_index = 0;
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = async () => {
                         console.info('RECORDS: databaseIntoStore: all database records loaded into memory!');
@@ -185,9 +186,9 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async storeIntoDatabase() {
+        storeIntoDatabase() {
             console.log('RECORDS: storeIntoDatabase');
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = () => {
                         resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!');
@@ -214,8 +215,8 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async addAccount(record) {
-            return new Promise((resolve, reject) => {
+        addAccount(record) {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = async (ev) => {
                         if (ev.target instanceof IDBRequest) {
@@ -242,9 +243,9 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async updateAccount(data, msg = false) {
+        updateAccount(data, msg = false) {
             console.info('RECORDS: updateAccount', data);
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
@@ -265,11 +266,11 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async deleteAccount(ident) {
+        deleteAccount(ident) {
             const indexOfAccount = this._accounts.all.findIndex((account) => {
                 return account.cID === ident;
             });
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._accounts.all.splice(indexOfAccount, 1);
@@ -286,8 +287,8 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async addBookingType(record) {
-            return new Promise((resolve, reject) => {
+        addBookingType(record) {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = (ev) => {
                         if (ev.target instanceof IDBRequest) {
@@ -312,9 +313,9 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async updateBookingType(data, msg = false) {
+        updateBookingType(data, msg = false) {
             console.info('RECORDS: updateBookingType', data);
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         if (msg) {
@@ -332,11 +333,11 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async deleteBookingType(ident) {
+        deleteBookingType(ident) {
             const indexOfBookingType = this._booking_types.all.findIndex((bookingType) => {
                 return bookingType.cID === ident;
             });
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._booking_types.all.splice(indexOfBookingType, 1);
@@ -353,8 +354,8 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async addBooking(record) {
-            return new Promise((resolve, reject) => {
+        addBooking(record) {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = (ev) => {
                         if (ev.target instanceof IDBRequest) {
@@ -379,9 +380,9 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async updateBooking(data, msg = false) {
+        updateBooking(data, msg = false) {
             console.info('RECORDS: updateBooking', data);
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         if (msg) {
@@ -399,11 +400,11 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        async deleteBooking(ident) {
+        deleteBooking(ident) {
             const indexOfBooking = this._bookings.all.findIndex((booking) => {
                 return booking.cID === ident;
             });
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._bookings.all.splice(indexOfBooking, 1);

@@ -23,8 +23,6 @@ import {useRecordsStore} from '@/stores/records'
 // {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-//import {useRuntimeStore} from '@/stores/runtime'
-import {CONS} from '@/pages/background'
 
 interface IImportDatabase {
   _choosen_file: Blob | null
@@ -35,13 +33,15 @@ interface EventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-//const runtime = useRuntimeStore()
+const {CONS} = useApp()
+
 const state: IImportDatabase = {
   _choosen_file: null
 }
 
 const choosenFile = (ev: EventTarget) => { state._choosen_file = ev.target.files[0] }
 
+//TODO async ???
 const ok = async (): Promise<void> => {
   console.log('IMPORTDATABASE: ok', state._choosen_file)
   const {notice} = useApp()
@@ -80,7 +80,6 @@ const ok = async (): Promise<void> => {
   const result = await records.storeIntoDatabase()
   if (result !== '') {
     console.info('IMPORTDATABASE: onLoad', result)
-    //runtime.toggleVisibility()
     return Promise.resolve()
   } else {
     await notice(['IMPORTDATABASE: onLoad', result])

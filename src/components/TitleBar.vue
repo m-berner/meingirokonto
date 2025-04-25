@@ -29,12 +29,13 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import CustomLogo from '@/components/helper/CustomLogo.vue'
-import {CONS} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const {CONS} = useApp()
 
 const {logo, activeAccountId} = storeToRefs(settings)
 

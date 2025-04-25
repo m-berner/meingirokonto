@@ -1,5 +1,5 @@
 import {} from 'vue';
-import { CONS } from '@/pages/background';
+import { useApp } from '@/pages/background';
 import AddAccount from '@/components/dialogs/AddAccount.vue';
 import DeleteAccount from '@/components/dialogs/DeleteAccount.vue';
 import AddBookingType from '@/components/dialogs/AddBookingType.vue';
@@ -11,6 +11,7 @@ import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DefaultSvg from '@/components/logos/DefaultSvg.vue';
 import IngdSvg from '@/components/logos/IngdSvg.vue';
 import BylaSvg from '@/components/logos/BylaSvg.vue';
+const { CONS } = useApp();
 export default {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount);

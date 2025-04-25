@@ -1,7 +1,26 @@
 import { createI18n } from 'vue-i18n';
 import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useApp } from '@/pages/background';
-const { getUI } = useApp();
+const { CONS } = useApp();
+const getUI = () => {
+    const result = {
+        lang: '',
+        region: '',
+        locale: ''
+    };
+    const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE;
+    if (uiLang.includes('-')) {
+        result.lang = uiLang.split('-')[0];
+        result.region = uiLang.split('-')[1].toUpperCase();
+        result.locale = uiLang;
+    }
+    else {
+        result.lang = uiLang;
+        result.region = uiLang.toUpperCase();
+        result.locale = uiLang + '-' + uiLang.toUpperCase();
+    }
+    return result;
+};
 export default {
     i18n: createI18n({
         locale: getUI().locale,

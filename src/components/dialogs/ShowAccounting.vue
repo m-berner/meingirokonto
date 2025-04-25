@@ -22,9 +22,7 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-//import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
-//import {CONS} from '@/pages/background'
 
 const {t} = useI18n()
 const {notice, VALIDATORS} = useApp()
@@ -35,26 +33,29 @@ const state: Omit<IAccount, 'cID'> = reactive({
   cNumber: ''
 })
 
-const ok = async (): Promise<void> => {
+const ok = (): Promise<void> => {
   console.log('SHOW_ACCOUNTING: ok')
-  const formIs = await formRef.value!.validate()
-  if (formIs.valid) {
-    try {
-      //const records = useRecordsStore()
-      //const result = await records.addAccount({
-      //  cSwift: state.cSwift.trim(),
-      //  cNumber: state.cNumber.replace(/\s/g, ''),
-      //  cCurrency: state.cCurrency.trim().toUpperCase()
-      //})
-      // if (result === CONS.RESULTS.SUCCESS) {
-      //   await notice([t('dialogs.showAccounting.success')])
-      //   formRef.value!.reset()
-      // }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.showAccounting.error')])
+  return new Promise(async (resolve): Promise<void> => {
+    const formIs = await formRef.value!.validate()
+    if (formIs.valid) {
+      try {
+        //const records = useRecordsStore()
+        //const result = await records.addAccount({
+        //  cSwift: state.cSwift.trim(),
+        //  cNumber: state.cNumber.replace(/\s/g, ''),
+        //  cCurrency: state.cCurrency.trim().toUpperCase()
+        //})
+        // if (result === CONS.RESULTS.SUCCESS) {
+        //   await notice([t('dialogs.showAccounting.success')])
+        //   formRef.value!.reset()
+        // }
+        resolve()
+      } catch (e) {
+        console.error(e)
+        await notice([t('dialogs.showAccounting.error')])
+      }
     }
-  }
+  })
 }
 const title = t('dialogs.showAccounting.title')
 

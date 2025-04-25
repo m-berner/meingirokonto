@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
-import { CONS } from '@/pages/background';
+import { useApp } from '@/pages/background';
 import { useRecordsStore } from '@/stores/records';
+const { CONS } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {
@@ -13,17 +14,17 @@ export const useSettingsStore = defineStore('settings', {
         };
     },
     getters: {
-        skin(state) {
-            return state._skin;
-        },
-        logo(state) {
-            return state._logo;
+        activeAccountId(state) {
+            return state._active_account_id;
         },
         bookingsPerPage(state) {
             return state._bookings_per_page;
         },
-        activeAccountId(state) {
-            return state._active_account_id;
+        logo(state) {
+            return state._logo;
+        },
+        skin(state) {
+            return state._skin;
         }
     },
     actions: {

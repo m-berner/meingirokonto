@@ -23,11 +23,11 @@
 <script lang="ts" setup>
 import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {CONS, useApp} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 
 const {t} = useI18n()
-const {notice} = useApp()
+const {CONS, notice} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 
@@ -35,18 +35,21 @@ const state = reactive({
   selected: null
 })
 
-const ok = async (): Promise<void> => {
+const ok = (): Promise<void> => {
   console.log('DELETE_BOOKING_TYPE: ok')
-  try {
-    const result = await records.deleteBookingType(state.selected)
-    if (result === 'Booking type deleted') {
-      formRef.value?.reset()
-      await notice([t('dialogs.deleteBookingType.success')])
+  return new Promise(async (resolve): Promise<void> => {
+    try {
+      const result = await records.deleteBookingType(state.selected)
+      if (result === 'Booking type deleted') {
+        formRef.value?.reset()
+        await notice([t('dialogs.deleteBookingType.success')])
+        resolve()
+      }
+    } catch (e) {
+      console.error(e)
+      await notice([t('dialogs.deleteBookingType.error')])
     }
-  } catch (e) {
-    console.error(e)
-    await notice([t('dialogs.deleteBookingType.error')])
-  }
+  })
 }
 const title = t('dialogs.deleteBookingType.title')
 

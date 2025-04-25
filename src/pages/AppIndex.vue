@@ -21,11 +21,12 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
-import {CONS} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const theme = useTheme()
+const {CONS} = useApp()
 
 onBeforeMount((): Promise<void> => {
   console.log('APPINDEX: onBeforeMount')
