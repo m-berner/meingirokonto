@@ -40,9 +40,9 @@
       ref="type-input"
       v-model="state.cType"
       density="compact"
+      max-width="300"
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-      max-width="300"
       v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:menu=false
@@ -59,10 +59,12 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
+import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {notice, VALIDATORS} = useApp()
 const records = useRecordsStore()
+const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
 const {CONS} = useApp()
 
@@ -81,13 +83,13 @@ const ok = (): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
       try {
-        const records = useRecordsStore()
-        const aNumber = records.accounts.all[records.getAccountIndexById(records.accounts.active_id)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        const aNumber = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        const aDescription = state.cDescription !== undefined && state.cDescription !== null ? state.cDescription.trim() : ''
         const result = await records.addBooking({
           cDate: state.cDate,
           cCredit: state.cCredit,
           cDebit: state.cDebit,
-          cDescription: state.cDescription!.trim(),
+          cDescription: aDescription,
           cType: state.cType,
           cAccountNumber: aNumber
         })

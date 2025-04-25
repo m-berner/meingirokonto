@@ -146,7 +146,7 @@
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
-  <DialogPort></DialogPort>
+  <DialogPort v-if="runtime.teleport.showHeaderDialog"></DialogPort>
 </template>
 
 <script lang="ts" setup>
@@ -167,73 +167,57 @@ const onIconClick = (ev: Event): Promise<void> => {
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.EXPORT_DATABASE,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DATABASE,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showHeaderDialog: true
         })
         break
       case CONS.DIALOGS.SETTING:

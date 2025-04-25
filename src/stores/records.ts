@@ -7,6 +7,9 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 import {useApp} from '@/pages/background'
+import {useSettingsStore} from '@/stores/settings'
+
+//import {toRaw} from 'vue'
 
 interface IRecordsStore {
   _dbi: IDBDatabase | null
@@ -24,7 +27,6 @@ interface IRecordStoreBooking {
 interface IRecordStoreAccount {
   all: IAccount[]
   selected_index: number
-  active_id: number
 }
 
 interface IRecordStoreBookingType {
@@ -40,8 +42,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       _dbi: null,
       _accounts: {
         all: [],
-        selected_index: -1,
-        active_id: -1
+        selected_index: -1
       },
       _bookings: {
         all: [],
@@ -83,8 +84,15 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return account.cID === ident
       })
     },
+    getBookingTypeNameById(ident: number): string {
+      const tmp = this._booking_types.all.filter((entry: IBookingType) => {
+        return entry.cID === ident
+      })
+      return tmp[0].cName
+    },
     getBookingsPerAccount(): IBooking[] {
-      const activeAccountIndex = this.getAccountIndexById(this._accounts.active_id)
+      const settings = useSettingsStore()
+      const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
         return []
       }
@@ -256,6 +264,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
       return new Promise(async (resolve, reject) => {
+        const settings = useSettingsStore()
         if (this._dbi != null) {
           const onSuccess = async (ev: Event): Promise<void> => {
             if (ev.target instanceof IDBRequest) {
@@ -264,7 +273,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 cID: ev.target.result
               }
               this._accounts.all.push(memRecord)
-              this._accounts.active_id = ev.target.result
+              settings.setActiveAccountId(ev.target.result)
               await browser.storage.local.set({sActiveAccountId: ev.target.result})
               resolve(ev.target.result)
             } else {

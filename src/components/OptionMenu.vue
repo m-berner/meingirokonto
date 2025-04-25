@@ -28,7 +28,7 @@
       </v-hover>
     </v-list>
   </v-menu>
-  <DialogPort></DialogPort>
+  <DialogPort v-if="runtime.teleport.showOptionDialog"></DialogPort>
 </template>
 
 <script lang="ts" setup>
@@ -49,6 +49,7 @@ const {CONS} = useApp()
 
 const setId = (optionIndex = -1): string => {
   let resultId: string = ''
+  console.error('--dfsfsf', optionIndex)
   switch (optionIndex) {
     case 0:
       resultId = CONS.DIALOGS.ADD_ACCOUNT
@@ -59,6 +60,7 @@ const setId = (optionIndex = -1): string => {
     default:
       break
   }
+  console.error(resultId)
   return resultId
 }
 
@@ -66,23 +68,20 @@ const onIconClick = (ev: Event): Promise<void> => {
   console.info('OPTIONMENU: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
+    console.error('HHHHH', elem, elem.id)
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showOptionDialog: true
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
-          childOk: runtime.teleport.childOk,
-          childTitle: runtime.teleport.childTitle,
           showOkButton: true,
-          showDialog: true
+          showOptionDialog: true
         })
         break
       default:
@@ -95,6 +94,6 @@ const onIconClick = (ev: Event): Promise<void> => {
     }
   })
 }
-// Buchung löschen Buchung korrigieren
+
 console.log('--- OptionMenu.vue setup ---')
 </script>

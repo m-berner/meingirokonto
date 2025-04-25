@@ -22,9 +22,11 @@ import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
+const runtime  = useRuntimeStore()
 const theme = useTheme()
 const {CONS} = useApp()
 
@@ -74,7 +76,6 @@ onBeforeMount((): Promise<void> => {
 
   return new Promise(async (resolve): Promise<void> => {
     const startSettings = await browser.runtime.sendMessage({type: 'GET_SETTINGS'})
-    console.info('APPINDEX: onBeforeMount', startSettings)
     if (startSettings !== null) {
       settings.initSettingsStore(theme, startSettings)
     }
@@ -88,6 +89,9 @@ onBeforeMount((): Promise<void> => {
     await records.openDatabase()
     await records.databaseIntoStore()
 
+    runtime.setLazyLoadBookingTable(true)
+
+    console.log('APPINDEX: onBeforeMount: promise resolves...')
     resolve()
   })
 })

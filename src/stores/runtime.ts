@@ -7,46 +7,57 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-type TTelePort = {
+interface ITelePort {
   dialogName: string
   childTitle: string
   childOk: null
   showOkButton: boolean
-  showDialog: boolean
+  showHeaderDialog: boolean
+  showOptionDialog: boolean
 }
 
 interface IRuntimeStore {
-  _tele_port: TTelePort
+  _teleport: ITelePort
+  _lazy_load_booking_table: boolean
 }
 
 export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = defineStore('runtime', {
   state: (): IRuntimeStore => {
     return {
-      _tele_port: {
+      _teleport: {
         dialogName: '',
         childTitle: '',
         childOk: null,
         showOkButton: true,
-        showDialog: false
-      }
+        showHeaderDialog: false,
+        showOptionDialog: false
+      },
+      _lazy_load_booking_table: false
     }
   },
   getters: {
     teleport(state: IRuntimeStore) {
-      return state._tele_port
+      return state._teleport
+    },
+    lazyLoadBookingTable(state: IRuntimeStore) {
+      return state._lazy_load_booking_table
     }
   },
   actions: {
-    setTeleport(entry: TTelePort) {
-      this._tele_port = entry
+    setTeleport(entry: ITelePort) {
+      this._teleport = entry
+    },
+    setLazyLoadBookingTable(value: boolean) {
+      this._lazy_load_booking_table = value
     },
     resetTeleport(): void {
-      this._tele_port = {
+      this._teleport = {
         dialogName: '',
         childTitle: '',
         childOk: null,
         showOkButton: true,
-        showDialog: false
+        showHeaderDialog: false,
+        showOptionDialog: false
       }
     }
   }

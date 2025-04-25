@@ -34,8 +34,11 @@ export const useSettingsStore = defineStore('settings', {
         setLogo(value) {
             this._logo = value;
         },
+        setBookingsPerPage(value) {
+            this._bookings_per_page = value;
+        },
         initSettingsStore(theme, settings) {
-            console.info('SETTINGS: initSettingsStore', settings);
+            console.log('SETTINGS: initSettingsStore');
             theme.global.name.value = settings.skin;
             this._skin = settings.skin;
             this._bookings_per_page = settings.bookingsPerPage;

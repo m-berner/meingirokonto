@@ -51,8 +51,11 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     setLogo(value: string): void {
       this._logo = value
     },
+    setBookingsPerPage(value: number): void {
+      this._bookings_per_page = value
+    },
     initSettingsStore(theme: ThemeInstance, settings: ISettings): void {
-      console.info('SETTINGS: initSettingsStore', settings)
+      console.log('SETTINGS: initSettingsStore')
       theme.global.name.value = settings.skin
       this._skin = settings.skin
       this._bookings_per_page = settings.bookingsPerPage

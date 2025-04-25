@@ -16,19 +16,6 @@
     "showAccounting": "Jahres-Berechnungen",
     "settings": "Einstellungen"
   },
-  "infoBar": {
-    "drawerTitles": {
-      "winloss": "Gewinn/Verlust",
-      "earnings": "Aktien-Erlös",
-      "deposits": "Einzahlung",
-      "dividends": "Dividende",
-      "withdrawals": "Auszahlung",
-      "fees": "Gebühr",
-      "taxes": "Steuer",
-      "account": "Handelskonto",
-      "depot": "Depotkonto"
-    }
-  },
   "bookingTable": {
     "search": "Suchen",
     "headers": [
@@ -172,36 +159,6 @@
     "privacy": "Datenschutz",
     "partner": "Partner",
     "mail": "Email"
-  },
-  "header": {
-    "titleExample": "Aktienverwaltung mit Fast-Echtzeit-Kursen von: {service}",
-    "toolbar": {
-      "home": "Startseite",
-      "transfersTable": "Buchungen",
-      "reload": "Kurse aktualisieren",
-      "addAccount": "Unternehmen hinzufügen",
-      "deleteStock": "Unternehmen entfernen",
-      "fadeinStock": "Unternehmen einblenden",
-      "cashPlus": "Einzahlung",
-      "cashMinus": "Auszahlung",
-      "dailyChanges": "Tagesveränderungen",
-      "dailyChangesAll": "Tagesveränderungen (alle)",
-      "exportDatabase": "Datenbank exportieren",
-      "importDatabase": "Datenbank importieren",
-      "showAccounting": "Jahres-Berechnungen",
-      "settings": "Einstellungen"
-    },
-    "drawer": {
-      "winloss": "Gewinn/Verlust",
-      "earnings": "Aktien-Erlös",
-      "deposits": "Einzahlung",
-      "dividends": "Dividende",
-      "withdrawals": "Auszahlung",
-      "fees": "Gebühr",
-      "taxes": "Steuer",
-      "account": "Handelskonto",
-      "depot": "Depotkonto"
-    }
   },
   "helpPage": {
     "title": "MeinGiroKonto Hilfe",
@@ -452,27 +409,6 @@
       "meadow": "Wiese",
       "dark": "Dunkel",
       "light": "Hell"
-    },
-    "materials": {
-      "au": "Gold",
-      "ag": "Silber",
-      "brent": "Öl (Brent)",
-      "cu": "Kupfer",
-      "pt": "Platin",
-      "al": "Aluminium",
-      "ni": "Nickel",
-      "sn": "Zinn",
-      "pb": "Blei"
-    },
-    "exchanges": {
-      "title": "Wechselkurs-Kürzel",
-      "label": "Kürzel",
-      "error": "Das Kürzel ist ungültig."
-    },
-    "markets": {
-      "title": "Handelsplätze",
-      "label": "Handelsplatz",
-      "error": "Der Handelsplatz ist ungültig."
     }
   },
   "validators": {

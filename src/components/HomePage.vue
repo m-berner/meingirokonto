@@ -16,20 +16,21 @@
     variant="outlined"
   ></v-text-field>
   <v-data-table
+    v-if="runtime.lazyLoadBookingTable"
     density="compact"
     item-key="cID"
     v-bind:headers="tableHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
     v-bind:items="records.getBookingsPerAccount() as IBooking[]"
-    v-bind:items-per-page="settings.itemsPerPageTransfers"
+    v-bind:items-per-page="settings.bookingsPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('bookingTable.itemsPerPageText')"
     v-bind:no-data-text="t('bookingTable.noDataText')"
     v-bind:search="state.search"
     v-on:update:items-per-page="
       (count) => {
-        settings.setItemsPerPageTransfers(count)
+        settings.setBookingsPerPage(count)
       }
     "
   >
@@ -45,7 +46,7 @@
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
-        <td>{{ item.cType }}</td>
+        <td>{{ records.getBookingTypeNameById(item.cType) }}</td>
         <td>{{ item.cAccountNumber }}</td>
       </tr>
     </template>
@@ -59,11 +60,13 @@ import {reactive} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, rt, t, tm} = useI18n()
 const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
 const state = reactive({
   search: '',
@@ -83,6 +86,21 @@ const tableHeaders = tm('bookingTable.headers').map((item: {
   }
 })
 const options: Record<string, string>[] = tm('bookingTable.menuItems')
+
+// const bookingTypeNameById = (id: number): string => {
+//   //const {_booking_types} = storeToRefs(records)
+//   //const all = toRaw(records.bookingTypes.all)
+//   console.error('---koooo-------', id)
+//   // let result = ''
+//   // if (all.length > 0) {
+//   //   const tmp = all.filter((entry: IBookingType) => {
+//   //     console.error('---', entry)
+//   //      return entry
+//   //   })
+//   //   console.error(id, all.length, all, tmp)
+//   // }
+//   return 'pp'
+// }
 
 console.log('--- HomePage.vue setup ---')
 </script>

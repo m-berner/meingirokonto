@@ -7,10 +7,10 @@
   -->
 <template>
   <Teleport to="body">
-    <v-dialog v-model="runtime.teleport.showDialog" v-bind:persistent="true" width="500">
+    <v-dialog v-model="showDialog" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
-          {{ runtime.teleport.childTitle }}
+          {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
           <component v-bind:is="runtime.teleport.dialogName" ref="dialog-ref"></component>
@@ -25,7 +25,7 @@
                 type="submit"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="runtime.teleport.childOk"
+                v-on:click="dialogRef?.ok"
               ></v-btn>
             </template>
           </v-tooltip>
@@ -49,25 +49,14 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useTemplateRef, watchEffect} from 'vue'
+import {useTemplateRef, ref} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const runtime = useRuntimeStore()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
-watchEffect(() => {
-  console.info('DIALOG_PORT: watchEffect', dialogRef.value)
-  if (dialogRef.value !== null && dialogRef.value!.title !== undefined) {
-    runtime.setTeleport({
-      dialogName: runtime.teleport.dialogName,
-      childTitle: dialogRef.value!.title,
-      childOk: dialogRef.value!.ok,
-      showOkButton: runtime.teleport.showOkButton,
-      showDialog: runtime.teleport.showDialog
-    })
-  }
-})
+const showDialog = ref<boolean>(runtime.teleport.showHeaderDialog || runtime.teleport.showOptionDialog)
 
 console.log('--- DialogPort.vue setup ---')
 </script>
