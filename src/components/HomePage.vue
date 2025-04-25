@@ -84,19 +84,5 @@ const tableHeaders = tm('bookingTable.headers').map((item: {
 })
 const options: Record<string, string>[] = tm('bookingTable.menuItems')
 
-//watchEffect(() => {
-// const activeAccountIndex = records.getAccountIndexById(records.accounts.active_id)
-// if (activeAccountIndex === -1) { return }
-// state.bookings_per_account = records.booking.all.filter((rec: IBooking) => {
-//   return rec.cAccountNumber === records.accounts.all[activeAccountIndex].cAccountNumber
-// })
-// state.bookings_per_account.sort((a: IBooking, b: IBooking)=> {
-//   const A = new Date(a.cDate).getTime()
-//   const B = new Date(b.cDate).getTime()
-//   return A - B
-// })
-//state.bookings_per_account = records.getBookingsPerAccount()
-//})
-
 console.log('--- HomePage.vue setup ---')
 </script>

@@ -52,7 +52,6 @@ interface IOptionsPage {
 }
 
 const {t, tm} = useI18n()
-/* NOTE: the destructured variables are reactive! */
 const theme = useTheme()
 
 const state: IOptionsPage = reactive({
@@ -61,20 +60,27 @@ const state: IOptionsPage = reactive({
   _theme_keys: [],
   _skin: ''
 })
-const setSkin = async (skin: string) => {
-  state._skin = skin
-  await browser.storage.local.set({sSkin: skin})
+const setSkin = (skin: string): Promise<void> => {
+  console.log('OPTIONSPAGE: setSkin')
+  return new Promise(async (resolve) => {
+    state._skin = skin
+    await browser.storage.local.set({sSkin: skin})
+    resolve()
+  })
 }
 
-onMounted(async () => {
+onMounted((): Promise<void> => {
   console.log('OPTIONSPAGE: onMounted')
-  const labelsOptionsPage: Record<string, string> = tm('optionsPage')
-  const skin = await browser.storage.local.get(['sSkin'])
-  state._tab = 1
-  state._tabs_length = labelsOptionsPage.tabs.length
-  state._theme_keys = Object.keys(toRaw(theme.themes.value))
-  state._skin = skin.sSkin
+  return new Promise(async (resolve) => {
+    const labelsOptionsPage: Record<string, string> = tm('optionsPage')
+    const skin = await browser.storage.local.get(['sSkin'])
+    state._tab = 1
+    state._tabs_length = labelsOptionsPage.tabs.length
+    state._theme_keys = Object.keys(toRaw(theme.themes.value))
+    state._skin = skin.sSkin
+    resolve()
+  })
 })
 
-console.log('--- OptionsIndex.vue setup ---', window.location.href)
+console.info('--- OptionsIndex.vue setup ---', window.location.href)
 </script>

@@ -62,7 +62,7 @@ const setId = (optionIndex = -1): string => {
   return resultId
 }
 
-const onIconClick = async (ev: Event): Promise<void> => {
+const onIconClick = (ev: Event): Promise<void> => {
   console.info('OPTIONMENU: onIconClick', ev)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
@@ -88,9 +88,12 @@ const onIconClick = async (ev: Event): Promise<void> => {
       default:
     }
   }
-  if (ev.target instanceof Element) {
-    await parse(ev.target)
-  }
+  return new Promise(async (resolve) => {
+    if (ev.target instanceof Element) {
+      await parse(ev.target)
+      resolve()
+    }
+  })
 }
 // Buchung löschen Buchung korrigieren
 console.log('--- OptionMenu.vue setup ---')

@@ -31,25 +31,6 @@ const {CONS} = useApp()
 onBeforeMount((): Promise<void> => {
   console.log('APPINDEX: onBeforeMount')
   const keyStrokeController: string[] = []
-  // const initStorageLocal = (): Promise<string> => {
-  //   console.log('APPINDEX: initStorageLocal')
-  //   return new Promise(async (resolve) => {
-  //     const storageLocal: IStorageLocal = await browser.storage.local.get()
-  //     if (storageLocal.sSkin === undefined) {
-  //       await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
-  //     }
-  //     if (storageLocal.sActiveAccountId === undefined) {
-  //       await browser.storage.local.set({sActiveAccountId: CONS.DEFAULTS.STORAGE.ACCOUNT_ACTIVE_ID})
-  //     }
-  //     if (storageLocal.sBookingsPerPage === undefined) {
-  //       await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
-  //     }
-  //     if (storageLocal.sDebug === undefined) {
-  //       await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
-  //     }
-  //     resolve('browser.storage.local initialized')
-  //   })
-  // }
   const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
     console.info('APPINDEX: onStorageChange', area)
     switch (true) {
@@ -58,21 +39,6 @@ onBeforeMount((): Promise<void> => {
         break
       default:
     }
-    // const accountIndex = records.getAccountIndexById(settings.activeAccountId)
-    // if (accountIndex > -1) {
-    //   const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
-    //   if (Object.keys(CONS.LOGOS).includes(lName.toUpperCase())) {
-    //     settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
-    //   } else {
-    //     settings.setLogo('DefaultSvg')
-    //   }
-    //   settings.setActiveAccountId(records.accounts.all[accountIndex].cID)
-    //   //browser.storage.local.set({sActiveAccountId: records.accounts.all[accountIndex].cID})
-    // } else {
-    //   settings.setLogo('DefaultSvg')
-    //   settings.setActiveAccountId(-1)
-    //   //browser.storage.local.set({sActiveAccountId: -1})
-    // }
   }
   const onBeforeUnload = (): Promise<void> => {
     console.log('APPINDEX: onBeforeUnload')
