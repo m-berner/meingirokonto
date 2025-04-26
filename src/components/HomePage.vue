@@ -70,7 +70,6 @@ const runtime = useRuntimeStore()
 
 const state = reactive({
   search: '',
-  //bookings_per_account: []
 })
 const tableHeaders = tm('bookingTable.headers').map((item: {
   title: string,
@@ -86,21 +85,6 @@ const tableHeaders = tm('bookingTable.headers').map((item: {
   }
 })
 const options: Record<string, string>[] = tm('bookingTable.menuItems')
-
-// const bookingTypeNameById = (id: number): string => {
-//   //const {_booking_types} = storeToRefs(records)
-//   //const all = toRaw(records.bookingTypes.all)
-//   console.error('---koooo-------', id)
-//   // let result = ''
-//   // if (all.length > 0) {
-//   //   const tmp = all.filter((entry: IBookingType) => {
-//   //     console.error('---', entry)
-//   //      return entry
-//   //   })
-//   //   console.error(id, all.length, all, tmp)
-//   // }
-//   return 'pp'
-// }
 
 console.log('--- HomePage.vue setup ---')
 </script>

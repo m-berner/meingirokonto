@@ -6,13 +6,12 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-app-bar app color="secondary" v-bind:flat="true">
+  <v-app-bar v-if="records.accounts.all.length > 0" app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
       <img v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl" alt="brandfetch.com logo">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-select
-      v-if="records.accounts.all.length > 0"
       v-model="activeAccountId"
       label="IBAN"
       max-width="300"

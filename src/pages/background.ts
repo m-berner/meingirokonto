@@ -630,8 +630,8 @@ export const useApp = (): IUseApp => {
       nameRules: msgs => {
         return [
           v => v !== null || msgs[0],
-          v => (v !== null && v.length < 16) || msgs[1],
-          v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+          v => (v !== null && v.length < 32) || msgs[1],
+          v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgs[2]
         ]
       },
       swiftRules: msgs => {
