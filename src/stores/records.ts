@@ -90,6 +90,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
       return tmp[0].cName
     },
+    getBookingTextById(ident: number): string {
+      const tmp = this._bookings.all.filter((entry: IBooking) => {
+        return entry.cID === ident
+      })
+      return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
+    },
     getBookingsPerAccount(): IBooking[] {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)

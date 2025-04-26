@@ -9,8 +9,6 @@ import {defineStore, type StoreDefinition} from 'pinia'
 
 interface ITelePort {
   dialogName: string
-  childTitle: string
-  childOk: null
   showOkButton: boolean
   showHeaderDialog: boolean
   showOptionDialog: boolean
@@ -19,6 +17,7 @@ interface ITelePort {
 interface IRuntimeStore {
   _teleport: ITelePort
   _lazy_load_booking_table: boolean
+  _booking_id: number
 }
 
 export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = defineStore('runtime', {
@@ -26,16 +25,18 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     return {
       _teleport: {
         dialogName: '',
-        childTitle: '',
-        childOk: null,
         showOkButton: true,
         showHeaderDialog: false,
         showOptionDialog: false
       },
-      _lazy_load_booking_table: false
+      _lazy_load_booking_table: false,
+      _booking_id: -1
     }
   },
   getters: {
+    bookingId(state: IRuntimeStore) {
+      return state._booking_id
+    },
     teleport(state: IRuntimeStore) {
       return state._teleport
     },
@@ -44,6 +45,9 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     }
   },
   actions: {
+    setBookingId(value: number) {
+      this._booking_id = value
+    },
     setTeleport(entry: ITelePort) {
       this._teleport = entry
     },
@@ -53,8 +57,6 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     resetTeleport(): void {
       this._teleport = {
         dialogName: '',
-        childTitle: '',
-        childOk: null,
         showOkButton: true,
         showHeaderDialog: false,
         showOptionDialog: false

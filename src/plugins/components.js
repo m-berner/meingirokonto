@@ -11,6 +11,7 @@ import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DefaultSvg from '@/components/logos/DefaultSvg.vue';
 import IngdSvg from '@/components/logos/IngdSvg.vue';
 import BylaSvg from '@/components/logos/BylaSvg.vue';
+import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
 const { CONS } = useApp();
 export default {
     install: (app) => {
@@ -19,6 +20,7 @@ export default {
         app.component(CONS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType);
         app.component(CONS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType);
         app.component(CONS.DIALOGS.ADD_BOOKING, AddBooking);
+        app.component(CONS.DIALOGS.DELETE_BOOKING, DeleteBooking);
         app.component(CONS.DIALOGS.EXPORT_DATABASE, ExportDatabase);
         app.component(CONS.DIALOGS.IMPORT_DATABASE, ImportDatabase);
         app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting);

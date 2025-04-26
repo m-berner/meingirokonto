@@ -56,6 +56,12 @@ export const useRecordsStore = defineStore('records', {
             });
             return tmp[0].cName;
         },
+        getBookingTextById(ident) {
+            const tmp = this._bookings.all.filter((entry) => {
+                return entry.cID === ident;
+            });
+            return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
+        },
         getBookingsPerAccount() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);

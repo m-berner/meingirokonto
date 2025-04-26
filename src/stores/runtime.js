@@ -4,16 +4,18 @@ export const useRuntimeStore = defineStore('runtime', {
         return {
             _teleport: {
                 dialogName: '',
-                childTitle: '',
-                childOk: null,
                 showOkButton: true,
                 showHeaderDialog: false,
                 showOptionDialog: false
             },
-            _lazy_load_booking_table: false
+            _lazy_load_booking_table: false,
+            _booking_id: -1
         };
     },
     getters: {
+        bookingId(state) {
+            return state._booking_id;
+        },
         teleport(state) {
             return state._teleport;
         },
@@ -22,6 +24,9 @@ export const useRuntimeStore = defineStore('runtime', {
         }
     },
     actions: {
+        setBookingId(value) {
+            this._booking_id = value;
+        },
         setTeleport(entry) {
             this._teleport = entry;
         },
@@ -31,8 +36,6 @@ export const useRuntimeStore = defineStore('runtime', {
         resetTeleport() {
             this._teleport = {
                 dialogName: '',
-                childTitle: '',
-                childOk: null,
                 showOkButton: true,
                 showHeaderDialog: false,
                 showOptionDialog: false

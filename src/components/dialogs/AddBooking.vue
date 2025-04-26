@@ -6,7 +6,7 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-form ref="form-ref" validate-on="submit">
+  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-text-field
       ref="date-input"
       v-model="state.cDate"

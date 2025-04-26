@@ -49,36 +49,25 @@ const {CONS} = useApp()
 
 const setId = (optionIndex = -1): string => {
   let resultId: string = ''
-  console.error('--dfsfsf', optionIndex)
   switch (optionIndex) {
     case 0:
-      resultId = CONS.DIALOGS.ADD_ACCOUNT
-      break
-    case 1:
-      resultId = CONS.DIALOGS.DELETE_ACCOUNT
+      resultId = CONS.DIALOGS.DELETE_BOOKING
       break
     default:
       break
   }
-  console.error(resultId)
   return resultId
 }
 
 const onIconClick = (ev: Event): Promise<void> => {
-  console.info('OPTIONMENU: onIconClick', ev)
+  console.info('OPTIONMENU: onIconClick', ev, _props.recordID)
+  runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
-      case CONS.DIALOGS.ADD_ACCOUNT:
+      case CONS.DIALOGS.DELETE_BOOKING:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          showOkButton: true,
-          showOptionDialog: true
-        })
-        break
-      case CONS.DIALOGS.DELETE_ACCOUNT:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
+          dialogName: CONS.DIALOGS.DELETE_BOOKING,
           showOkButton: true,
           showOptionDialog: true
         })

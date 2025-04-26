@@ -72,10 +72,6 @@
       {
         "title": "Buchung löschen",
         "icon": "$tableRemove"
-      },
-      {
-        "title": "Buchung korrigieren",
-        "icon": "$close"
       }
     ],
     "noDataText": "Keine Einträge gefunden.",
@@ -91,6 +87,12 @@
       "creditLabel": "Einnahme",
       "debitLabel": "Ausgabe",
       "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
+    },
+    "deleteBooking": {
+      "title": "Buchung",
+      "ask": "jetzt löschen?",
+      "success": "Buchung wurde enternt",
       "error": "Eingabe Fehler?"
     },
     "addAccount": {
@@ -138,19 +140,6 @@
       "title": "Datenbank importieren",
       "filename": "Dateiname",
       "label": "aus Datei"
-    },
-    "configStock": {
-      "title": "Aktie konfigurieren - {company}",
-      "company": "Unternehmen",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Kürzel",
-      "firstPage": "Erste Seite",
-      "fadeOut": "Ausblenden",
-      "qf": "Quartalszahlen",
-      "gm": "Hauptversammlung",
-      "url": "Link zur Aktienseite",
-      "validationError": "Die Konfiguration kann nicht validiert werden."
     },
     "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - Heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
   },

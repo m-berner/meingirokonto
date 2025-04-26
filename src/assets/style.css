@@ -52,3 +52,7 @@ thead tr div.v-progress-linear {
 .opacity-on {
     opacity: 1;
 }
+
+.text-align-center {
+    text-align: center;
+}

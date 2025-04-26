@@ -18,6 +18,7 @@
     </v-card-text>
   </v-form>
 </template>
+
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 // {onMounted} from 'vue'
