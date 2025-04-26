@@ -47,7 +47,7 @@ const ok = () => {
       buffer += JSON.stringify({
         cSwift: records.accounts.all[i].cSwift,
         cNumber: records.accounts.all[i].cNumber,
-        cCurrency: records.accounts.all[i].cCurrency,
+        cLogoUrl: records.accounts.all[i].cLogoUrl,
         cID: records.accounts.all[i].cID
       })
       if (i === records.accounts.all.length - 1) {
