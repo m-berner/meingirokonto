@@ -98,7 +98,7 @@
     "addAccount": {
       "title": "Bankkonto hinzufügen",
       "swiftLabel": "BIC/SWIFT Code",
-      "currencyLabel": "Währungscode",
+      "logoLabel": "Logo brandfetch.com",
       "accountNumberLabel": "Kontonummer",
       "currencyPlaceholder": "z. B. EUR",
       "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
@@ -406,6 +406,7 @@
     "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch",
     "dateRules": "Datum ist erforderlich",
     "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
-    "requiredRule": "Ist erforderlich"
+    "requiredRule": "Ist erforderlich",
+    "logoUrlRules": "Ist erforderlich"
   }
 }

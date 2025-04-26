@@ -26,18 +26,21 @@
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state.cCurrency"
+      v-model="state.cLogoUrl"
+      autofocus
       required
-      v-bind:label="t('dialogs.addAccount.currencyLabel')"
-      v-bind:placeholder="t('dialogs.addAccount.currencyPlaceholder')"
-      v-bind:rules="VALIDATORS.currencyCodeRules([t('validators.currencyCodeRules', 0), t('validators.currencyCodeRules', 1), t('validators.currencyCodeRules', 2)])"
+      v-bind:label="t('dialogs.addAccount.logoLabel')"
+      v-bind:rules="VALIDATORS.logoUrlRules([t('validators.logoUrlRules', 0)])"
       variant="outlined"
+      placeholder="z. B. ing.com"
+      v-on:input="onInput"
     ></v-text-field>
+    <img v-bind:src="brandFetchUrl" alt="brandfetch.com logo">
   </v-form>
 </template>
 
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, ref, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -48,9 +51,15 @@ const {notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const state: Omit<IAccount, 'cID'> = reactive({
   cSwift: '',
-  cCurrency: '',
-  cNumber: ''
+  cNumber: '',
+  cLogoUrl: ''
 })
+
+const brandFetchUrl = ref('') //ref(`https://cdn.brandfetch.io/${state.cLogoUrl}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`)
+const onInput = () => {
+  brandFetchUrl.value = 'https://cdn.brandfetch.io/' + state.cLogoUrl + '/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
+}
+
 const ibanMask = (iban: string) => {
   if (iban !== null) {
     const withoutSpace = iban.replace(/\s/g, '')
@@ -78,7 +87,7 @@ const ok = (): Promise<void> => {
         const result = await records.addAccount({
           cSwift: state.cSwift.trim().toUpperCase(),
           cNumber: state.cNumber.replace(/\s/g, ''),
-          cCurrency: state.cCurrency.trim().toUpperCase()
+          cLogoUrl: state.cLogoUrl
         })
         if (settings.activeAccountId < 0) {
           const accountIndex = records.getAccountIndexById(result)

@@ -10,8 +10,8 @@ declare global {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
     cID: number
     cSwift: string
-    cCurrency: string
     cNumber: string
+    cLogoUrl: string
   }
 
   interface IBookingType {
@@ -290,6 +290,7 @@ interface IUseApp {
     dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
     currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
     requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
+    logoUrlRules: (msgs: string[]) => ((v: string) => string | boolean)[]
   }>
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
@@ -653,6 +654,11 @@ export const useApp = (): IUseApp => {
         ]
       },
       requiredRule: msgs => {
+        return [
+          v => v !== null || msgs[0]
+        ]
+      },
+      logoUrlRules: msgs => {
         return [
           v => v !== null || msgs[0]
         ]

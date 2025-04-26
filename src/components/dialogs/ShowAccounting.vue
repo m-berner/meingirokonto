@@ -29,8 +29,8 @@ const {notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const state: Omit<IAccount, 'cID'> = reactive({
   cSwift: '',
-  cCurrency: '',
-  cNumber: ''
+  cNumber: '',
+  cLogoUrl: ''
 })
 
 const ok = (): Promise<void> => {

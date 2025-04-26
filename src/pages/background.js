@@ -352,6 +352,11 @@ export const useApp = () => {
                 return [
                     v => v !== null || msgs[0]
                 ];
+            },
+            logoUrlRules: msgs => {
+                return [
+                    v => v !== null || msgs[0]
+                ];
             }
         }),
         utcDate: (iso) => {
