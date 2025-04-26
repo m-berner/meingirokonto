@@ -290,7 +290,7 @@ interface IUseApp {
     dateRules: (msgs: string[]) => ((v: string) => string | boolean)[]
     currencyCodeRules: (msgs: string[]) => ((v: string) => string | boolean)[]
     requiredRule: (msgs: string[]) => ((v: string) => string | boolean)[]
-    logoUrlRules: (msgs: string[]) => ((v: string) => string | boolean)[]
+    brandNameRules: (msgs: string[]) => ((v: string) => string | boolean)[]
   }>
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
@@ -658,7 +658,7 @@ export const useApp = (): IUseApp => {
           v => v !== null || msgs[0]
         ]
       },
-      logoUrlRules: msgs => {
+      brandNameRules: msgs => {
         return [
           v => v !== null || msgs[0]
         ]

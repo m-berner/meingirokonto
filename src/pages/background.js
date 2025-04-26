@@ -353,7 +353,7 @@ export const useApp = () => {
                     v => v !== null || msgs[0]
                 ];
             },
-            logoUrlRules: msgs => {
+            brandNameRules: msgs => {
                 return [
                     v => v !== null || msgs[0]
                 ];

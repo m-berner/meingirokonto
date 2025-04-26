@@ -8,7 +8,7 @@
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <CustomLogo v-bind:name="logo"></CustomLogo>
+      <img v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl" alt="brandfetch.com logo">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-select
@@ -28,7 +28,6 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
-import CustomLogo from '@/components/helper/CustomLogo.vue'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 
@@ -37,7 +36,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {CONS} = useApp()
 
-const {logo, activeAccountId} = storeToRefs(settings)
+const {activeAccountId} = storeToRefs(settings)
 
 // TODO calculate booking sums cCredit + cDebit
 
