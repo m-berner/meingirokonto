@@ -16,7 +16,7 @@
     "showAccounting": "Jahres-Berechnungen",
     "settings": "Einstellungen"
   },
-  "bookingTable": {
+  "appPage": {
     "search": "Suchen",
     "headers": [
       {
@@ -149,7 +149,7 @@
     "partner": "Partner",
     "mail": "Email"
   },
-  "helpPage": {
+  "helpContent": {
     "title": "MeinGiroKonto Hilfe",
     "requestsTitle": "Anforderungen",
     "requests": [
@@ -309,7 +309,7 @@
       }
     ]
   },
-  "privacyPage": {
+  "privacyContent": {
     "title": "MeinGiroKonto Datenschutz Richtlinien",
     "local": {
       "title": "Lokale Daten",
@@ -331,54 +331,6 @@
         "Wechselkursen"
       ]
     }
-  },
-  "partnerPage": {
-    "title": "MeinGiroKonto Partner",
-    "buttonText": "Öffnen",
-    "linkData": [
-      {
-        "title": "finanzen.net",
-        "content": "Kursdaten, Indexdaten, Materialdaten",
-        "url": "https://www.finanzen.net/",
-        "icon": "fnet"
-      },
-      {
-        "title": "fx-rate",
-        "content": "Wechselkurs-Daten",
-        "url": "https://fx-rate.net/",
-        "icon": "fx"
-      },
-      {
-        "title": "tagesschau",
-        "content": "Kursdaten",
-        "url": "https://www.tagesschau.de/wirtschaft/boersenkurse/",
-        "icon": "ard"
-      },
-      {
-        "title": "tradegatexchange",
-        "content": "Neue Aktie Daten",
-        "url": "https://www.tradegate.de/",
-        "icon": "tgate"
-      },
-      {
-        "title": "wallstreet Online",
-        "content": "Kursdaten",
-        "url": "https://www.wallstreet-online.de/",
-        "icon": "wstreet"
-      },
-      {
-        "title": "Aktien Check",
-        "content": "Kursdaten, 52Wochen Hoch/Tief Daten",
-        "url": "https://www.aktiencheck.de/",
-        "icon": "acheck"
-      },
-      {
-        "title": "GOYAX",
-        "content": "Kursdaten",
-        "url": "https://www.goyax.de/",
-        "icon": "goyax"
-      }
-    ]
   },
   "optionsPage": {
     "tabs": [

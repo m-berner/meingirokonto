@@ -12,7 +12,7 @@
         <v-col cols="8" s="8">
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpPage.requestsTitle') }}
+              {{ t('helpContent.requestsTitle') }}
             </v-card-title>
           </v-card>
           <v-card v-for="item in helpPageRequests" v-bind:key="item.title">
@@ -40,7 +40,7 @@
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpPage.companyBarTitle') }}
+              {{ t('helpContent.companyBarTitle') }}
             </v-card-title>
           </v-card>
           <v-card v-for="item in helpPageCompanybar" v-bind:key="item.title">
@@ -54,7 +54,7 @@
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpPage.transferBarTitle') }}
+              {{ t('helpContent.transferBarTitle') }}
             </v-card-title>
           </v-card>
           <v-card v-for="item in helpPageTransferbar" v-bind:key="item.title">
@@ -77,10 +77,10 @@ import {useI18n} from 'vue-i18n'
 
 const {rt, t, tm} = useI18n()
 
-const helpPageRequests: Record<string, string>[] = tm('helpPage.requests')
-const helpPageToolbar: Record<string, string>[] = tm('helpPage.toolBar')
-const helpPageCompanybar: Record<string, string>[] = tm('helpPage.companyBar')
-const helpPageTransferbar: Record<string, string>[] = tm('helpPage.transferBar')
+const helpPageRequests: Record<string, string>[] = tm('helpContent.requests')
+const helpPageToolbar: Record<string, string>[] = tm('helpContent.toolBar')
+const helpPageCompanybar: Record<string, string>[] = tm('helpContent.companyBar')
+const helpPageTransferbar: Record<string, string>[] = tm('helpContent.transferBar')
 
 console.log('--- HelpPage.vue setup ---')
 </script>

@@ -11,18 +11,18 @@
       <v-col cols="7" sm="7">
         <v-card>
           <v-card-title>
-            {{ t('privacyPage.public.title') }}
+            {{ t('privacyContent.public.title') }}
           </v-card-title>
           <v-card-text>
-            {{ t('privacyPage.public.content') }}
+            {{ t('privacyContent.public.content') }}
           </v-card-text>
         </v-card>
         <v-card>
           <v-card-title>
-            {{ t('privacyPage.connections.title') }}
+            {{ t('privacyContent.connections.title') }}
           </v-card-title>
           <v-card-text>
-            {{ t('privacyPage.connections.content') }}
+            {{ t('privacyContent.connections.content') }}
             <v-list density="compact">
               <v-list-item
                 v-for="item in dataList"
@@ -43,7 +43,7 @@ import {useI18n} from 'vue-i18n'
 
 const {rt, t, tm} = useI18n()
 
-const dataList: string[] = tm('privacyPage.connections.dataList')
+const dataList: string[] = tm('privacyContent.connections.dataList')
 
 console.log('--- PrivacyPage.vue setup ---')
 </script>

@@ -12,7 +12,7 @@
     hide-details
     prepend-inner-icon="$magnify"
     single-line
-    v-bind:label="t('bookingTable.search')"
+    v-bind:label="t('appPage.search')"
     variant="outlined"
   ></v-text-field>
   <v-data-table
@@ -25,8 +25,8 @@
     v-bind:items="records.getBookingsPerAccount() as IBooking[]"
     v-bind:items-per-page="settings.bookingsPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="t('bookingTable.itemsPerPageText')"
-    v-bind:no-data-text="t('bookingTable.noDataText')"
+    v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
+    v-bind:no-data-text="t('appPage.noDataText')"
     v-bind:search="state.search"
     v-on:update:items-per-page="
       (count) => {
@@ -71,7 +71,7 @@ const runtime = useRuntimeStore()
 const state = reactive({
   search: '',
 })
-const tableHeaders = tm('bookingTable.headers').map((item: {
+const tableHeaders = tm('appPage.headers').map((item: {
   title: string,
   align: string,
   sortable: boolean,
@@ -84,7 +84,7 @@ const tableHeaders = tm('bookingTable.headers').map((item: {
     key: rt(item.key)
   }
 })
-const options: Record<string, string>[] = tm('bookingTable.menuItems')
+const options: Record<string, string>[] = tm('appPage.menuItems')
 
 console.log('--- HomePage.vue setup ---')
 </script>
