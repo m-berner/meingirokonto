@@ -124,7 +124,7 @@
       "error": "Buchungstyp wurde nicht entfernt"
     },
     "showAccounting": {
-      "title": "Buchung hinzufügen",
+      "title": "Buchungsergebnisse",
       "dateLabel": "Buchungstag",
       "descriptionLabel": "Bemerkung",
       "creditLabel": "Einnahme",

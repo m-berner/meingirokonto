@@ -360,21 +360,7 @@ export const useApp = () => {
             }
         }),
         utcDate: (iso) => {
-            const tzo = new Date().getTimezoneOffset() / 60;
-            let result = '';
-            if (tzo < 0 && tzo > -10) {
-                result = `+0${-tzo}`;
-            }
-            else if (tzo < 0) {
-                result = `+${-tzo}`;
-            }
-            else if (tzo >= 0 && tzo < 10) {
-                result = `-0${tzo}`;
-            }
-            else if (tzo > 9) {
-                result = `-${tzo}`;
-            }
-            return new Date(`${iso}T00:00:00.000${result}:00`);
+            return new Date(`${iso}T00:00:00.000`);
         },
         notice: async (messages) => {
             const msg = messages.join('\n');

@@ -27,7 +27,9 @@ export const useRecordsStore = defineStore('records', {
                 accounts: [],
                 bookings: [],
                 booking_types: []
-            }
+            },
+            _booking_sum: 0,
+            _booking_sum_field: ''
         };
     },
     getters: {
@@ -39,6 +41,12 @@ export const useRecordsStore = defineStore('records', {
         },
         bookings(state) {
             return state._bookings;
+        },
+        bookingSum(state) {
+            return state._booking_sum;
+        },
+        bookingSumField(state) {
+            return state._booking_sum_field;
         },
         dbi(state) {
             return state._dbi;
@@ -77,6 +85,14 @@ export const useRecordsStore = defineStore('records', {
                 return A - B;
             });
             return bookings_per_account;
+        },
+        setBookingsSum() {
+            this._booking_sum = this.bookings.all.map((entry) => {
+                return entry.cCredit - entry.cDebit;
+            }).reduce((acc, cur) => acc + cur, 0);
+        },
+        setBookingSumField(value) {
+            this._booking_sum_field = value;
         },
         setBkupObject(value) {
             this._bkup_object = value;

@@ -17,6 +17,8 @@ interface IRecordsStore {
   _bookings: IRecordStoreBooking
   _booking_types: IRecordStoreBookingType
   _bkup_object: IBackup
+  _booking_sum: number
+  _booking_sum_field: string
 }
 
 interface IRecordStoreBooking {
@@ -61,7 +63,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         accounts: [],
         bookings: [],
         booking_types: []
-      }
+      },
+      _booking_sum: 0,
+      _booking_sum_field: ''
     }
   },
   getters: {
@@ -73,6 +77,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     bookings(state: IRecordsStore): IRecordStoreBooking {
       return state._bookings
+    },
+    bookingSum(state: IRecordsStore): number {
+      return state._booking_sum
+    },
+    bookingSumField(state: IRecordsStore): string {
+      return state._booking_sum_field
     },
     dbi(state: IRecordsStore): IDBDatabase | null {
       return state._dbi
@@ -111,6 +121,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return A - B
       })
       return bookings_per_account
+    },
+    setBookingsSum(): void {
+      this._booking_sum = this.bookings.all.map((entry: IBooking) => {
+        return entry.cCredit - entry.cDebit
+      }).reduce((acc: number, cur: number) => acc + cur, 0)
+    },
+    setBookingSumField(value: string): void {
+      this._booking_sum_field = value
     },
     setBkupObject(value: IBackup) {
       this._bkup_object = value

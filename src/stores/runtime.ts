@@ -17,6 +17,7 @@ interface ITelePort {
 interface IRuntimeStore {
   _teleport: ITelePort
   _lazy_load_booking_table: boolean
+  _lazy_load_title_bar: boolean
   _booking_id: number
 }
 
@@ -30,6 +31,7 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
         showOptionDialog: false
       },
       _lazy_load_booking_table: false,
+      _lazy_load_title_bar: false,
       _booking_id: -1
     }
   },
@@ -42,6 +44,9 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     },
     lazyLoadBookingTable(state: IRuntimeStore) {
       return state._lazy_load_booking_table
+    },
+    lazyLoadTitleBar(state: IRuntimeStore) {
+      return state._lazy_load_title_bar
     }
   },
   actions: {
@@ -53,6 +58,9 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     },
     setLazyLoadBookingTable(value: boolean) {
       this._lazy_load_booking_table = value
+    },
+    setLazyLoadTitleBar(value: boolean) {
+      this._lazy_load_title_bar = value
     },
     resetTeleport(): void {
       this._teleport = {

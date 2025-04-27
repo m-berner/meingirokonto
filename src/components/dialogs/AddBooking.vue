@@ -87,13 +87,16 @@ const ok = (): Promise<void> => {
         const aDescription = state.cDescription !== undefined && state.cDescription !== null ? state.cDescription.trim() : ''
         const result = await records.addBooking({
           cDate: state.cDate,
-          cCredit: state.cCredit,
-          cDebit: state.cDebit,
+          // NOTE: CurrencyInput ensure 0 instead of null
+          cCredit: state.cCredit === null ? 0 : state.cCredit,
+          cDebit: state.cDebit === null ? 0 : state.cDebit,
           cDescription: aDescription,
           cType: state.cType,
           cAccountNumber: aNumber
         })
         if (result === CONS.RESULTS.SUCCESS) {
+          state.cDebit = 0
+          state.cCredit = 0
           await notice([t('dialogs.addBooking.success')])
           formRef.value!.reset()
           resolve()

@@ -9,6 +9,7 @@ export const useRuntimeStore = defineStore('runtime', {
                 showOptionDialog: false
             },
             _lazy_load_booking_table: false,
+            _lazy_load_title_bar: false,
             _booking_id: -1
         };
     },
@@ -21,6 +22,9 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         lazyLoadBookingTable(state) {
             return state._lazy_load_booking_table;
+        },
+        lazyLoadTitleBar(state) {
+            return state._lazy_load_title_bar;
         }
     },
     actions: {
@@ -32,6 +36,9 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         setLazyLoadBookingTable(value) {
             this._lazy_load_booking_table = value;
+        },
+        setLazyLoadTitleBar(value) {
+            this._lazy_load_title_bar = value;
         },
         resetTeleport() {
             this._teleport = {

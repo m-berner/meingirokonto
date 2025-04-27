@@ -23,7 +23,9 @@ import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useI18n} from 'vue-i18n'
 
+const {n} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime  = useRuntimeStore()
@@ -90,6 +92,9 @@ onBeforeMount((): Promise<void> => {
     await records.databaseIntoStore()
 
     runtime.setLazyLoadBookingTable(true)
+    runtime.setLazyLoadTitleBar(true)
+    records.setBookingsSum()
+    records.setBookingSumField(n(records.bookingSum, 'currency'))
 
     console.log('APPINDEX: onBeforeMount: promise resolves...')
     resolve()

@@ -216,7 +216,7 @@ const onIconClick = (ev: Event): Promise<void> => {
       case CONS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
-          showOkButton: true,
+          showOkButton: false,
           showHeaderDialog: true
         })
         break

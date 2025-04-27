@@ -6,11 +6,19 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-app-bar v-if="records.accounts.all.length > 0" app color="secondary" v-bind:flat="true">
+  <v-app-bar v-if="runtime.lazyLoadTitleBar" app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl" alt="brandfetch.com logo">
+      <img alt="brandfetch.com logo"
+           v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
+    <v-text-field
+      v-model="records.bookingSumField"
+      label="Kontostand"
+      max-width="150"
+      v-bind:disabled="true"
+    ></v-text-field>
+    <v-spacer></v-spacer>
     <v-select
       v-model="activeAccountId"
       label="IBAN"
@@ -29,15 +37,17 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
+//import {ref} from 'vue'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 const {CONS} = useApp()
 
 const {activeAccountId} = storeToRefs(settings)
-
-// TODO calculate booking sums cCredit + cDebit
+//const sum = ref(n(records.bookingSum, 'currency'))
 
 console.log('--- TitleBar.vue setup ---')
 </script>
