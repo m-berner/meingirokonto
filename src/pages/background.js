@@ -96,7 +96,7 @@ export const useApp = () => {
                         FIELDS: {
                             ID: 'cID',
                             S: 'cSwift',
-                            C: 'cCurrency',
+                            L: 'cLogoUrl',
                             N: 'cNumber'
                         }
                     },
@@ -384,7 +384,19 @@ if (window.location.href.includes('_generated_background_page.html')) {
             const onSuccess = (ev) => {
                 console.log('BACKGROUND: onInstall: onSuccess');
                 if (ev.target instanceof IDBRequest) {
-                    ev.target.result.close();
+                    const openDB = ev.target.result;
+                    const transaction = openDB.transaction(['booking_types'], 'readwrite');
+                    const onComplete = () => {
+                        openDB.close();
+                        console.log('BACKGROUND: onUpgradeNeeded: Transaction completed.');
+                    };
+                    const onError = () => {
+                        openDB.close();
+                        console.error('BACKGROUND: onUpgradeNeeded: Transaction not opened due to error. Duplicate items not allowed.');
+                    };
+                    transaction.addEventListener('complete', onComplete, CONS.SYSTEM.ONCE);
+                    transaction.addEventListener('error', onError, CONS.SYSTEM.ONCE);
+                    transaction.objectStore('booking_types').add({ cName: 'Start' });
                 }
             };
             const onError = (ev) => {
@@ -392,7 +404,7 @@ if (window.location.href.includes('_generated_background_page.html')) {
             };
             const onUpgradeNeeded = async (ev) => {
                 if (ev instanceof IDBVersionChangeEvent) {
-                    console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.oldVersion);
+                    console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion);
                     const createDB = () => {
                         console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
                         const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {

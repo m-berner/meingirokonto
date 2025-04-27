@@ -33,7 +33,6 @@ defineExpose({title})
 onMounted(() => {
   console.log('SHOW_ACCOUNTING: onMounted')
   const sums = []
-  // TODO ignore Start Kontostand...?
   for (let i = 1; i < records.bookingTypes.all.length; i++) {
     sums[i-1] = records.bookings.all.filter((entry: IBooking) => {
       return entry.cType === records.bookingTypes.all[i].cID

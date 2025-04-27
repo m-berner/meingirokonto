@@ -21,9 +21,9 @@
 
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
-// {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IImportDatabase {
   _choosen_file: Blob | null
@@ -35,6 +35,7 @@ interface EventTarget extends HTMLInputElement {
 
 const {t} = useI18n()
 const {CONS} = useApp()
+const settings = useSettingsStore()
 
 const state: IImportDatabase = {
   _choosen_file: null
@@ -81,6 +82,14 @@ const ok = async (): Promise<void> => {
   const result = await records.storeIntoDatabase()
   if (result !== '') {
     console.info('IMPORTDATABASE: onLoad', result)
+    await notice(['IMPORTDATABASE: onLoad', result])
+    if (settings.activeAccountId < 0) {
+      const lName = records.accounts.all[0].cSwift.substring(0, 4)
+      settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
+      settings.setActiveAccountId(result)
+      await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
+      await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+    }
     return Promise.resolve()
   } else {
     await notice(['IMPORTDATABASE: onLoad', result])

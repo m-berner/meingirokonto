@@ -37,13 +37,18 @@ const state = reactive({
 
 const ok = (): Promise<void> => {
   console.log('DELETE_BOOKING_TYPE: ok')
-  return new Promise(async (resolve): Promise<void> => {
+  return new Promise(async (resolve, reject): Promise<void> => {
     try {
-      const result = await records.deleteBookingType(state.selected)
-      if (result === 'Booking type deleted') {
-        formRef.value?.reset()
-        await notice([t('dialogs.deleteBookingType.success')])
-        resolve()
+      if (state.selected !== null && state.selected > 1) {
+        const result = await records.deleteBookingType(state.selected)
+        if (result === 'Booking type deleted') {
+          formRef.value?.reset()
+          await notice([t('dialogs.deleteBookingType.success')])
+          resolve()
+        }
+      } else {
+        await notice(['Start kann nicht entfernt werden'])
+        reject()
       }
     } catch (e) {
       console.error(e)

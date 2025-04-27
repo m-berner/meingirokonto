@@ -8,8 +8,10 @@
 <template>
   <v-app-bar v-if="runtime.lazyLoadTitleBar" app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img alt="brandfetch.com logo"
+      <img v-if="activeAccountId > -1" alt="brandfetch.com logo"
            v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl">
+      <img v-else alt="brandfetch.com logo"
+           src="https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
@@ -20,6 +22,7 @@
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
+      v-if="activeAccountId > -1"
       v-model="activeAccountId"
       label="IBAN"
       max-width="300"
@@ -37,7 +40,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-//import {ref} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
@@ -47,7 +49,6 @@ const runtime = useRuntimeStore()
 const {CONS} = useApp()
 
 const {activeAccountId} = storeToRefs(settings)
-//const sum = ref(n(records.bookingSum, 'currency'))
 
 console.log('--- TitleBar.vue setup ---')
 </script>
