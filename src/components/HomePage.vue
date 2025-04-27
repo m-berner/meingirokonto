@@ -22,7 +22,7 @@
     v-bind:headers="tableHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="records.getBookingsPerAccount() as IBooking[]"
+    v-bind:items="(): IBooking[] => records.getBookingsPerAccount()"
     v-bind:items-per-page="settings.bookingsPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
@@ -62,6 +62,13 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
+interface IHeader {
+  title: string,
+  align: string,
+  sortable: boolean,
+  key: string
+}
+
 const {d, n, rt, t, tm} = useI18n()
 const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
@@ -71,15 +78,10 @@ const runtime = useRuntimeStore()
 const state = reactive({
   search: '',
 })
-const tableHeaders = tm('appPage.headers').map((item: {
-  title: string,
-  align: string,
-  sortable: boolean,
-  key: string
-}) => {
+const tableHeaders = tm('appPage.headers').map((item: IHeader): IHeader => {
   return {
     title: rt(item.title),
-    align: rt(item.align) as 'start' | 'center' | 'end' | undefined,
+    align: rt(item.align),
     sortable: item.sortable,
     key: rt(item.key)
   }

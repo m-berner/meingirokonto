@@ -39,9 +39,3 @@ const {CONS}  = useApp()
 
 console.log('--- FooterBar.vue setup ---')
 </script>
-
-<style scoped>
-.nowrap {
-  white-space: nowrap;
-}
-</style>

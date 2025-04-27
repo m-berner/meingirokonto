@@ -6,7 +6,7 @@
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <template>
-  <v-app-bar :flat="true" app v-bind:height="75">
+  <v-app-bar v-bind:flat="true" app height="75">
     <v-spacer></v-spacer>
     <router-link class="router-link-active" to="/">
       <v-tooltip location="top" v-bind:text="t('headerBar.home')">

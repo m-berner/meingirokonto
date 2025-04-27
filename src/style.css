@@ -21,6 +21,10 @@ thead tr div.v-progress-linear {
     color: red;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 .font-weight-bold {
     font-weight: bold;
 }
@@ -42,7 +46,7 @@ thead tr div.v-progress-linear {
 }
 
 .router-link-active {
-   color: white;
+    color: white;
 }
 
 .opacity-off {
