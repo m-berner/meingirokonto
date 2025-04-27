@@ -29,7 +29,7 @@ interface IImportDatabase {
   _choosen_file: Blob | null
 }
 
-interface EventTarget extends HTMLInputElement {
+interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
 }
 
@@ -41,60 +41,67 @@ const state: IImportDatabase = {
   _choosen_file: null
 }
 
-const choosenFile = (ev: EventTarget) => { state._choosen_file = ev.target.files[0] }
+const choosenFile = (ev: IEventTarget) => { state._choosen_file = ev.target.files[0] }
 
-//TODO async ???
-const ok = async (): Promise<void> => {
-  console.log('IMPORTDATABASE: ok', state._choosen_file)
-  const {notice} = useApp()
-  const records = useRecordsStore()
-  // NOTE: only database version 21.0 or newer could be restored
-  await records.cleanStoreAndDatabase()
-  // read backup file into records store bkup object
-  await new Promise((resolve, reject) => {
-    const onError = (ev: Event): void => {
-      reject(ev)
+const ok = (): Promise<string> => {
+  console.info('IMPORTDATABASE: ok', state._choosen_file)
+  return new Promise(async (resolve, reject) => {
+    const {notice} = useApp()
+    const records = useRecordsStore()
+    const onError = (): void => {
+      reject('IMPORTDATABASE: onError: FileReader')
     }
-    const onLoadBackup = (): void => {
-      console.log('IMPORTDATABASE: onLoadBackup')
+    const onFileLoaded = async (): Promise<void> => {
+      console.log('IMPORTDATABASE: onFileLoaded')
       if (typeof fr.result === 'string') {
         const bkupObject: IBackup = JSON.parse(fr.result)
+        let account: IAccount
+        let booking: IBooking
+        let bookingType: IBookingType
         if (bkupObject.sm.cDBVersion < CONS.DB.MINVERSION) {
-          notice(['IMPORTDATABASE:onLoadBackup', 'Invalid backup file version'])
-          reject(new Error('Invalid backup file version'))
+          await notice(['IMPORTDATABASE: onFileLoaded', 'Invalid backup file version'])
+          reject('Invalid backup file version')
         } else {
-          records.setBkupObject(bkupObject)
-          resolve('Backup file loaded successfully!')
+          for (account of bkupObject.accounts) {
+            records.accounts.all.push(account)
+          }
+          for (bookingType of bkupObject.booking_types) {
+            records.bookingTypes.all.push(bookingType)
+          }
+          for (booking of bkupObject.bookings) {
+            records.bookings.all.push(booking)
+          }
+          const result = await records.storeIntoDatabase()
+          if (result !== '') {
+            if (settings.activeAccountId < 0) {
+              const lName = records.accounts.all[0].cSwift.substring(0, 4)
+              settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
+              settings.setActiveAccountId(result)
+              await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
+              await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+            }
+            console.info('IMPORTDATABASE: onFileLoaded', result)
+            await notice(['IMPORTDATABASE: onFileLoaded', result])
+            resolve('Backup file loaded successfully!')
+          } else {
+            await notice(['IMPORTDATABASE: onLoad', result])
+            reject('ERROR: database could not be loaded!')
+          }
         }
       } else {
-        notice(['IMPORTDATABASE:onLoadBackup', 'Could not read backup file'])
-        reject(new Error('Could not read backup file!'))
+        await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
+        reject('Could not read backup file!')
       }
     }
     const fr: FileReader = new FileReader()
+    fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
+    fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+    //
     if (state._choosen_file !== null) {
+      await records.cleanStoreAndDatabase()
       fr.readAsText(state._choosen_file, 'UTF-8')
-      fr.addEventListener(CONS.EVENTS.LOAD, onLoadBackup, CONS.SYSTEM.ONCE)
-      fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
     }
   })
-  records.loadBkupObjectIntoStore()
-  const result = await records.storeIntoDatabase()
-  if (result !== '') {
-    console.info('IMPORTDATABASE: onLoad', result)
-    await notice(['IMPORTDATABASE: onLoad', result])
-    if (settings.activeAccountId < 0) {
-      const lName = records.accounts.all[0].cSwift.substring(0, 4)
-      settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
-      settings.setActiveAccountId(result)
-      await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
-      await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
-    }
-    return Promise.resolve()
-  } else {
-    await notice(['IMPORTDATABASE: onLoad', result])
-    return Promise.reject('ERROR: database could not be loaded!')
-  }
 }
 const title = t('dialogs.importDatabase.title')
 

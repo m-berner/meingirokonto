@@ -98,7 +98,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       const tmp = this._booking_types.all.filter((entry: IBookingType) => {
         return entry.cID === ident
       })
-      return tmp[0].cName
+      if (tmp.length > 0) {
+        return tmp[0].cName
+      } else {
+        return ''
+      }
     },
     getBookingTextById(ident: number): string {
       const tmp = this._bookings.all.filter((entry: IBooking) => {
@@ -130,24 +134,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
     },
-    setBkupObject(value: IBackup) {
-      this._bkup_object = value
-    },
-    loadBkupObjectIntoStore(): void {
-      console.log('RECORDS: loadBkupObjectIntoStore')
-      let account: IAccount
-      let booking: IBooking
-      let bookingType: IBookingType
-      for (account of this._bkup_object.accounts) {
-        this._accounts.all.push(account)
-      }
-      for (bookingType of this._bkup_object.booking_types) {
-        this._booking_types.all.push(bookingType)
-      }
-      for (booking of this._bkup_object.bookings) {
-        this._bookings.all.push(booking)
-      }
-    },
     cleanStoreAndDatabase(): Promise<string> {
       console.log('RECORDS: cleanStoreAndDatabase')
       this._bookings.all.splice(0, this._bookings.all.length)
@@ -173,8 +159,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
             console.info('RECORDS: accounts dropped')
           }
           const onSuccessClearAccountType = (): void => {
-            requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
-            console.info('RECORDS: account types dropped')
+            requestClearBookingTypes.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
+            console.info('RECORDS: booking types dropped')
           }
 
           const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
@@ -184,8 +170,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
           const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
           requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
-          const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
-          requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
+          const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+          requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
         }
       })
     },

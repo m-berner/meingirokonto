@@ -62,7 +62,12 @@ export const useRecordsStore = defineStore('records', {
             const tmp = this._booking_types.all.filter((entry) => {
                 return entry.cID === ident;
             });
-            return tmp[0].cName;
+            if (tmp.length > 0) {
+                return tmp[0].cName;
+            }
+            else {
+                return '';
+            }
         },
         getBookingTextById(ident) {
             const tmp = this._bookings.all.filter((entry) => {
@@ -94,24 +99,6 @@ export const useRecordsStore = defineStore('records', {
         setBookingSumField(value) {
             this._booking_sum_field = value;
         },
-        setBkupObject(value) {
-            this._bkup_object = value;
-        },
-        loadBkupObjectIntoStore() {
-            console.log('RECORDS: loadBkupObjectIntoStore');
-            let account;
-            let booking;
-            let bookingType;
-            for (account of this._bkup_object.accounts) {
-                this._accounts.all.push(account);
-            }
-            for (bookingType of this._bkup_object.booking_types) {
-                this._booking_types.all.push(bookingType);
-            }
-            for (booking of this._bkup_object.bookings) {
-                this._bookings.all.push(booking);
-            }
-        },
         cleanStoreAndDatabase() {
             console.log('RECORDS: cleanStoreAndDatabase');
             this._bookings.all.splice(0, this._bookings.all.length);
@@ -137,8 +124,8 @@ export const useRecordsStore = defineStore('records', {
                         console.info('RECORDS: accounts dropped');
                     };
                     const onSuccessClearAccountType = () => {
-                        requestClearAccountType.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
-                        console.info('RECORDS: account types dropped');
+                        requestClearBookingTypes.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
+                        console.info('RECORDS: booking types dropped');
                     };
                     const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
@@ -147,8 +134,8 @@ export const useRecordsStore = defineStore('records', {
                     requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false);
                     const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
                     requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false);
-                    const requestClearAccountType = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                    requestClearAccountType.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
+                    const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
                 }
             });
         },
