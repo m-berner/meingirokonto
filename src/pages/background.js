@@ -124,6 +124,7 @@ export const useApp = () => {
                 MINVERSION: 1
             },
             DEFAULTS: {
+                BACKGROUND: '_generated_background_page.html',
                 CURRENCY: 'EUR',
                 LANG: 'de',
                 LOCALE: 'de-DE',
@@ -149,9 +150,7 @@ export const useApp = () => {
                 SETTING: 'setting'
             },
             LOGOS: {
-                NO_LOGO: 'DefaultSvg',
-                INGD: 'IngdSvg',
-                BYLA: 'BylaSvg'
+                NO_LOGO: 'DefaultSvg'
             },
             EVENTS: {
                 ABORT: 'abort',
@@ -252,11 +251,10 @@ export const useApp = () => {
             },
             SYSTEM: {
                 COPYRIGHT: '2013-2025 Martin Berner',
-                FETCHTO: 20,
                 DELAY: 600,
                 EMAIL: 'mailto:meingirokonto@gmx.de',
                 GET: 'GET',
-                HTMLENTITY: '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
+                HTMLENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
                 ISINLENGTH: 12,
                 KEYS: {
                     ENTER: 'Enter',
@@ -276,19 +274,7 @@ export const useApp = () => {
                     WRONGPARAM: 'Wrong parameter!',
                     SEND: 'Send message failed!'
                 },
-                NULL: 0.00001,
-                PERCENT: 100,
-                PROGRESSBAR: { MAX: 400 },
                 ROWS: 10,
-                STARTUP: 2,
-                STORAGE_OLD: [
-                    'resetconfig',
-                    'config',
-                    'reset',
-                    'itemsPerPage',
-                    'cb',
-                    'tb'
-                ],
                 TYPE: 599,
                 ONCE: { once: true }
             },
@@ -359,9 +345,6 @@ export const useApp = () => {
                 ];
             }
         }),
-        utcDate: (iso) => {
-            return new Date(`${iso}T00:00:00.000`);
-        },
         notice: async (messages) => {
             const msg = messages.join('\n');
             const notificationOption = {
@@ -371,11 +354,14 @@ export const useApp = () => {
                 message: msg
             };
             await browser.notifications.create(notificationOption);
+        },
+        utcDate: (iso) => {
+            return new Date(`${iso}T00:00:00.000`);
         }
     };
 };
 const { CONS } = useApp();
-if (window.location.href.includes('_generated_background_page.html')) {
+if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     console.log('BACKGROUND: listener attached');
     const onInstall = () => {
         console.log('BACKGROUND: onInstall');

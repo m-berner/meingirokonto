@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserve
+ * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 declare global {
   interface IAccount {
@@ -62,54 +62,55 @@ interface IStorageLocal {
 interface IUseApp {
   CONS: Readonly<{
     CURRENCIES: {
-      EUR: string;
-      USD: string;
-      CODE: Map<string, string>;
+      EUR: string
+      USD: string
+      CODE: Map<string, string>
     }
     DATE: {
-      DEFAULT: number;
-      DEFAULTSTR: string;
-      FYEAR: number;
-      MILLIPERDAY: number;
-      MILLIPERMIN: number;
+      DEFAULT: number
+      DEFAULTSTR: string
+      FYEAR: number
+      MILLIPERDAY: number
+      MILLIPERMIN: number
     }
     DB: {
-      BKFN: string;
-      NAME: string;
+      BKFN: string
+      NAME: string
       STORES: {
         ACCOUNTS: {
-          NAME: string;
+          NAME: string
           FIELDS: {
-            ID: string;
-            S: string;
-            L: string;
-            N: string;
-          };
-        };
+            ID: string
+            S: string
+            L: string
+            N: string
+          }
+        }
         BOOKINGS: {
-          NAME: string;
+          NAME: string
           FIELDS: {
-            ID: string;
-            DAT: string;
-            C: string;
-            D: string;
-            DESC: string;
-            T: string;
-            AN: string;
-          };
-        };
+            ID: string
+            DAT: string
+            C: string
+            D: string
+            DESC: string
+            T: string
+            AN: string
+          }
+        }
         BOOKING_TYPES: {
-          NAME: string;
+          NAME: string
           FIELDS: {
-            ID: string;
-            N: string;
-          };
-        };
-      };
-      VERSION: number;
-      MINVERSION: number;
+            ID: string
+            N: string
+          }
+        }
+      }
+      VERSION: number
+      MINVERSION: number
     }
     DEFAULTS: {
+      BACKGROUND: string
       CURRENCY: string
       LANG: string
       LOCALE: string
@@ -120,167 +121,157 @@ interface IUseApp {
         DEBUG: boolean
         LOGO: string
         SKIN: string
-      };
+      }
     }
     DIALOGS: {
-      ADD_ACCOUNT: string;
-      DELETE_ACCOUNT: string;
-      ADD_BOOKING_TYPE: string;
-      ADD_BOOKING: string;
-      DELETE_BOOKING: string;
-      DELETE_BOOKING_TYPE: string;
-      EXPORT_DATABASE: string;
-      IMPORT_DATABASE: string;
-      SHOW_ACCOUNTING: string;
-      SETTING: string;
+      ADD_ACCOUNT: string
+      DELETE_ACCOUNT: string
+      ADD_BOOKING_TYPE: string
+      ADD_BOOKING: string
+      DELETE_BOOKING: string
+      DELETE_BOOKING_TYPE: string
+      EXPORT_DATABASE: string
+      IMPORT_DATABASE: string
+      SHOW_ACCOUNTING: string
+      SETTING: string
     }
     LOGOS: {
-      NO_LOGO: string;
-      INGD: string;
-      BYLA: string;
+      NO_LOGO: string
     }
     EVENTS: {
-      ABORT: string;
-      BEFOREUNLOAD: string;
-      CHANGE: string;
-      CLICK: string;
-      COMP: string;
-      DOM: string;
-      ERR: string;
-      INP: string;
-      KEYDOWN: string;
-      LOAD: string;
-      FOCUS: string;
-      BLUR: string;
-      SUC: string;
-      UPG: string;
+      ABORT: string
+      BEFOREUNLOAD: string
+      CHANGE: string
+      CLICK: string
+      COMP: string
+      DOM: string
+      ERR: string
+      INP: string
+      KEYDOWN: string
+      LOAD: string
+      FOCUS: string
+      BLUR: string
+      SUC: string
+      UPG: string
     }
     SETTINGS: {
       ITEMS_PER_PAGE_OPTIONS: {
-        value: number;
-        title: string;
-      }[];
+        value: number
+        title: string
+      }[]
     }
     RESOURCES: {
-      SRC: string;
-      OK: string;
-      OKD: string;
-      CANCEL: string;
-      CANCELD: string;
-      ICON32: string;
-      LOGO16: string;
-      LOGO256: string;
-      MAG: string;
-      CALENDAR: string;
-      RENEW: string;
-      FIRST: string;
-      NEXT: string;
-      PREV: string;
-      LAST: string;
-      CB: string;
-      UP: string;
-      NS: string;
-      DS: string;
-      FI: string;
-      IT: string;
-      OT: string;
-      CHS: string;
-      CHB: string;
-      BK: string;
-      RE: string;
-      OB: string;
-      TB: string;
-      PY: string;
-      CO: string;
-      SE: string;
-      RESET: string;
-      ADD: string;
-      CHANGE: string;
-      DEL: string;
-      NO: string;
-      BUY: string;
-      SELL: string;
-      ND: string;
-      SD: string;
-      CONF: string;
-      HTTP: string;
-      HELP: string;
-      PRIVACY: string;
-      LICENSE: string;
-      INDEX: string;
-      ROOT: string;
+      SRC: string
+      OK: string
+      OKD: string
+      CANCEL: string
+      CANCELD: string
+      ICON32: string
+      LOGO16: string
+      LOGO256: string
+      MAG: string
+      CALENDAR: string
+      RENEW: string
+      FIRST: string
+      NEXT: string
+      PREV: string
+      LAST: string
+      CB: string
+      UP: string
+      NS: string
+      DS: string
+      FI: string
+      IT: string
+      OT: string
+      CHS: string
+      CHB: string
+      BK: string
+      RE: string
+      OB: string
+      TB: string
+      PY: string
+      CO: string
+      SE: string
+      RESET: string
+      ADD: string
+      CHANGE: string
+      DEL: string
+      NO: string
+      BUY: string
+      SELL: string
+      ND: string
+      SD: string
+      CONF: string
+      HTTP: string
+      HELP: string
+      PRIVACY: string
+      LICENSE: string
+      INDEX: string
+      ROOT: string
     }
     RESULTS: {
-      ERROR: string;
-      SUCCESS: string;
+      ERROR: string
+      SUCCESS: string
     }
     STATES: {
-      DONE: string;
-      SRV: number;
-      SUCCESS: number;
-      PAUSE: string;
-      MUTATE: string;
-      NORENDER: string;
+      DONE: string
+      SRV: number
+      SUCCESS: number
+      PAUSE: string
+      MUTATE: string
+      NORENDER: string
     }
     SYSTEM: {
-      COPYRIGHT: string;
-      FETCHTO: number;
-      DELAY: number;
-      EMAIL: string;
-      GET: string;
-      HTMLENTITY: string;
-      ISINLENGTH: number;
+      COPYRIGHT: string
+      DELAY: number
+      EMAIL: string
+      GET: string
+      HTMLENTITY: string
+      ISINLENGTH: number
       KEYS: {
-        ENTER: string;
-        TAB: string;
-        T: string;
-        V: string;
-        Z: string;
-      };
+        ENTER: string
+        TAB: string
+        T: string
+        V: string
+        Z: string
+      }
       ERRORS: {
-        CURR: string;
-        ERR: string;
-        INVALID: string;
-        NOCASE: string;
-        NODEL: string;
-        REQ: string;
-        SRV: string;
-        WRONGPARAM: string;
-        SEND: string;
-      };
-      NULL: number;
-      PERCENT: number;
-      PROGRESSBAR: {
-        MAX: number;
-      };
-      ROWS: number;
-      STARTUP: number;
-      STORAGE_OLD: string[];
-      TYPE: number;
+        CURR: string
+        ERR: string
+        INVALID: string
+        NOCASE: string
+        NODEL: string
+        REQ: string
+        SRV: string
+        WRONGPARAM: string
+        SEND: string
+      }
+      ROWS: number
+      TYPE: number
       ONCE: {
-        once: boolean;
-      };
+        once: boolean
+      }
     }
     RECORDS: {
       CONTROLLER: {
         TOTAL: {
-          efficiency: number;
-          returnRate: number;
-          buy: number;
-          sell: number;
-          dividends: number;
-          deposits: number;
-          withdrawals: number;
-          taxes: number;
-          fees: number;
-          earnings: number;
-          account: number;
-          depot: number;
-          winloss: number;
-          winlossPercent: number;
-          depotBuyValue: number;
-        };
-      };
+          efficiency: number
+          returnRate: number
+          buy: number
+          sell: number
+          dividends: number
+          deposits: number
+          withdrawals: number
+          taxes: number
+          fees: number
+          earnings: number
+          account: number
+          depot: number
+          winloss: number
+          winlossPercent: number
+          depotBuyValue: number
+        }
+      }
     }
   }>
   VALIDATORS: Readonly<{
@@ -424,6 +415,7 @@ export const useApp = (): IUseApp => {
         MINVERSION: 1
       },
       DEFAULTS: {
+        BACKGROUND: '_generated_background_page.html',
         CURRENCY: 'EUR',
         LANG: 'de',
         LOCALE: 'de-DE',
@@ -449,9 +441,7 @@ export const useApp = (): IUseApp => {
         SETTING: 'setting'
       },
       LOGOS: {
-        NO_LOGO: 'DefaultSvg',
-        INGD: 'IngdSvg',
-        BYLA: 'BylaSvg'
+        NO_LOGO: 'DefaultSvg'
       },
       EVENTS: {
         ABORT: 'abort',
@@ -556,12 +546,11 @@ export const useApp = (): IUseApp => {
       },
       SYSTEM: {
         COPYRIGHT: '2013-2025 Martin Berner',
-        FETCHTO: 20,
         DELAY: 600,
         EMAIL: 'mailto:meingirokonto@gmx.de',
         GET: 'GET',
         HTMLENTITY:
-          '(&auml;|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
+          '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
         ISINLENGTH: 12,
         KEYS: {
           ENTER: 'Enter',
@@ -581,19 +570,7 @@ export const useApp = (): IUseApp => {
           WRONGPARAM: 'Wrong parameter!',
           SEND: 'Send message failed!'
         },
-        NULL: 0.00001,
-        PERCENT: 100,
-        PROGRESSBAR: {MAX: 400},
         ROWS: 10,
-        STARTUP: 2,
-        STORAGE_OLD: [
-          'resetconfig',
-          'config',
-          'reset',
-          'itemsPerPage',
-          'cb',
-          'tb'
-        ],
         TYPE: 599,
         ONCE: {once: true}
       },
@@ -664,9 +641,6 @@ export const useApp = (): IUseApp => {
         ]
       }
     }),
-    utcDate: (iso) => {
-      return new Date(`${iso}T00:00:00.000`)
-    },
     notice: async (messages) => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
@@ -677,13 +651,16 @@ export const useApp = (): IUseApp => {
           message: msg
         }
       await browser.notifications.create(notificationOption)
+    },
+    utcDate: (iso) => {
+      return new Date(`${iso}T00:00:00.000`)
     }
   }
 }
 
 const {CONS} = useApp()
 
-if (window.location.href.includes('_generated_background_page.html')) {
+if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   console.log('BACKGROUND: listener attached')
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = (): Promise<void> => {

@@ -9,6 +9,7 @@ import OptionsIndex from '@/pages/OptionsIndex.vue'
 import {createApp} from 'vue'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
+
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
   console.error(err)

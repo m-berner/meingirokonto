@@ -28,7 +28,7 @@ import {useI18n} from 'vue-i18n'
 const {n} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
-const runtime  = useRuntimeStore()
+const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS} = useApp()
 
