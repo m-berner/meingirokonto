@@ -23,6 +23,8 @@ interface IRecordsStore {
 
 interface IRecordStoreBooking {
   all: IBooking[]
+  per_account: IBooking[]
+  search: string
   selected_index: number
 }
 
@@ -48,6 +50,8 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       },
       _bookings: {
         all: [],
+        per_account: [],
+        search: '',
         selected_index: -1
       },
       _booking_types: {
@@ -77,6 +81,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     bookings(state: IRecordsStore): IRecordStoreBooking {
       return state._bookings
+    },
+    bookingsPerAccount(state: IRecordsStore): IBooking[] {
+      return state._bookings.per_account
+    },
+    bookingsSearch(state: IRecordsStore): string {
+      return state._bookings.search
     },
     bookingSum(state: IRecordsStore): number {
       return state._booking_sum
@@ -110,11 +120,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
       return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
     },
-    getBookingsPerAccount(): IBooking[] {
+    setBookingsPerAccount(): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
-        return []
+        return
       }
       const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
         return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber
@@ -124,12 +134,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         const B = new Date(b.cDate).getTime()
         return A - B
       })
-      return bookings_per_account
+      this._bookings.per_account = bookings_per_account
     },
     setBookingsSum(): void {
-      this._booking_sum = this.bookings.all.map((entry: IBooking) => {
-        return entry.cCredit - entry.cDebit
-      }).reduce((acc: number, cur: number) => acc + cur, 0)
+      if (this._bookings.all.length > 0) {
+        this._booking_sum = this._bookings.all.map((entry: IBooking) => {
+          return entry.cCredit - entry.cDebit
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+      }
     },
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
@@ -207,7 +219,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
             resolve('RECORDS: databaseIntoStore: all database records loaded into memory!')
           }
           const onAbort = (): void => {
-            //notice(['RECORDS: databaseIntoStore: transaction aborted!'])
+            //await notice(['RECORDS: databaseIntoStore: transaction aborted!'])
             reject(requestTransaction.error)
           }
           const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly')
@@ -246,11 +258,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onComplete = (): void => {
             // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
-            //notice(['All memory records are added to the database!'])
+            //await notice(['All memory records are added to the database!'])
             resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
           }
           const onAbort = (): void => {
-            //notice(['Transaction aborted!'])
+            //await notice(['Transaction aborted!'])
             reject(requestTransaction.error)
           }
           const onError = (ev: Event): void => {
@@ -307,7 +319,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           const onSuccess = (): void => {
             requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
             if (msg) {
-              //notice(['sm_msg_updaterecord'])
+              //await notice(['sm_msg_updaterecord'])
             }
             resolve('Account updated')
           }
@@ -376,7 +388,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onSuccess = (): void => {
             if (msg) {
-              //notice(['sm_msg_updaterecord'])
+              //await notice(['sm_msg_updaterecord'])
             }
             resolve('Account type updated')
           }
@@ -443,7 +455,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onSuccess = (): void => {
             if (msg) {
-              //notice(['sm_msg_updaterecord'])
+              //await notice(['sm_msg_updaterecord'])
             }
             resolve('Booking updated')
           }

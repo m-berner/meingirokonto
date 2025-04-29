@@ -12,6 +12,8 @@ export const useRecordsStore = defineStore('records', {
             },
             _bookings: {
                 all: [],
+                per_account: [],
+                search: '',
                 selected_index: -1
             },
             _booking_types: {
@@ -41,6 +43,12 @@ export const useRecordsStore = defineStore('records', {
         },
         bookings(state) {
             return state._bookings;
+        },
+        bookingsPerAccount(state) {
+            return state._bookings.per_account;
+        },
+        bookingsSearch(state) {
+            return state._bookings.search;
         },
         bookingSum(state) {
             return state._booking_sum;
@@ -75,11 +83,11 @@ export const useRecordsStore = defineStore('records', {
             });
             return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
         },
-        getBookingsPerAccount() {
+        setBookingsPerAccount() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
-                return [];
+                return;
             }
             const bookings_per_account = this._bookings.all.filter((rec) => {
                 return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber;
@@ -89,12 +97,14 @@ export const useRecordsStore = defineStore('records', {
                 const B = new Date(b.cDate).getTime();
                 return A - B;
             });
-            return bookings_per_account;
+            this._bookings.per_account = bookings_per_account;
         },
         setBookingsSum() {
-            this._booking_sum = this.bookings.all.map((entry) => {
-                return entry.cCredit - entry.cDebit;
-            }).reduce((acc, cur) => acc + cur, 0);
+            if (this._bookings.all.length > 0) {
+                this._booking_sum = this._bookings.all.map((entry) => {
+                    return entry.cCredit - entry.cDebit;
+                }).reduce((acc, cur) => acc + cur, 0);
+            }
         },
         setBookingSumField(value) {
             this._booking_sum_field = value;

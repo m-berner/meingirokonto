@@ -1,36 +1,10 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-menu>
-    <template v-slot:activator="{ props }">
-      <v-btn
-        icon="$dots"
-        v-bind="props"
-      ></v-btn>
-    </template>
-    <v-list>
-      <v-hover v-slot:default="{ props, isHovering }">
-        <v-list-item
-          v-for="(item, i) in _props.menuItems" v-bind:id="setId(i)"
-          v-bind:key="item.title"
-          class="pointer"
-          v-bind="props"
-          v-bind:base-color="isHovering ? 'orange' : ''"
-          v-bind:prepend-icon="rt(item.icon)"
-          v-bind:title="rt(item.title)"
-          v-on:click="onIconClick"
-        ></v-list-item>
-      </v-hover>
-    </v-list>
-  </v-menu>
-  <DialogPort v-if="runtime.teleport.showOptionDialog"></DialogPort>
-</template>
-
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import DialogPort from '@/components/helper/DialogPort.vue'
@@ -87,3 +61,29 @@ const onIconClick = (ev: Event): Promise<void> => {
 
 console.log('--- OptionMenu.vue setup ---')
 </script>
+
+<template>
+  <v-menu>
+    <template v-slot:activator="{ props }">
+      <v-btn
+        icon="$dots"
+        v-bind="props"
+      ></v-btn>
+    </template>
+    <v-list>
+      <v-hover v-slot:default="{ props, isHovering }">
+        <v-list-item
+          v-for="(item, i) in _props.menuItems" v-bind:id="setId(i)"
+          v-bind:key="item.title"
+          class="pointer"
+          v-bind="props"
+          v-bind:base-color="isHovering ? 'orange' : ''"
+          v-bind:prepend-icon="rt(item.icon)"
+          v-bind:title="rt(item.title)"
+          v-on:click="onIconClick"
+        ></v-list-item>
+      </v-hover>
+    </v-list>
+  </v-menu>
+  <DialogPort v-if="runtime.teleport.showOptionDialog"></DialogPort>
+</template>

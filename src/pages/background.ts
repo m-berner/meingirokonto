@@ -104,6 +104,7 @@ interface IUseApp {
             ID: string
             N: string
           }
+          START_ENTRY: string
         }
       }
       VERSION: number
@@ -153,6 +154,9 @@ interface IUseApp {
       BLUR: string
       SUC: string
       UPG: string
+    }
+    MESSAGES: {
+      GS: string
     }
     SETTINGS: {
       ITEMS_PER_PAGE_OPTIONS: {
@@ -225,6 +229,7 @@ interface IUseApp {
       COPYRIGHT: string
       DELAY: number
       EMAIL: string
+      MAILTO: string
       GET: string
       HTMLENTITY: string
       ISINLENGTH: number
@@ -407,7 +412,8 @@ export const useApp = (): IUseApp => {
             FIELDS: {
               ID: 'cID',
               N: 'cName',
-            }
+            },
+            START_ENTRY: 'Start'
           }
           // do not change! (part of database)>
         },
@@ -458,6 +464,9 @@ export const useApp = (): IUseApp => {
         BLUR: 'blur',
         SUC: 'success',
         UPG: 'upgradeneeded'
+      },
+      MESSAGES: {
+        GS: 'GET_SETTINGS'
       },
       SETTINGS: {
         ITEMS_PER_PAGE_OPTIONS: [
@@ -548,6 +557,7 @@ export const useApp = (): IUseApp => {
         COPYRIGHT: '2013-2025 Martin Berner',
         DELAY: 600,
         EMAIL: 'mailto:meingirokonto@gmx.de',
+        MAILTO: 'mailto:meingirokonto@gmx.de',
         GET: 'GET',
         HTMLENTITY:
           '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
@@ -641,16 +651,19 @@ export const useApp = (): IUseApp => {
         ]
       }
     }),
-    notice: async (messages) => {
-      const msg = messages.join('\n')
-      const notificationOption: browser.notifications.CreateNotificationOptions =
-        {
-          type: 'basic',
-          iconUrl: '_assets/icon16.png',
-          title: 'MeinGiroKonto',
-          message: msg
-        }
-      await browser.notifications.create(notificationOption)
+    notice: (messages) => {
+      return new Promise(async (resolve) => {
+        const msg = messages.join('\n')
+        const notificationOption: browser.notifications.CreateNotificationOptions =
+          {
+            type: 'basic',
+            iconUrl: 'assets/icon16.png',
+            title: 'MeinGiroKonto',
+            message: msg
+          }
+        await browser.notifications.create(notificationOption)
+        resolve()
+      })
     },
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
@@ -671,7 +684,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         console.log('BACKGROUND: onInstall: onSuccess')
         if (ev.target instanceof IDBRequest) {
           const openDB = ev.target.result
-          const transaction = openDB.transaction(['booking_types'], 'readwrite')
+          const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
           const onComplete = () => {
             openDB.close()
             console.log('BACKGROUND: onUpgradeNeeded: Transaction completed.')
@@ -680,9 +693,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             openDB.close()
             console.error('BACKGROUND: onUpgradeNeeded: Transaction not opened due to error. Duplicate items not allowed.')
           }
-          transaction.addEventListener('complete', onComplete, CONS.SYSTEM.ONCE)
-          transaction.addEventListener('error', onError, CONS.SYSTEM.ONCE)
-          transaction.objectStore('booking_types').add({cName: 'Start'})
+          transaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          transaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          transaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({cName: CONS.DB.STORES.BOOKING_TYPES.START_ENTRY})
         }
       }
       const onError = (ev: Event): void => {
@@ -890,7 +903,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
         const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
         const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
-        console.info('BACKGROUND: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug)
+        console.info('BACKGROUND: onSettings: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug)
         resolve({
           skin,
           logo,
@@ -901,7 +914,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       })
     }
     return new Promise(async (resolve): Promise<ISettings | void> => {
-      if (data.type === 'GET_SETTINGS') {
+      if (data.type === CONS.MESSAGES.GS) {
         resolve(await startSettings())
       } else {
         resolve()

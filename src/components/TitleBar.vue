@@ -1,14 +1,31 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
+<script lang="ts" setup>
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
+import {useI18n} from 'vue-i18n'
+import {useApp} from '@/pages/background'
+import {storeToRefs} from 'pinia'
+
+const {t} = useI18n()
+const records = useRecordsStore()
+const settings = useSettingsStore()
+const {CONS} = useApp()
+
+const {activeAccountId} = storeToRefs(settings)
+
+console.log('--- TitleBar.vue setup ---')
+</script>
+
 <template>
-  <v-app-bar v-if="runtime.lazyLoadTitleBar" app color="secondary" v-bind:flat="true">
+  <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img v-if="activeAccountId > -1" alt="brandfetch.com logo"
+      <img v-if="records.accounts.all.length > 0" alt="brandfetch.com logo"
            v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl">
       <img v-else alt="brandfetch.com logo"
            src="https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7">
@@ -33,22 +50,3 @@
     ></v-select>
   </v-app-bar>
 </template>
-
-<script lang="ts" setup>
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
-import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
-import {storeToRefs} from 'pinia'
-import {useRuntimeStore} from '@/stores/runtime'
-
-const {t} = useI18n()
-const records = useRecordsStore()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
-const {CONS} = useApp()
-
-const {activeAccountId} = storeToRefs(settings)
-
-console.log('--- TitleBar.vue setup ---')
-</script>

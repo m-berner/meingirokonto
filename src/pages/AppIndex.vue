@@ -1,34 +1,21 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-app v-bind:flat="true">
-    <router-view name="title"></router-view>
-    <router-view name="header"></router-view>
-    <v-main>
-      <router-view></router-view>
-    </v-main>
-    <router-view name="footer"></router-view>
-  </v-app>
-</template>
-
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
 
 const {n} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
-const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS} = useApp()
 
@@ -77,7 +64,7 @@ onBeforeMount((): Promise<void> => {
   }
 
   return new Promise(async (resolve): Promise<void> => {
-    const startSettings = await browser.runtime.sendMessage({type: 'GET_SETTINGS'})
+    const startSettings = await browser.runtime.sendMessage({type: CONS.MESSAGES.GS})
     if (startSettings !== null) {
       settings.initSettingsStore(theme, startSettings)
     }
@@ -91,8 +78,7 @@ onBeforeMount((): Promise<void> => {
     await records.openDatabase()
     await records.databaseIntoStore()
 
-    runtime.setLazyLoadBookingTable(true)
-    runtime.setLazyLoadTitleBar(true)
+    records.setBookingsPerAccount()
     records.setBookingsSum()
     records.setBookingSumField(n(records.bookingSum, 'currency'))
 
@@ -103,3 +89,14 @@ onBeforeMount((): Promise<void> => {
 
 console.log('--- AppIndex.vue setup ---')
 </script>
+
+<template>
+  <v-app v-bind:flat="true">
+    <router-view name="title"></router-view>
+    <router-view name="header"></router-view>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+    <router-view name="footer"></router-view>
+  </v-app>
+</template>

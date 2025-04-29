@@ -3,13 +3,11 @@ export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {
             _teleport: {
-                dialogName: '',
-                showOkButton: true,
-                showHeaderDialog: false,
-                showOptionDialog: false
+                dialog_name: '',
+                show_ok_button: true,
+                show_header_dialog: false,
+                show_option_dialog: false
             },
-            _lazy_load_booking_table: false,
-            _lazy_load_title_bar: false,
             _booking_id: -1
         };
     },
@@ -19,12 +17,6 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         teleport(state) {
             return state._teleport;
-        },
-        lazyLoadBookingTable(state) {
-            return state._lazy_load_booking_table;
-        },
-        lazyLoadTitleBar(state) {
-            return state._lazy_load_title_bar;
         }
     },
     actions: {
@@ -34,18 +26,12 @@ export const useRuntimeStore = defineStore('runtime', {
         setTeleport(entry) {
             this._teleport = entry;
         },
-        setLazyLoadBookingTable(value) {
-            this._lazy_load_booking_table = value;
-        },
-        setLazyLoadTitleBar(value) {
-            this._lazy_load_title_bar = value;
-        },
         resetTeleport() {
             this._teleport = {
-                dialogName: '',
-                showOkButton: true,
-                showHeaderDialog: false,
-                showOptionDialog: false
+                dialog_name: '',
+                show_ok_button: true,
+                show_header_dialog: false,
+                show_option_dialog: false
             };
         }
     }

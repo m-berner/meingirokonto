@@ -5,8 +5,98 @@
   -
   - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
+<script lang="ts" setup>
+import {useI18n} from 'vue-i18n'
+import {useApp} from '@/pages/background'
+import DialogPort from '@/components/helper/DialogPort.vue'
+import {useRuntimeStore} from '@/stores/runtime'
+
+const {t} = useI18n()
+const {CONS} = useApp()
+const runtime = useRuntimeStore()
+
+const onIconClick = (ev: Event): Promise<void> => {
+  console.info('HEADERBAR: onIconClick', ev)
+  const parse = async (elem: Element | null, loop = 0): Promise<void> => {
+    if (loop > 6 || elem === null) return
+    switch (elem!.id) {
+      case CONS.DIALOGS.ADD_ACCOUNT:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.DELETE_ACCOUNT:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.ADD_BOOKING_TYPE:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.DELETE_BOOKING_TYPE:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.ADD_BOOKING:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ADD_BOOKING,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.EXPORT_DATABASE:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.EXPORT_DATABASE,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.IMPORT_DATABASE:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.IMPORT_DATABASE,
+          showOkButton: true,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.SHOW_ACCOUNTING:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
+          showOkButton: false,
+          showHeaderDialog: true
+        })
+        break
+      case CONS.DIALOGS.SETTING:
+        await browser.runtime.openOptionsPage()
+        break
+      default:
+        loop += 1
+        await parse(elem!.parentElement, loop)
+    }
+  }
+  return new Promise(async (resolve) => {
+    if (ev.target instanceof Element) {
+      await parse(ev.target)
+      resolve()
+    }
+  })
+}
+
+console.log('--- HeaderBar.vue setup ---')
+</script>
+
 <template>
-  <v-app-bar v-bind:flat="true" app height="75">
+  <v-app-bar app height="75" v-bind:flat="true">
     <v-spacer></v-spacer>
     <router-link class="router-link-active" to="/">
       <v-tooltip location="top" v-bind:text="t('headerBar.home')">
@@ -15,8 +105,7 @@
             icon="$home"
             size="large"
             v-bind="props"
-            variant="tonal"
-          ></v-app-bar-nav-icon>
+            variant="tonal"></v-app-bar-nav-icon>
         </template>
       </v-tooltip>
     </router-link>
@@ -123,10 +212,8 @@
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="onIconClick"
-        >
-          <v-icon class="put-into-background" icon="$showAccounting"></v-icon
-          >
+          v-on:click="onIconClick">
+          <v-icon class="put-into-background" icon="$showAccounting"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -140,101 +227,10 @@
           size="large"
           v-bind="props"
           variant="tonal"
-          v-on:click="onIconClick"
-        ></v-app-bar-nav-icon>
+          v-on:click="onIconClick"></v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
   <DialogPort v-if="runtime.teleport.showHeaderDialog"></DialogPort>
 </template>
-
-<script lang="ts" setup>
-import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
-import DialogPort from '@/components/helper/DialogPort.vue'
-import {useRuntimeStore} from '@/stores/runtime'
-
-const {t} = useI18n()
-const {CONS} = useApp()
-const runtime = useRuntimeStore()
-
-const onIconClick = (ev: Event): Promise<void> => {
-  console.info('HEADERBAR: onIconClick', ev)
-  const parse = async (elem: Element | null, loop = 0): Promise<void> => {
-    if (loop > 6 || elem === null) return
-    switch (elem!.id) {
-      case CONS.DIALOGS.ADD_ACCOUNT:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.DELETE_ACCOUNT:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.ADD_BOOKING_TYPE:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.DELETE_BOOKING_TYPE:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.ADD_BOOKING:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_BOOKING,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.EXPORT_DATABASE:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.EXPORT_DATABASE,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.IMPORT_DATABASE:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.IMPORT_DATABASE,
-          showOkButton: true,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.SHOW_ACCOUNTING:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
-          showOkButton: false,
-          showHeaderDialog: true
-        })
-        break
-      case CONS.DIALOGS.SETTING:
-        await browser.runtime.openOptionsPage()
-        break
-      default:
-        loop += 1
-        await parse(elem!.parentElement, loop)
-    }
-  }
-  return new Promise(async (resolve) => {
-    if (ev.target instanceof Element) {
-      await parse(ev.target)
-      resolve()
-    }
-  })
-}
-
-console.log('--- HeaderBar.vue setup ---')
-</script>

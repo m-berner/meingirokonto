@@ -35,7 +35,7 @@ const state: IExportDatabase = reactive({
   _file_name: fn
 })
 
-const ok = () => {
+const ok = (): Promise<void> => {
   console.log('EXPORTDATABASE: ok')
   const records = useRecordsStore()
   const {notice} = useApp()
@@ -95,8 +95,8 @@ const ok = () => {
   }, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'
-  const blob = new Blob([buffer], {type: 'application/json'})
-  const blobUrl = URL.createObjectURL(blob)
+  const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
+  const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
   const op: browser.downloads._DownloadOptions = {
     url: blobUrl,
     filename: state._file_name
@@ -109,20 +109,16 @@ const ok = () => {
       (change.state !== undefined && change.id > 0) ||
       (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)
     ) {
-      URL.revokeObjectURL(blobUrl)
+      URL.revokeObjectURL(blobUrl) // release blob object
     }
   }
   // noinspection JSDeprecatedSymbols
-  browser.downloads.onChanged.addListener(onDownloadChange) // wait for download changes
-  browser.downloads
-    .download(op)
-    .then(() => {
-      console.log('HEADERBAR: onExportDatabase', 'Download started')
-      notice(['Database exporting ...'])
-    })
-    .catch((err: Error) => {
-      notice([err.message])
-    })
+  browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up blob object after download.
+  return new Promise(async (resolve) => {
+    await browser.downloads.download(op) // writing blob object into download file
+    await notice(['Database exported!'])
+    resolve()
+  })
 }
 const title = t('dialogs.exportDatabase.title')
 

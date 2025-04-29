@@ -8,16 +8,14 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 
 interface ITelePort {
-  dialogName: string
-  showOkButton: boolean
-  showHeaderDialog: boolean
-  showOptionDialog: boolean
+  dialog_name: string
+  show_ok_button: boolean
+  show_header_dialog: boolean
+  show_option_dialog: boolean
 }
 
 interface IRuntimeStore {
   _teleport: ITelePort
-  _lazy_load_booking_table: boolean
-  _lazy_load_title_bar: boolean
   _booking_id: number
 }
 
@@ -25,13 +23,11 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
   state: (): IRuntimeStore => {
     return {
       _teleport: {
-        dialogName: '',
-        showOkButton: true,
-        showHeaderDialog: false,
-        showOptionDialog: false
+        dialog_name: '',
+        show_ok_button: true,
+        show_header_dialog: false,
+        show_option_dialog: false
       },
-      _lazy_load_booking_table: false,
-      _lazy_load_title_bar: false,
       _booking_id: -1
     }
   },
@@ -41,12 +37,6 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     },
     teleport(state: IRuntimeStore) {
       return state._teleport
-    },
-    lazyLoadBookingTable(state: IRuntimeStore) {
-      return state._lazy_load_booking_table
-    },
-    lazyLoadTitleBar(state: IRuntimeStore) {
-      return state._lazy_load_title_bar
     }
   },
   actions: {
@@ -56,18 +46,12 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
     setTeleport(entry: ITelePort) {
       this._teleport = entry
     },
-    setLazyLoadBookingTable(value: boolean) {
-      this._lazy_load_booking_table = value
-    },
-    setLazyLoadTitleBar(value: boolean) {
-      this._lazy_load_title_bar = value
-    },
     resetTeleport(): void {
       this._teleport = {
-        dialogName: '',
-        showOkButton: true,
-        showHeaderDialog: false,
-        showOptionDialog: false
+        dialog_name: '',
+        show_ok_button: true,
+        show_header_dialog: false,
+        show_option_dialog: false
       }
     }
   }

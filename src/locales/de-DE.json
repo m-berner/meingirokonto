@@ -323,12 +323,12 @@
       "title": "Internetverbindungen",
       "content": "zu den Kursanbietern werden hergestellt zum Empfang von:",
       "dataList": [
-        "Kursdaten",
-        "Rohstoffdaten",
-        "Indexdaten",
-        "Tagesdeltas",
-        "52Wochen Hoch/Tief Daten",
-        "Wechselkursen"
+        {"id": 1, "name": "Kursdaten"},
+        {"id": 2, "name": "Rohstoffdaten"},
+        {"id": 3, "name": "Indexdaten"},
+        {"id": 4, "name": "Tagesdeltas"},
+        {"id": 5, "name": "52Wochen Hoch/Tief Daten"},
+        {"id": 6, "name": "Wechselkursen"}
       ]
     }
   },

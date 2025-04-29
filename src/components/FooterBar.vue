@@ -5,6 +5,16 @@
   -
   - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
+<script lang="ts" setup>
+import {useI18n} from 'vue-i18n'
+import {useApp} from '@/pages/background'
+
+const {t} = useI18n()
+const {CONS} = useApp()
+
+console.log('--- FooterBar.vue setup ---')
+</script>
+
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
@@ -19,7 +29,7 @@
         <div>{{ t('footer.privacy') }}</div>
       </router-link>
     </v-btn>
-    <v-btn color="white" href="mailto:meingirokonto@gmx.de">
+    <v-btn color="white" v-bind:href="CONS.SYSTEM.MAILTO">
       <v-icon icon="$mail"></v-icon>
       <div>{{ t('footer.mail') }}</div>
     </v-btn>
@@ -29,13 +39,3 @@
     </v-btn>
   </v-bottom-navigation>
 </template>
-
-<script lang="ts" setup>
-import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
-
-const {t} = useI18n()
-const {CONS} = useApp()
-
-console.log('--- FooterBar.vue setup ---')
-</script>
