@@ -1,6 +1,8 @@
 {
   "titleBar": {
     "title": "Mein Girokonto",
+    "bookingsSumLabel": "Kontostand",
+    "selectAccountLabel": "IBAN",
     "error": "Es wurde noch kein Konto angelegt?"
   },
   "headerBar": {

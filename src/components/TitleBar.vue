@@ -11,13 +11,15 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
+import {useTitleBarStore} from '@/stores/components/titlebar'
 
 const {t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const titlebar = useTitleBarStore()
 const {CONS} = useApp()
 
-const {activeAccountId} = storeToRefs(settings)
+const {_active_account_id} = storeToRefs(settings)
 
 console.log('--- TitleBar.vue setup ---')
 </script>
@@ -25,28 +27,25 @@ console.log('--- TitleBar.vue setup ---')
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img v-if="records.accounts.all.length > 0" alt="brandfetch.com logo"
-           v-bind:src="records.accounts.all[records.getAccountIndexById(activeAccountId)].cLogoUrl">
-      <img v-else alt="brandfetch.com logo"
-           src="https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7">
+      <img v-bind:src="titlebar.logo" alt="brandfetch.com logo">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-      v-model="records.bookingSumField"
-      label="Kontostand"
+      v-model="titlebar.bookingsSumFormatted"
+      v-bind:label="t('titleBar.bookingsSumLabel')"
       max-width="150"
       v-bind:disabled="true"
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-      v-if="activeAccountId > -1"
-      v-model="activeAccountId"
-      label="IBAN"
+      v-if="_active_account_id > -1"
+      v-model="_active_account_id"
+      v-bind:label="t('titleBar.selectAccountLabel')"
       max-width="300"
+      v-bind:items="records.accounts.all"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts.all"
-      v-on:update:modelValue="settings.onUpdateAccount"
+      v-on:update:modelValue="titlebar.setLogo"
     ></v-select>
   </v-app-bar>
 </template>

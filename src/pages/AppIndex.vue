@@ -12,10 +12,12 @@ import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
 import {useI18n} from 'vue-i18n'
+import {useTitleBarStore} from '@/stores/components/titlebar'
 
 const {n} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
+const titlebar = useTitleBarStore()
 const theme = useTheme()
 const {CONS} = useApp()
 
@@ -77,12 +79,13 @@ onBeforeMount((): Promise<void> => {
 
     await records.openDatabase()
     await records.databaseIntoStore()
-
+    //
     records.setBookingsPerAccount()
     records.setBookingsSum()
-    records.setBookingSumField(n(records.bookingSum, 'currency'))
+    titlebar.setBookingsSumFormatted(n(records.bookingSum, 'currency'))
+    titlebar.setLogo()
 
-    console.log('APPINDEX: onBeforeMount: promise resolves...')
+    console.log('APPINDEX: onBeforeMount: promise resolves...', titlebar.logo)
     resolve()
   })
 })

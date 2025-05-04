@@ -24,6 +24,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+import {useTitleBarStore} from '@/stores/components/titlebar'
 
 interface IImportDatabase {
   _choosen_file: Blob | null
@@ -33,9 +34,10 @@ interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
 }
 
-const {t} = useI18n()
+const {n, t} = useI18n()
 const {CONS} = useApp()
 const settings = useSettingsStore()
+const titlebar = useTitleBarStore()
 
 const state: IImportDatabase = {
   _choosen_file: null
@@ -100,6 +102,11 @@ const ok = (): Promise<string> => {
     if (state._choosen_file !== null) {
       await records.cleanStoreAndDatabase()
       fr.readAsText(state._choosen_file, 'UTF-8')
+      //
+      records.setBookingsPerAccount()
+      records.setBookingsSum()
+      titlebar.setBookingsSumFormatted(n(records.bookingSum, 'currency'))
+      titlebar.setLogo()
     }
   })
 }
