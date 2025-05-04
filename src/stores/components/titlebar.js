@@ -4,25 +4,17 @@ import { useSettingsStore } from '@/stores/settings';
 export const useTitleBarStore = defineStore('titlebar', {
     state: () => {
         return {
-            _title: '',
             _logo: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7',
             _bookings_sum: 0,
-            _bookings_sum_formatted: '',
-            _bookings_sum_label: '',
+            _bookings_sum_label: ''
         };
     },
     getters: {
         logo(state) {
             return state._logo;
         },
-        title(state) {
-            return state._title;
-        },
         bookingsSumLabel(state) {
             return state._bookings_sum_label;
-        },
-        bookingsSumFormatted(state) {
-            return state._bookings_sum_formatted;
         }
     },
     actions: {
@@ -33,15 +25,21 @@ export const useTitleBarStore = defineStore('titlebar', {
                 this._logo = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl;
             }
         },
-        setTitle(value) {
-            this._title = value;
-        },
         setBookingsSumLabel(value) {
             this._bookings_sum_label = value;
         },
-        setBookingsSumFormatted(value) {
-            this._bookings_sum_formatted = value;
-        },
+        updateTitlebar() {
+            const records = useRecordsStore();
+            const settings = useSettingsStore();
+            records.sumBookings();
+            this.setLogo();
+            return new Promise(async (resolve) => {
+                await browser.storage.local.set({
+                    sActiveAccountId: settings.activeAccountId
+                });
+                resolve(null);
+            });
+        }
     }
 });
 console.log('--- STORE privacypage.js ---');

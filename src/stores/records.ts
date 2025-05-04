@@ -120,7 +120,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
       return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
     },
-    setBookingsPerAccount(): void {
+    sumBookings(): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
@@ -135,14 +135,21 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return A - B
       })
       this._bookings.per_account = bookings_per_account
-    },
-    setBookingsSum(): void {
-      if (this._bookings.all.length > 0) {
-        this._booking_sum = this._bookings.all.map((entry: IBooking) => {
+      if (bookings_per_account.length > 0) {
+        this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
+      } else {
+        this._booking_sum = 0
       }
     },
+    // setBookingsSum(): void {
+    //   if (this._bookings.all.length > 0) {
+    //     this._booking_sum = this._bookings.all.map((entry: IBooking) => {
+    //       return entry.cCredit - entry.cDebit
+    //     }).reduce((acc: number, cur: number) => acc + cur, 0)
+    //   }
+    // },
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
     },

@@ -34,7 +34,7 @@ interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
 }
 
-const {n, t} = useI18n()
+const {t} = useI18n()
 const {CONS} = useApp()
 const settings = useSettingsStore()
 const titlebar = useTitleBarStore()
@@ -98,15 +98,10 @@ const ok = (): Promise<string> => {
     const fr: FileReader = new FileReader()
     fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
     fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-    //
     if (state._choosen_file !== null) {
       await records.cleanStoreAndDatabase()
       fr.readAsText(state._choosen_file, 'UTF-8')
-      //
-      records.setBookingsPerAccount()
-      records.setBookingsSum()
-      titlebar.setBookingsSumFormatted(n(records.bookingSum, 'currency'))
-      titlebar.setLogo()
+      titlebar.updateTitlebar()
     }
   })
 }

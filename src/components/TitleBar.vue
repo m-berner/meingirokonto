@@ -13,7 +13,7 @@ import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useTitleBarStore} from '@/stores/components/titlebar'
 
-const {t} = useI18n()
+const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const titlebar = useTitleBarStore()
@@ -31,7 +31,7 @@ console.log('--- TitleBar.vue setup ---')
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-      v-model="titlebar.bookingsSumFormatted"
+      v-bind:modelValue="n(records.bookingSum, 'currency')"
       v-bind:label="t('titleBar.bookingsSumLabel')"
       max-width="150"
       v-bind:disabled="true"
@@ -45,7 +45,7 @@ console.log('--- TitleBar.vue setup ---')
       v-bind:items="records.accounts.all"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-on:update:modelValue="titlebar.setLogo"
+      v-on:update:modelValue="titlebar.updateTitlebar"
     ></v-select>
   </v-app-bar>
 </template>

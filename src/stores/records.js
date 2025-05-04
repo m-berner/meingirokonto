@@ -83,7 +83,7 @@ export const useRecordsStore = defineStore('records', {
             });
             return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
         },
-        setBookingsPerAccount() {
+        sumBookings() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
@@ -98,12 +98,13 @@ export const useRecordsStore = defineStore('records', {
                 return A - B;
             });
             this._bookings.per_account = bookings_per_account;
-        },
-        setBookingsSum() {
-            if (this._bookings.all.length > 0) {
-                this._booking_sum = this._bookings.all.map((entry) => {
+            if (bookings_per_account.length > 0) {
+                this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
                 }).reduce((acc, cur) => acc + cur, 0);
+            }
+            else {
+                this._booking_sum = 0;
             }
         },
         setBookingSumField(value) {
