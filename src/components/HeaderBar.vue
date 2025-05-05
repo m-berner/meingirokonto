@@ -24,56 +24,64 @@ const onIconClick = (ev: Event): Promise<void> => {
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.EXPORT_DATABASE,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DATABASE,
           showOkButton: true,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
           showOkButton: false,
-          showHeaderDialog: true
+          showHeaderDialog: true,
+          showOptionDialog: false
         })
         break
       case CONS.DIALOGS.SETTING:

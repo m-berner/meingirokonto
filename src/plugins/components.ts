@@ -15,7 +15,6 @@ import AddBooking from '@/components/dialogs/AddBooking.vue'
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
-import DefaultSvg from '@/components/logos/DefaultSvg.vue'
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue'
 
 const {CONS} = useApp()
@@ -31,7 +30,6 @@ export default <ObjectPlugin<[]>>{
     app.component(CONS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
     app.component(CONS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
     app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
-    app.component(CONS.LOGOS.NO_LOGO, DefaultSvg)
   }
 }
 

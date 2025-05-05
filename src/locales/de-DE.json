@@ -72,6 +72,7 @@
     ],
     "menuItems": [
       {
+        "id": "DeleteBooking",
         "title": "Buchung löschen",
         "icon": "$tableRemove"
       }
@@ -245,7 +246,6 @@
       }
     ],
     "companyBarTitle": "Unternehmen Aktionen",
-    "companyBarSubtitle": "Dialoge und Link",
     "companyBar": [
       {
         "title": "Aktien kaufen",
@@ -265,12 +265,12 @@
       {
         "title": "Dividenden-Übersicht",
         "subtitle": "",
-        "icon": "$showDividend"
+        "icon": "$addDividend"
       },
       {
         "title": "Unternehmen konfigurieren",
         "subtitle": "",
-        "icon": "$configs"
+        "icon": "$addDividend"
       },
       {
         "title": "Unternehmen-Brokerseite",
@@ -290,48 +290,21 @@
         "subtitle": "",
         "icon": "$editDocument"
       }
-    ],
-    "footerBarTitle": "Fußzeile",
-    "footerBarSubtitle": "Andere Seiten öffnen",
-    "footerBar": [
-      {
-        "title": "Hilfe",
-        "content": "Klicken um diese Hilfe-Seite anzuzeigen.",
-        "icon": "$help"
-      },
-      {
-        "title": "Datenschutz",
-        "content": "Klicken um die Datenschutz-Seite anzuzeigen.",
-        "icon": "$privacy"
-      },
-      {
-        "title": "Partner",
-        "content": "Klicken um die Partner-Seite anzuzeigen.",
-        "icon": "$partner"
-      }
     ]
   },
   "privacyContent": {
     "title": "MeinGiroKonto Datenschutz Richtlinien",
     "local": {
       "title": "Lokale Daten",
-      "content": "MeinGiroKonto speichert alle Daten lokal im Browser. Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. MeinGiroKonto personalisiert keine Daten."
+      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. MeinGiroKonto personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
     },
     "public": {
       "title": "Öffentliche Daten",
-      "content": "MeinGiroKonto verwendet Kursdaten von öffentlichen Kursanbietern. Diese Daten werden über das Internet abgerufen. Die Kursanbieter können die Daten jederzeit ändern oder abschalten. MeinGiroKonto übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden Aktien-Kürzel, ISIN bzw. WKN über das Internet versendet. Andere Daten werden nicht weitergegeben."
+      "content": "Nur Bank-Logos von brandfetsch.com werden verwendet und über das Internet abgerufen. MeinGiroKonto übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
     },
     "connections": {
       "title": "Internetverbindungen",
-      "content": "zu den Kursanbietern werden hergestellt zum Empfang von:",
-      "dataList": [
-        {"id": 1, "name": "Kursdaten"},
-        {"id": 2, "name": "Rohstoffdaten"},
-        {"id": 3, "name": "Indexdaten"},
-        {"id": 4, "name": "Tagesdeltas"},
-        {"id": 5, "name": "52Wochen Hoch/Tief Daten"},
-        {"id": 6, "name": "Wechselkursen"}
-      ]
+      "content": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetsch.com herunterzuladen."
     }
   },
   "optionsPage": {

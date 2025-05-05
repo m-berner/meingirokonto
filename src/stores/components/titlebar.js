@@ -1,20 +1,26 @@
 import { defineStore } from 'pinia';
 import { useRecordsStore } from '@/stores/records';
 import { useSettingsStore } from '@/stores/settings';
+import { useApp } from '@/pages/background';
+const { CONS } = useApp();
 export const useTitleBarStore = defineStore('titlebar', {
     state: () => {
         return {
-            _logo: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7',
+            _logo: CONS.LOGOS.NO_LOGO,
             _bookings_sum: 0,
-            _bookings_sum_label: ''
+            _steady: {
+                title: '',
+                bookings_sum_label: '',
+                account_label: ''
+            }
         };
     },
     getters: {
         logo(state) {
             return state._logo;
         },
-        bookingsSumLabel(state) {
-            return state._bookings_sum_label;
+        steady(state) {
+            return state._steady;
         }
     },
     actions: {
@@ -25,8 +31,8 @@ export const useTitleBarStore = defineStore('titlebar', {
                 this._logo = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl;
             }
         },
-        setBookingsSumLabel(value) {
-            this._bookings_sum_label = value;
+        setSteady(value) {
+            this._steady = value;
         },
         updateTitlebar() {
             const records = useRecordsStore();
@@ -42,4 +48,4 @@ export const useTitleBarStore = defineStore('titlebar', {
         }
     }
 });
-console.log('--- STORE privacypage.js ---');
+console.log('--- STORE titlebar.js ---');

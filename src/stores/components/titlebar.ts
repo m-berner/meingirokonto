@@ -8,39 +8,55 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+import {useApp} from '@/pages/background'
 
 interface ITitleBarStore {
   _logo: string
   _bookings_sum: number
-  _bookings_sum_label: string
+  _steady: {
+    title: string
+    bookings_sum_label: string
+    account_label: string
+  }
 }
 
+interface ITitleBarSteady {
+  title: string
+  bookings_sum_label: string
+  account_label: string
+}
+
+const {CONS} = useApp()
 export const useTitleBarStore: StoreDefinition<'titlebar', ITitleBarStore> = defineStore('titlebar', {
   state: (): ITitleBarStore => {
     return {
-      _logo: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7',
+      _logo: CONS.LOGOS.NO_LOGO,
       _bookings_sum: 0,
-      _bookings_sum_label: ''
+      _steady: {
+        title: '',
+        bookings_sum_label: '',
+        account_label: ''
+      }
     }
   },
   getters: {
     logo(state: ITitleBarStore) {
       return state._logo
     },
-    bookingsSumLabel(state: ITitleBarStore) {
-      return state._bookings_sum_label
+    steady(state: ITitleBarStore) {
+      return state._steady
     }
   },
   actions: {
-    setLogo(){
+    setLogo() {
       const records = useRecordsStore()
       const settings = useSettingsStore()
       if (settings.activeAccountId > -1) {
         this._logo = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl
       }
     },
-    setBookingsSumLabel(value: string) {
-      this._bookings_sum_label = value
+    setSteady(value: ITitleBarSteady) {
+      this._steady = value
     },
     updateTitlebar() {
       const records = useRecordsStore()
@@ -57,4 +73,4 @@ export const useTitleBarStore: StoreDefinition<'titlebar', ITitleBarStore> = def
   }
 })
 
-console.log('--- STORE privacypage.js ---')
+console.log('--- STORE titlebar.js ---')

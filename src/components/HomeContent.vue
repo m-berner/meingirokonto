@@ -60,7 +60,7 @@ const state: IHomePage = reactive({
   search: ''
 })
 
-console.log('--- HomePage.vue setup ---')
+console.log('--- HomeContent.vue setup ---')
 </script>
 
 <template>

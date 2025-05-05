@@ -37,9 +37,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     bookingsPerPage(state: ISettingsStore) {
       return state._bookings_per_page
     },
-    logo(state: ISettingsStore) {
-      return state._logo
-    },
     skin(state: ISettingsStore) {
       return state._skin
     }
@@ -60,7 +57,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._skin = settings.skin
       this._bookings_per_page = settings.bookingsPerPage
       this._active_account_id = settings.activeAccountId
-      this._logo = settings.logo
+      //this._logo = settings.logo
       this._debug = settings.debug
     },
     onUpdateAccount(value: number): Promise<void> {

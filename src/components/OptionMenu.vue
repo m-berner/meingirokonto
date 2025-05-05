@@ -21,29 +21,19 @@ const {rt} = useI18n()
 const runtime = useRuntimeStore()
 const {CONS} = useApp()
 
-const setId = (optionIndex = -1): string => {
-  let resultId: string = ''
-  switch (optionIndex) {
-    case 0:
-      resultId = CONS.DIALOGS.DELETE_BOOKING
-      break
-    default:
-      break
-  }
-  return resultId
-}
-
 const onIconClick = (ev: Event): Promise<void> => {
   console.info('OPTIONMENU: onIconClick', ev, _props.recordID)
   runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
+    console.error(elem.id)
     switch (elem!.id) {
       case CONS.DIALOGS.DELETE_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING,
           showOkButton: true,
-          showOptionDialog: true
+          showOptionDialog: true,
+          showHeaderDialog: false
         })
         break
       default:
@@ -73,8 +63,9 @@ console.log('--- OptionMenu.vue setup ---')
     <v-list>
       <v-hover v-slot:default="{ props, isHovering }">
         <v-list-item
-          v-for="(item, i) in _props.menuItems" v-bind:id="setId(i)"
-          v-bind:key="item.title"
+          v-for="item in _props.menuItems"
+          v-bind:id="rt(item.id)"
+          v-bind:key="rt(item.title)"
           class="pointer"
           v-bind="props"
           v-bind:base-color="isHovering ? 'orange' : ''"

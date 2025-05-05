@@ -19,7 +19,7 @@ export default<IRouter> {
         path: '/',
         name: 'home',
         components: {
-          default: () => import('@/components/HomePage.vue'),
+          default: () => import('@/components/HomeContent.vue'),
           title: () => import('@/components/TitleBar.vue'),
           header: () => import ('@/components/HeaderBar.vue'),
           footer: () => import('@/components/FooterBar.vue')
@@ -29,7 +29,7 @@ export default<IRouter> {
         path: '/help',
         name: 'help',
         components: {
-          default: () => import('@/components/HelpPage.vue'),
+          default: () => import('@/components/HelpContent.vue'),
           title: () => import('@/components/TitleBar.vue'),
           header: () => import ('@/components/HeaderBar.vue'),
           footer: () => import('@/components/FooterBar.vue')
@@ -39,7 +39,7 @@ export default<IRouter> {
         path: '/privacy',
         name: 'privacy',
         components: {
-          default: () => import('@/components/PrivacyPage.vue'),
+          default: () => import('@/components/PrivacyContent.vue'),
           title: () => import('@/components/TitleBar.vue'),
           header: () => import ('@/components/HeaderBar.vue'),
           footer: () => import('@/components/FooterBar.vue')

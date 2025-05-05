@@ -20,9 +20,6 @@ export const useSettingsStore = defineStore('settings', {
         bookingsPerPage(state) {
             return state._bookings_per_page;
         },
-        logo(state) {
-            return state._logo;
-        },
         skin(state) {
             return state._skin;
         }
@@ -43,7 +40,6 @@ export const useSettingsStore = defineStore('settings', {
             this._skin = settings.skin;
             this._bookings_per_page = settings.bookingsPerPage;
             this._active_account_id = settings.activeAccountId;
-            this._logo = settings.logo;
             this._debug = settings.debug;
         },
         onUpdateAccount(value) {

@@ -46,7 +46,6 @@ declare global {
     activeAccountId: number
     bookingsPerPage: number
     debug: boolean
-    logo: string
     skin: string
   }
 }
@@ -120,7 +119,6 @@ interface IUseApp {
         ACTIVE_ACCOUNT_ID: number
         BOOKINGS_PER_PAGE: number
         DEBUG: boolean
-        LOGO: string
         SKIN: string
       }
     }
@@ -430,7 +428,6 @@ export const useApp = (): IUseApp => {
           ACTIVE_ACCOUNT_ID: -1,
           BOOKINGS_PER_PAGE: 9,
           DEBUG: false,
-          LOGO: 'DefaultSvg',
           SKIN: 'ocean'
         }
       },
@@ -447,7 +444,7 @@ export const useApp = (): IUseApp => {
         SETTING: 'setting'
       },
       LOGOS: {
-        NO_LOGO: 'DefaultSvg'
+        NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
       },
       EVENTS: {
         ABORT: 'abort',
@@ -857,9 +854,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           if (storageLocal.sBookingsPerPage === undefined) {
             await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
           }
-          if (storageLocal.sLogo === undefined) {
-            await browser.storage.local.set({sLogo: CONS.DEFAULTS.STORAGE.LOGO})
-          }
           if (storageLocal.sDebug === undefined) {
             await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
           }
@@ -899,14 +893,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       return new Promise(async (resolve) => {
         const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
         const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
-        const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO
+        //const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO
         const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
         const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
         const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
-        console.info('BACKGROUND: onSettings: startSettings', skin, logo, activeAccountId, bookingsPerPage, debug)
+        console.info('BACKGROUND: onSettings: startSettings', skin, activeAccountId, bookingsPerPage, debug)
         resolve({
           skin,
-          logo,
           activeAccountId,
           bookingsPerPage,
           debug

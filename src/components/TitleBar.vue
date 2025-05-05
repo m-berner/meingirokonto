@@ -20,7 +20,11 @@ const titlebar = useTitleBarStore()
 const {CONS} = useApp()
 
 const {_active_account_id} = storeToRefs(settings)
-
+titlebar.setSteady({
+  title: t('titleBar.title'),
+  bookings_sum_label: t('titleBar.bookingsSumLabel'),
+  account_label: t('titleBar.selectAccountLabel')
+})
 console.log('--- TitleBar.vue setup ---')
 </script>
 
@@ -29,10 +33,10 @@ console.log('--- TitleBar.vue setup ---')
     <template v-slot:prepend>
       <img v-bind:src="titlebar.logo" alt="brandfetch.com logo">
     </template>
-    <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
+    <v-app-bar-title>{{ titlebar.steady.title }}</v-app-bar-title>
     <v-text-field
       v-bind:modelValue="n(records.bookingSum, 'currency')"
-      v-bind:label="t('titleBar.bookingsSumLabel')"
+      v-bind:label="titlebar.steady.bookings_sum_label"
       max-width="150"
       v-bind:disabled="true"
     ></v-text-field>
@@ -40,7 +44,7 @@ console.log('--- TitleBar.vue setup ---')
     <v-select
       v-if="_active_account_id > -1"
       v-model="_active_account_id"
-      v-bind:label="t('titleBar.selectAccountLabel')"
+      v-bind:label="titlebar.steady.account_label"
       max-width="300"
       v-bind:items="records.accounts.all"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"

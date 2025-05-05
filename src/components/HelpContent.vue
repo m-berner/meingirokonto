@@ -7,36 +7,22 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-
-interface IEntry {
-  title: string
-  subtitle: string
-  icon: string
-  content: string
-}
-
-interface IHelpPage {
-  helpPageRequests: IEntry[]
-  helpPageToolbar: IEntry[]
-  helpPageCompanybar: IEntry[]
-  helpPageTransferbar: IEntry[]
-}
+import {useHelpPageStore} from '@/stores/components/helpcontent'
 
 const {rt, t, tm} = useI18n()
 
-const state: IHelpPage = {
-  helpPageRequests: tm('helpContent.requests'),
-  helpPageToolbar: tm('helpContent.toolBar'),
-  helpPageCompanybar: tm('helpContent.companyBar'),
-  helpPageTransferbar: tm('helpContent.transferBar')
-}
-
-//const helpPageRequests: Record<string, string>[] = tm('helpContent.requests')
-//const helpPageToolbar: Record<string, string>[] = tm('helpContent.toolBar')
-//const helpPageCompanybar: Record<string, string>[] = tm('helpContent.companyBar')
-//const helpPageTransferbar: Record<string, string>[] = tm('helpContent.transferBar')
-
-console.log('--- HelpPage.vue setup ---')
+const helppage = useHelpPageStore()
+helppage.setSteady({
+  titleBarTitle: t('helpContent.requestsTitle'),
+  titleBar: tm('helpContent.requests'),
+  toolBarTitle: t('helpContent.toolBarTitle'),
+  toolBar: tm('helpContent.toolBar'),
+  dotMenuTitle: t('helpContent.companyBarTitle'),
+  dotMenu: tm('helpContent.companyBar'),
+  footerBarTitle: t('helpContent.transferBarTitle'),
+  footerBar: tm('helpContent.transferBar')
+})
+console.log('--- HelpContent.vue setup ---')
 </script>
 
 <template>
@@ -46,10 +32,10 @@ console.log('--- HelpPage.vue setup ---')
         <v-col cols="8" s="8">
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpContent.requestsTitle') }}
+              {{ helppage.steady.titleBarTitle }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in state.helpPageRequests" v-bind:key="item.title">
+          <v-card v-for="item in helppage.steady.titleBar" v-bind:key="item.title">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -60,10 +46,10 @@ console.log('--- HelpPage.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpPage.toolBarTitle') }}
+              {{ helppage.toolBarTitle }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in state.helpPageToolbar" v-bind:key="item.title">
+          <v-card v-for="item in helppage.steady.toolBar" v-bind:key="item.title">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -74,10 +60,10 @@ console.log('--- HelpPage.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpContent.companyBarTitle') }}
+              {{ helppage.steady.dotMenuBarTitle }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in state.helpPageCompanybar" v-bind:key="item.title">
+          <v-card v-for="item in helppage.steady.dotMenu" v-bind:key="item.title">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -88,11 +74,11 @@ console.log('--- HelpPage.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ t('helpContent.transferBarTitle') }}
+              {{ helppage.footerBarTitle }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in state.helpPageTransferbar" v-bind:key="item.title">
-            <v-card-title v-bind="{ item }">
+          <v-card v-for="item in helppage.footerBar" v-bind:key="item.title">
+            <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
             </v-card-title>
