@@ -7,72 +7,34 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IImportDatabaseSteady {
+  label: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IImportDatabaseStore {
+  _choosen_file: Blob | null
+  _steady: IImportDatabaseSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useImportDatabaseStore: StoreDefinition<'importdatabase', IImportDatabaseStore> = defineStore('importdatabase', {
+  state: (): IImportDatabaseStore => {
     return {
+      _choosen_file: null,
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        label: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IImportDatabaseStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IImportDatabaseSteady) {
+      this._steady.label = value.label
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE importdatabase.js ---')

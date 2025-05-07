@@ -7,70 +7,24 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IShowAccountingStore {
+  _result: Array<{title: string, subtitle: string}>
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
-}
-
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useShowAccountingStore: StoreDefinition<'showaccounting', IShowAccountingStore> = defineStore('showaccounting', {
+  state: (): IShowAccountingStore => {
     return {
-      _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
-      }
+      _result: []
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
-      return state._steady
+    getResult(state: IShowAccountingStore) {
+      return state._result
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    addEntryToResult(value: {title: string, subtitle: string}) {
+      this._result.push(value)
     }
   }
 })

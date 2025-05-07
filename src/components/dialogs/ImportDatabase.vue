@@ -1,34 +1,18 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-form validate-on="submit" v-on:submit.prevent>
-    <v-card-text class="pa-5">
-      <v-file-input
-        accept=".json"
-        v-bind:clearable="true"
-        v-bind:label="t('dialogs.importDatabase.label')"
-        variant="outlined"
-        v-on:change="choosenFile"
-      ></v-file-input>
-    </v-card-text>
-  </v-form>
-</template>
-
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useTitleBarStore} from '@/stores/components/titlebar'
-
-interface IImportDatabase {
-  _choosen_file: Blob | null
-}
+import {useImportDatabaseStore} from '@/stores/components/dialogs/importdatabase'
+import {storeToRefs} from 'pinia'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
@@ -38,15 +22,16 @@ const {t} = useI18n()
 const {CONS} = useApp()
 const settings = useSettingsStore()
 const titlebar = useTitleBarStore()
+const importdatabase = useImportDatabaseStore()
 
-const state: IImportDatabase = {
-  _choosen_file: null
-}
+const {_choosen_file} = storeToRefs(importdatabase)
 
-const choosenFile = (ev: IEventTarget) => { state._choosen_file = ev.target.files[0] }
+importdatabase.setSteady({
+  label: t('dialogs.importDatabase.label'),
+})
 
 const ok = (): Promise<string> => {
-  console.info('IMPORTDATABASE: ok', state._choosen_file)
+  console.info('IMPORTDATABASE: ok', _choosen_file.value)
   return new Promise(async (resolve, reject) => {
     const {notice} = useApp()
     const records = useRecordsStore()
@@ -98,9 +83,9 @@ const ok = (): Promise<string> => {
     const fr: FileReader = new FileReader()
     fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
     fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-    if (state._choosen_file !== null) {
+    if (_choosen_file.value !== null) {
       await records.cleanStoreAndDatabase()
-      fr.readAsText(state._choosen_file, 'UTF-8')
+      fr.readAsText(_choosen_file.value, 'UTF-8')
       titlebar.updateTitlebar()
     }
   })
@@ -111,3 +96,17 @@ defineExpose({ok, title})
 
 console.log('--- ImportDatabase.vue setup ---')
 </script>
+
+<template>
+  <v-form validate-on="submit" v-on:submit.prevent>
+    <v-card-text class="pa-5">
+      <v-file-input
+        accept=".json"
+        v-bind:clearable="true"
+        v-bind:label="importdatabase.steady.label"
+        variant="outlined"
+        v-on:change="(ev: IEventTarget) => { _choosen_file = ev.target.files[0] }"
+      ></v-file-input>
+    </v-card-text>
+  </v-form>
+</template>
