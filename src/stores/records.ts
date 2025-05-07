@@ -9,14 +9,11 @@ import {defineStore, type StoreDefinition} from 'pinia'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 
-//import {toRaw} from 'vue'
-
 interface IRecordsStore {
   _dbi: IDBDatabase | null
   _accounts: IRecordStoreAccount
   _bookings: IRecordStoreBooking
   _booking_types: IRecordStoreBookingType
-  _bkup_object: IBackup
   _booking_sum: number
   _booking_sum_field: string
 }
@@ -57,16 +54,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       _booking_types: {
         all: [],
         selected_index: -1
-      },
-      _bkup_object: {
-        sm: {
-          cVersion: 0,
-          cDBVersion: 0,
-          cEngine: ''
-        },
-        accounts: [],
-        bookings: [],
-        booking_types: []
       },
       _booking_sum: 0,
       _booking_sum_field: ''

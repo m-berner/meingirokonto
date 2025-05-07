@@ -20,16 +20,6 @@ export const useRecordsStore = defineStore('records', {
                 all: [],
                 selected_index: -1
             },
-            _bkup_object: {
-                sm: {
-                    cVersion: 0,
-                    cDBVersion: 0,
-                    cEngine: ''
-                },
-                accounts: [],
-                bookings: [],
-                booking_types: []
-            },
             _booking_sum: 0,
             _booking_sum_field: ''
         };
