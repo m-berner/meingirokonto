@@ -9,7 +9,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {useExportDatabaseStore} from '@/stores/components/dialogs/exportdatabase'
+import {useExportDatabaseStore} from '@/components/dialogs/exportdatabase'
 
 const {t} = useI18n()
 const {CONS} = useApp()

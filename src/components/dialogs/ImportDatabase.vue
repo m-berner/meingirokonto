@@ -10,8 +10,8 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
-import {useTitleBarStore} from '@/stores/components/titlebar'
-import {useImportDatabaseStore} from '@/stores/components/dialogs/importdatabase'
+import {useTitleBarStore} from '@/components/titlebar'
+import {useImportDatabaseStore} from '@/components/dialogs/importdatabase'
 import {storeToRefs} from 'pinia'
 
 interface IEventTarget extends HTMLInputElement {

@@ -10,7 +10,7 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useDeleteBookingStore} from '@/stores/components/dialogs/deletebooking'
+import {useDeleteBookingStore} from '@/components/dialogs/deletebooking'
 
 const {t} = useI18n()
 const {notice} = useApp()

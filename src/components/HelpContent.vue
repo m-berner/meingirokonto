@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useHelpPageStore} from '@/stores/components/helpcontent'
+import {useHelpPageStore} from '@/components/helpcontent'
 
 const {rt, t, tm} = useI18n()
 

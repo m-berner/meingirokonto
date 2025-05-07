@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {useFooterBarStore} from '@/stores/components/footerbar'
+import {useFooterBarStore} from '@/components/footerbar'
 
 const {t} = useI18n()
 const {CONS} = useApp()

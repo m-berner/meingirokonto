@@ -12,7 +12,7 @@ import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
-import {useHomeContentStore} from '@/stores/components/homecontent'
+import {useHomeContentStore} from '@/components/homecontent'
 
 interface IHeader {
   title: string,

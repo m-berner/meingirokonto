@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {usePrivacyPageStore} from '@/stores/components/privacycontent'
+import {usePrivacyPageStore} from '@/components/privacycontent'
 
 const {t} = useI18n()
 

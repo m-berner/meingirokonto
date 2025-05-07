@@ -10,7 +10,7 @@ import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onMounted} from 'vue'
-import {useOptionsIndexStore} from '@/stores/pages/optionsindex'
+import {useOptionsIndexStore} from '@/pages/optionsindex'
 
 const {rt, tm} = useI18n()
 const theme = useTheme()

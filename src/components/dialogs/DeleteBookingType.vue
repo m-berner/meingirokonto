@@ -10,7 +10,7 @@ import {onMounted, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
-import {useDeleteBookingTypeStore} from '@/stores/components/dialogs/deletebookingtype'
+import {useDeleteBookingTypeStore} from '@/components/dialogs/deletebookingtype'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()

@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {useAddAccountStore} from '@/stores/components/dialogs/addaccount'
+import {useAddAccountStore} from '@/components/dialogs/addaccount'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()

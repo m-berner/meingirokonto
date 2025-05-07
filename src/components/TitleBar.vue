@@ -11,7 +11,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {useTitleBarStore} from '@/stores/components/titlebar'
+import {useTitleBarStore} from '@/components/titlebar'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()

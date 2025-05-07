@@ -12,7 +12,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
-import {useAddBookingStore} from '@/stores/components/dialogs/addbooking'
+import {useAddBookingStore} from '@/components/dialogs/addbooking'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()

@@ -11,7 +11,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
-import {useTitleBarStore} from '@/stores/components/titlebar'
+import {useTitleBarStore} from '@/components/titlebar'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()

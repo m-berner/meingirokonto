@@ -10,7 +10,7 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useHeaderBarStore} from '@/stores/components/headerbar'
+import {useHeaderBarStore} from '@/components/headerbar'
 
 const {t} = useI18n()
 const {CONS} = useApp()
