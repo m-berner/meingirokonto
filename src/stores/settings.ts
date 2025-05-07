@@ -26,7 +26,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       _skin: CONS.DEFAULTS.STORAGE.SKIN,
       _bookings_per_page: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
       _active_account_id: -1,
-      _logo: 'DefaultSvg',
+      _logo: '',
       _debug: false
     }
   },

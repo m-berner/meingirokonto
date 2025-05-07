@@ -1,20 +1,10 @@
 import { defineStore } from 'pinia';
-export const usePrivacyPageStore = defineStore('privacypage', {
+export const useDeleteBookingTypeStore = defineStore('deletebookingtype', {
     state: () => {
         return {
+            _selected: -1,
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                label: ''
             }
         };
     },
@@ -25,13 +15,8 @@ export const usePrivacyPageStore = defineStore('privacypage', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.label = value.label;
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+console.log('--- STORE deletebookingtype.js ---');

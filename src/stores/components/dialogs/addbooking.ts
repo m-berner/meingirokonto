@@ -7,72 +7,54 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IAddBookingSteady {
+  dateLabel: string
+  creditLabel: string
+  debitLabel: string
+  descriptionLabel: string
+  typeLabel: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IAddBookingStore {
+  _date: string
+  _debit: number
+  _credit: number
+  _description: string
+  _type: number
+  _steady: IAddBookingSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useAddBookingStore: StoreDefinition<'addbooking', IAddBookingStore> = defineStore('addbooking', {
+  state: (): IAddBookingStore => {
     return {
+      _date: '',
+      _debit: 0,
+      _credit: 0,
+      _description: '',
+      _type: 0,
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        dateLabel: '',
+        creditLabel: '',
+        debitLabel: '',
+        descriptionLabel: '',
+        typeLabel: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IAddBookingStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IAddBookingSteady) {
+      this._steady.dateLabel = value.dateLabel
+      this._steady.creditLabel = value.creditLabel
+      this._steady.debitLabel = value.debitLabel
+      this._steady.descriptionLabel = value.descriptionLabel
+      this._steady.typeLabel = value.typeLabel
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE addbooking.js ---')

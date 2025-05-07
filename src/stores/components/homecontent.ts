@@ -7,54 +7,39 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IHomeContentStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IHomeContentSteady {
+  bookingsHeaders: {
+    readonly key?:
+      | (string & {})
+      | 'data-table-group'
+      | 'data-table-select'
+      | 'data-table-expand'
+      | undefined
+    readonly title?: string | undefined
+    readonly align?: 'end' | 'start' | 'center' | undefined
+    readonly sortable?: boolean | undefined
+  }[]
+  searchLabel: string
+  noDataText: string
+  itemsPerPageText: string
+  dotMenuItems: []
 }
 
-interface IHomeContentSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IHomeContentStore {
+  _search: string
+  _steady: IHomeContentSteady
 }
 
 export const useHomeContentStore: StoreDefinition<'homecontent', IHomeContentStore> = defineStore('homecontent', {
   state: (): IHomeContentStore => {
     return {
+      _search: '',
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        bookingsHeaders: [],
+        searchLabel: '',
+        noDataText: '',
+        itemsPerPageText: '',
+        dotMenuItems: []
       }
     }
   },
@@ -65,12 +50,11 @@ export const useHomeContentStore: StoreDefinition<'homecontent', IHomeContentSto
   },
   actions: {
     setSteady(value: IHomeContentSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+      this._steady.bookingsHeaders = value.bookingsHeaders
+      this._steady.searchLabel = value.searchLabel
+      this._steady.noDataText = value.noDataText
+      this._steady.itemsPerPageText = value.itemsPerPageText
+      this._steady.dotMenuItems = value.dotMenuItems
     }
   }
 })

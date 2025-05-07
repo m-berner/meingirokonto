@@ -2,6 +2,7 @@ import OptionsIndex from '@/pages/OptionsIndex.vue';
 import { createApp } from 'vue';
 import vuetifyPlugin from '@/plugins/vuetify';
 import i18nPlugin from '@/plugins/i18n';
+import piniaPlugin from '@/plugins/pinia';
 const op = createApp(OptionsIndex);
 op.config.errorHandler = (err) => {
     console.error(err);
@@ -11,5 +12,6 @@ op.config.warnHandler = (msg) => {
 };
 op.use(vuetifyPlugin.vuetify);
 op.use(i18nPlugin.i18n);
+op.use(piniaPlugin.pinia);
 op.mount('#options');
-console.log('--- options.js ---');
+console.log('--- PAGE_SCRIPT options.js ---');

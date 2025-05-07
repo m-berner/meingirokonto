@@ -1,40 +1,25 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-form validate-on="submit" v-on:submit.prevent>
-    <v-card-text class="pa-5">
-      <v-textarea
-        v-bind:disabled="true"
-        v-bind:modelValue="t('dialogs.exportDialog', { filename: state._file_name })"
-        variant="outlined"
-      ></v-textarea>
-    </v-card-text>
-  </v-form>
-</template>
-
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
-import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-
-interface IExportDatabase {
-  _file_name: string
-}
+import {useExportDatabaseStore} from '@/stores/components/dialogs/exportdatabase'
 
 const {t} = useI18n()
 const {CONS} = useApp()
+const exportdatabase = useExportDatabaseStore()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
-const state: IExportDatabase = reactive({
-  _file_name: fn
-})
 
+exportdatabase.setSteady({
+  fileName: t('dialogs.exportDialog', { filename: fn })
+})
 const ok = (): Promise<void> => {
   console.log('EXPORTDATABASE: ok')
   const records = useRecordsStore()
@@ -99,7 +84,7 @@ const ok = (): Promise<void> => {
   const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
   const op: browser.downloads._DownloadOptions = {
     url: blobUrl,
-    filename: state._file_name
+    filename: fn
   }
   const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
     console.log('HEADERBAR: onChanged')
@@ -126,3 +111,15 @@ defineExpose({ok, title})
 
 console.log('--- ExportDatabase.vue setup ---')
 </script>
+
+<template>
+  <v-form validate-on="submit" v-on:submit.prevent>
+    <v-card-text class="pa-5">
+      <v-textarea
+        v-bind:disabled="true"
+        v-bind:modelValue="exportdatabase.steady.fileName"
+        variant="outlined"
+      ></v-textarea>
+    </v-card-text>
+  </v-form>
+</template>

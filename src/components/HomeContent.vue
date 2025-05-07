@@ -7,12 +7,12 @@
   -->
 <script lang="ts" setup>
 import {storeToRefs} from 'pinia'
-import {reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
+import {useHomeContentStore} from '@/stores/components/homecontent'
 
 interface IHeader {
   title: string,
@@ -21,33 +21,17 @@ interface IHeader {
   key: string
 }
 
-interface IHomePage {
-  bookings: readonly IBooking[],
-  bookingHeaders: {
-    readonly key?:
-      | (string & {})
-      | 'data-table-group'
-      | 'data-table-select'
-      | 'data-table-expand'
-      | undefined
-    readonly title?: string | undefined
-    readonly align?: 'end' | 'start' | 'center' | undefined
-    readonly sortable?: boolean | undefined
-  }[]
-  bookingsPerPage: number,
-  search: string
-}
-
 const {d, n, rt, t, tm} = useI18n()
 const {CONS, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const homecontent = useHomeContentStore()
 
 const {bookingsPerAccount} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
+const {_search} = storeToRefs(homecontent)
 
-const state: IHomePage = reactive({
-  bookings: bookingsPerAccount,
+homecontent.setSteady({
   bookingHeaders: tm('appPage.headers').map((item: IHeader): IHeader => {
     return {
       title: rt(item.title),
@@ -56,8 +40,10 @@ const state: IHomePage = reactive({
       key: rt(item.key)
     }
   }),
-  bookingsPerPage: bookingsPerPage,
-  search: ''
+  searchLabel: t('appPage.search'),
+  itemsPerPageText: t('appPage.itemsPerPageText'),
+  noDataText: t('appPage.noDataText'),
+  dotMenuItems: tm('appPage.menuItems')
 })
 
 console.log('--- HomeContent.vue setup ---')
@@ -65,32 +51,32 @@ console.log('--- HomeContent.vue setup ---')
 
 <template>
   <v-text-field
-    v-model="state.search"
+    v-model="_search"
     density="compact"
     hide-details
     prepend-inner-icon="$magnify"
     single-line
-    v-bind:label="t('appPage.search')"
+    v-bind:label="homecontent.steady.searchLabel"
     variant="outlined"
   ></v-text-field>
   <v-data-table
     density="compact"
     item-key="cID"
-    v-bind:headers="state.bookingHeaders"
+    v-bind:headers="homecontent.steady.bookingHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="state.bookings"
-    v-bind:items-per-page="state.bookingsPerPage"
+    v-bind:items="bookingsPerAccount as readonly IBooking[]"
+    v-bind:items-per-page="bookingsPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
-    v-bind:no-data-text="t('appPage.noDataText')"
-    v-bind:search="state.search"
+    v-bind:items-per-page-text="homecontent.steady.itemsPerPageText"
+    v-bind:no-data-text="homecontent.steady.noDataText"
+    v-bind:search="_search"
     v-on:update:items-per-page="(count) => { settings.setBookingsPerPage(count) }">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td>
           <OptionMenu
-            v-bind:menuItems="tm('appPage.menuItems')"
+            v-bind:menuItems="homecontent.steady.dotMenuItems"
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>

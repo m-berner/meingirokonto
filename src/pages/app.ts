@@ -27,4 +27,4 @@ app.use(piniaPlugin.pinia)
 app.use(routerPlugin.router)
 app.mount('#app')
 
-console.log('--- app.js ---')
+console.log('--- PAGE_SCRIPT app.js ---')

@@ -89,6 +89,7 @@
       "descriptionLabel": "Bemerkung",
       "creditLabel": "Einnahme",
       "debitLabel": "Ausgabe",
+      "typeLabel": "Buchungstyp",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },
@@ -310,14 +311,10 @@
   "optionsPage": {
     "tabs": [
       {
-        "title": "Thema",
+        "title": "Themen",
         "id": "register_ge"
       }
     ],
-    "capitals": {
-      "skins": "Themen",
-      "services": "Kursanbieter"
-    },
     "themeNames": {
       "earth": "Erde",
       "ocean": "Ozean",

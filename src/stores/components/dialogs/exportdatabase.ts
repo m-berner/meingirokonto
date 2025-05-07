@@ -7,72 +7,33 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+
+interface IExportDatabaseSteady {
+  fileName: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IExportDatabaseStore {
+  _steady: IExportDatabaseSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useExportDatabaseStore: StoreDefinition<'exportdatabase', IExportDatabaseStore> = defineStore('exportdatabase', {
+  state: (): IExportDatabaseStore => {
     return {
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        fileName: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IExportDatabaseStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IExportDatabaseSteady) {
+      this._steady.fileName = value.fileName
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE exportdatabase.js ---')

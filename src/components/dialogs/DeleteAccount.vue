@@ -5,46 +5,35 @@
   --
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
-    <v-select
-      v-model="state.selected"
-      density="compact"
-      required
-      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
-      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts.all"
-      v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
-      variant="outlined"
-    ></v-select>
-  </v-form>
-</template>
-
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
+import {useDeleteAccountStore} from '@/stores/components/dialogs/deleteaccount'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const deleteaccount = useDeleteAccountStore()
+const {_selected} = storeToRefs(deleteaccount)
 
-const state = reactive({
-  selected: null
+deleteaccount.setSteady({
+  accountNumberLabel: t('dialogs.deleteAccount.accountNumberLabel')
 })
 
 const ok = (): Promise<void> => {
   console.log('DELETE_ACCOUNT: ok')
   return new Promise(async (resolve): Promise<void> => {
     try {
-      const result = await records.deleteAccount(state.selected)
+      const result = await records.deleteAccount(_selected.value)
       if (result === 'Account deleted') {
         formRef.value?.reset()
-        if (settings.activeAccountId === state.selected && records.accounts.length > 0) {
+        if (settings.activeAccountId === _selected.value && records.accounts.length > 0) {
           settings.setActiveAccountId(records.accounts.all[0].cID)
           await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
         }
@@ -68,3 +57,18 @@ onMounted(() => {
 
 console.log('--- DeleteAccount.vue setup ---')
 </script>
+
+<template>
+  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+    <v-select
+      v-model="_selected"
+      density="compact"
+      required
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
+      v-bind:items="records.accounts.all"
+      v-bind:label="deleteaccount.steady.accountNumberlabel"
+      variant="outlined"
+    ></v-select>
+  </v-form>
+</template>

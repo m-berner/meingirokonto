@@ -7,72 +7,32 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IDeleteBookingSteady {
+  label: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IDeleteBookingStore {
+  _steady: IDeleteBookingSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useDeleteBookingStore: StoreDefinition<'deletebooking', IDeleteBookingStore> = defineStore('deletebooking', {
+  state: (): IDeleteBookingStore => {
     return {
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        label: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IDeleteBookingStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IDeleteBookingSteady) {
+      this._steady.label = value.label
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE deletebooking.js ---')

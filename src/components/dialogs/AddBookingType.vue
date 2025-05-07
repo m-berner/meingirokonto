@@ -5,38 +5,25 @@
   --
   -- Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
-<template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
-    <v-combobox
-      v-model="state.cName"
-      ref="name-input"
-      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
-      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-      v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
-      max-width="300"
-      v-bind:menu=true
-      v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
-    ></v-combobox>
-  </v-form>
-</template>
-
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
+import {useAddBookingTypeStore} from '@/stores/components/dialogs/addbookingtype'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 
-const state: Omit<IBookingType, 'cID'> = reactive({
-  cName: ''
-})
+const addbookingtype = useAddBookingTypeStore()
+const {_name} = storeToRefs(addbookingtype)
 
+addbookingtype.setSteady({
+  bookingTypeLabel: t('dialogs.addBookingType.label')
+})
 const ok = (): Promise<void> => {
   console.log('ADD_BOOKING_TYPE: ok')
   return new Promise(async (resolve): Promise<void> => {
@@ -44,7 +31,7 @@ const ok = (): Promise<void> => {
     if (formIs.valid) {
       try {
         const records = useRecordsStore()
-        const result = await records.addBookingType({cName: state.cName.trim()})
+        const result = await records.addBookingType({cName: _name.value.trim()})
         if (result === CONS.RESULTS.SUCCESS) {
           await notice([t('dialogs.addBookingType.success')])
           formRef.value!.reset()
@@ -68,3 +55,20 @@ onMounted(() => {
 
 console.log('--- AddBookingType.vue setup ---')
 </script>
+
+<template>
+  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+    <v-combobox
+      v-model="_name"
+      ref="name-input"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+      v-bind:label="addbookingtype.steady.bookingTypeLabel"
+      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+      max-width="300"
+      v-bind:menu=true
+      v-bind:menu-props="{ maxHeight: 250 }"
+      v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+    ></v-combobox>
+  </v-form>
+</template>

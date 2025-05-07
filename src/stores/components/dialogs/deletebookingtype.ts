@@ -7,72 +7,35 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+
+interface IDeleteBookingTypeSteady {
+  label: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IDeleteBookingTypeStore {
+  _selected: number
+  _steady: IDeleteBookingTypeSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useDeleteBookingTypeStore: StoreDefinition<'deletebookingtype', IDeleteBookingTypeStore> = defineStore('deletebookingtype', {
+  state: (): IDeleteBookingTypeStore => {
     return {
+      _selected: -1,
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        label: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IDeleteBookingTypeStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IDeleteBookingTypeSteady) {
+      this._steady.label = value.label
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE deletebookingtype.js ---')

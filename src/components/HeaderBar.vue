@@ -10,10 +10,12 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useHeaderBarStore} from '@/stores/components/headerbar'
 
 const {t} = useI18n()
 const {CONS} = useApp()
 const runtime = useRuntimeStore()
+const headerbar = useHeaderBarStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
@@ -100,6 +102,18 @@ const onIconClick = (ev: Event): Promise<void> => {
   })
 }
 
+headerbar.setSteady({
+  home: t('headerBar.home'),
+  addAccount: t('headerBar.addAccount'),
+  deleteAccount: t('headerBar.deleteAccount'),
+  addBooking: t('headerBar.addBooking'),
+  addBookingType: t('headerBar.addBookingType'),
+  deleteBookingType: t('headerBar.deleteBookingType'),
+  exportDatabase: t('headerBar.exportDatabase'),
+  importDatabase: t('headerBar.importDatabase'),
+  showAccounting: t('headerBar.showAccounting'),
+  settings: t('headerBar.settings')
+})
 console.log('--- HeaderBar.vue setup ---')
 </script>
 
@@ -107,7 +121,7 @@ console.log('--- HeaderBar.vue setup ---')
   <v-app-bar app height="75" v-bind:flat="true">
     <v-spacer></v-spacer>
     <router-link class="router-link-active" to="/">
-      <v-tooltip location="top" v-bind:text="t('headerBar.home')">
+      <v-tooltip location="top" v-bind:text="headerbar.steady.home">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
             icon="$home"
@@ -118,7 +132,7 @@ console.log('--- HeaderBar.vue setup ---')
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.addAccount">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
@@ -131,7 +145,7 @@ console.log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.deleteAccount">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.DELETE_ACCOUNT"
@@ -145,7 +159,7 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.addBooking">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_BOOKING"
@@ -159,7 +173,7 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.addBookingType">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
@@ -172,7 +186,7 @@ console.log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.deleteBookingType">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.DELETE_BOOKING_TYPE"
@@ -186,7 +200,7 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.exportDatabase')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.exportDatabase">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.EXPORT_DATABASE"
@@ -199,7 +213,7 @@ console.log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.importDatabase">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.IMPORT_DATABASE"
@@ -213,7 +227,7 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.showAccounting">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.SHOW_ACCOUNTING"
@@ -227,7 +241,7 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.settings')">
+    <v-tooltip location="top" v-bind:text="headerbar.steady.settings">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.SETTING"

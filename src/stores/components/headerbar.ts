@@ -7,54 +7,37 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IHeaderBarStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IHeaderBarSteady {
+  home: string
+  addAccount: string
+  deleteAccount: string
+  addBooking: string
+  addBookingType: string
+  deleteBookingType: string
+  exportDatabase: string
+  importDatabase: string
+  showAccounting: string
+  settings: string
 }
 
-interface IHeaderBarSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IHeaderBarStore {
+  _steady: IHeaderBarSteady
 }
 
 export const useHeaderBarStore: StoreDefinition<'headerbar', IHeaderBarStore> = defineStore('headerbar', {
   state: (): IHeaderBarStore => {
     return {
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        home: '',
+        addAccount: '',
+        deleteAccount: '',
+        addBooking: '',
+        addBookingType: '',
+        deleteBookingType: '',
+        exportDatabase: '',
+        importDatabase: '',
+        showAccounting: '',
+        settings: ''
       }
     }
   },
@@ -65,12 +48,16 @@ export const useHeaderBarStore: StoreDefinition<'headerbar', IHeaderBarStore> = 
   },
   actions: {
     setSteady(value: IHeaderBarSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+      this._steady.home = value.home
+      this._steady.addAccount = value.addAccount
+      this._steady.deleteAccount = value.deleteAccount
+      this._steady.addBooking = value.addBooking
+      this._steady.addBookingType = value.addBookingType
+      this._steady.deleteBookingType = value.deleteBookingType
+      this._steady.exportDatabase = value.exportDatabase
+      this._steady.importDatabase = value.importDatabase
+      this._steady.showAccounting = value.showAccounting
+      this._steady.settings = value.settings
     }
   }
 })

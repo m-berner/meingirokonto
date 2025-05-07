@@ -14,36 +14,24 @@ const {t} = useI18n()
 const runtime = useRuntimeStore()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
-interface IDialogPort {
-  visibility: boolean
-  dialogName: string
-  showOkButton: boolean
-}
-
-const state: IDialogPort = {
-  visibility: runtime.teleport.showHeaderDialog || runtime.teleport.showOptionDialog,
-  dialogName: runtime.teleport.dialogName,
-  showOkButton: runtime.teleport.showOkButton
-}
-
 console.log('--- DialogPort.vue setup ---')
 </script>
 
 <template>
   <Teleport to="body">
-    <v-dialog v-model="state.visibility" v-bind:persistent="true" width="500">
+    <v-dialog v-bind:modelValue="runtime.teleport.showHeaderDialog || runtime.teleport.showOptionDialog" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component v-bind:is="state.dialogName" ref="dialog-ref"></component>
+          <component v-bind:is="runtime.teleport.dialogName" ref="dialog-ref"></component>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="state.showOkButton"
+                v-if="runtime.teleport.showOkButton"
                 class="ml-auto"
                 icon="$check"
                 type="submit"

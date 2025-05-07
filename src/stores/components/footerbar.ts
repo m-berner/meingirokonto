@@ -7,54 +7,23 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IFooterBarStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IFooterBarSteady {
+  help: string
+  privacy: string
+  mail: string
 }
 
-interface IFooterBarSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IFooterBarStore {
+  _steady: IFooterBarSteady
 }
 
 export const useFooterBarStore: StoreDefinition<'footerbar', IFooterBarStore> = defineStore('footerbar', {
   state: (): IFooterBarStore => {
     return {
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        help: '',
+        privacy: '',
+        mail: ''
       }
     }
   },
@@ -65,12 +34,9 @@ export const useFooterBarStore: StoreDefinition<'footerbar', IFooterBarStore> = 
   },
   actions: {
     setSteady(value: IFooterBarSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+      this._steady.help = value.help
+      this._steady.privacy = value.privacy
+      this._steady.mail = value.mail
     }
   }
 })

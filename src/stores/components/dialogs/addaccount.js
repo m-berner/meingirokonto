@@ -1,20 +1,15 @@
 import { defineStore } from 'pinia';
-export const usePrivacyPageStore = defineStore('privacypage', {
+export const useAddAccountStore = defineStore('addaccount', {
     state: () => {
         return {
+            _swift: '',
+            _number: '',
+            _logoUrl: '',
+            _brandFetchName: '',
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                swiftLabel: '',
+                accountNumberLabel: '',
+                logoLabel: ''
             }
         };
     },
@@ -25,13 +20,10 @@ export const usePrivacyPageStore = defineStore('privacypage', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.swiftLabel = value.swiftLabel;
+            this._steady.accountNumberLabel = value.accountNumberLabel;
+            this._steady.logoLabel = value.logoLabel;
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+console.log('--- STORE addaccount.js ---');

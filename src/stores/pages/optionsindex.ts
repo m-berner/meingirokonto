@@ -7,54 +7,27 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IOptionsIndexStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IOptionsIndexSteady {
+  tabs: string[]
+  themeKeys: string[]
+  themeNames: []
 }
 
-interface IOptionsIndexSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IOptionsIndexStore {
+  _tab: number
+  _skin: string
+  _steady: IOptionsIndexSteady
 }
 
 export const useOptionsIndexStore: StoreDefinition<'optionsindex', IOptionsIndexStore> = defineStore('optionsindex', {
   state: (): IOptionsIndexStore => {
     return {
+      _tab: 0,
+      _skin: '',
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        tabs: [],
+        themeKeys: [],
+        themeNames: []
       }
     }
   },
@@ -65,12 +38,9 @@ export const useOptionsIndexStore: StoreDefinition<'optionsindex', IOptionsIndex
   },
   actions: {
     setSteady(value: IOptionsIndexSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+      this._steady.tabs = value.tabs
+      this._steady.themeNames = value.themeNames
+      this._steady.themeKeys = value.themeKeys
     }
   }
 })

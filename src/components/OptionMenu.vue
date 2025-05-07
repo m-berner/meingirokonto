@@ -26,7 +26,6 @@ const onIconClick = (ev: Event): Promise<void> => {
   runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
-    console.error(elem.id)
     switch (elem!.id) {
       case CONS.DIALOGS.DELETE_BOOKING:
         runtime.setTeleport({

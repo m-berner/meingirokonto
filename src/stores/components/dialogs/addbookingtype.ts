@@ -7,72 +7,34 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IAddBookingTypeSteady {
+  bookingTypeLabel: string,
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IAddBookingTypeStore {
+  _name: string
+  _steady: IAddBookingTypeSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useAddBookingTypeStore: StoreDefinition<'addbookingtype', IAddBookingTypeStore> = defineStore('addbookingtype', {
+  state: (): IAddBookingTypeStore => {
     return {
+      _name: '',
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        bookingTypeLabel: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IAddBookingTypeStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IAddBookingTypeSteady) {
+      this._steady.bookingTypeLabel = value.bookingTypeLabel
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE addbookingtype.js ---')

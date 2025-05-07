@@ -11,10 +11,8 @@ import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
-//import {useI18n} from 'vue-i18n'
 import {useTitleBarStore} from '@/stores/components/titlebar'
 
-//const {n} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const titlebar = useTitleBarStore()
@@ -22,50 +20,50 @@ const theme = useTheme()
 const {CONS} = useApp()
 
 onBeforeMount((): Promise<void> => {
-  console.log('APPINDEX: onBeforeMount')
-  const keyStrokeController: string[] = []
-  const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
-    console.info('APPINDEX: onStorageChange', area)
-    switch (true) {
-      case changes.sSkin?.oldValue !== undefined:
-        theme.global.name.value = changes.sSkin.newValue
-        break
-      default:
-    }
-  }
-  const onBeforeUnload = (): Promise<void> => {
-    console.log('APPINDEX: onBeforeUnload')
-    return new Promise(async (resolve) => {
-      const foundTabs = await browser.tabs.query({url: 'about:addons'})
-      if (foundTabs.length > 0) {
-        await browser.tabs.remove(foundTabs[0].id ?? 0)
+  console.log('APPINDEX: onBeforeMount: before')
+  return new Promise(async (resolve) => {
+    const keyStrokeController: string[] = []
+    const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
+      console.info('APPINDEX: onStorageChange', area)
+      switch (true) {
+        case changes.sSkin?.oldValue !== undefined:
+          theme.global.name.value = changes.sSkin.newValue
+          break
+        default:
       }
-      records.dbi.close()
-      resolve()
-    })
-  }
-  const onKeyDown = (ev: KeyboardEvent): void => {
-    keyStrokeController.push(ev.key)
-    if (
-      keyStrokeController.includes('Control') &&
-      keyStrokeController.includes('Alt') &&
-      ev.key === 'r'
-    ) {
-      browser.storage.local.clear()
     }
-    if (
-      keyStrokeController.includes('Control') &&
-      keyStrokeController.includes('Alt') &&
-      ev.key === 'd'
-    ) {
-      browser.storage.local.set({sDebug: true})
+    const onBeforeUnload = (): Promise<void> => {
+      console.log('APPINDEX: onBeforeUnload')
+      return new Promise(async (resolve) => {
+        const foundTabs = await browser.tabs.query({url: 'about:addons'})
+        if (foundTabs.length > 0) {
+          await browser.tabs.remove(foundTabs[0].id ?? 0)
+        }
+        records.dbi.close()
+        resolve()
+      })
     }
-  }
-  const onKeyUp = (ev: KeyboardEvent): void => {
-    keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
-  }
+    const onKeyDown = (ev: KeyboardEvent): void => {
+      keyStrokeController.push(ev.key)
+      if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'r'
+      ) {
+        browser.storage.local.clear()
+      }
+      if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'd'
+      ) {
+        browser.storage.local.set({sDebug: true})
+      }
+    }
+    const onKeyUp = (ev: KeyboardEvent): void => {
+      keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+    }
 
-  return new Promise(async (resolve): Promise<void> => {
     const startSettings = await browser.runtime.sendMessage({type: CONS.MESSAGES.GS})
     if (startSettings !== null) {
       settings.initSettingsStore(theme, startSettings)
@@ -79,7 +77,7 @@ onBeforeMount((): Promise<void> => {
     await records.openDatabase()
     await records.databaseIntoStore()
     titlebar.updateTitlebar()
-    console.log('APPINDEX: onBeforeMount: promise resolves...', titlebar.logo)
+    console.log('APPINDEX: onBeforeMount: after')
     resolve()
   })
 })

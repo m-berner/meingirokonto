@@ -1,20 +1,18 @@
 import { defineStore } from 'pinia';
-export const usePrivacyPageStore = defineStore('privacypage', {
+export const useAddBookingStore = defineStore('addbooking', {
     state: () => {
         return {
+            _date: '',
+            _debit: 0,
+            _credit: 0,
+            _description: '',
+            _type: 0,
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                dateLabel: '',
+                creditLabel: '',
+                debitLabel: '',
+                descriptionLabel: '',
+                typeLabel: ''
             }
         };
     },
@@ -25,13 +23,12 @@ export const usePrivacyPageStore = defineStore('privacypage', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.dateLabel = value.dateLabel;
+            this._steady.creditLabel = value.creditLabel;
+            this._steady.debitLabel = value.debitLabel;
+            this._steady.descriptionLabel = value.descriptionLabel;
+            this._steady.typeLabel = value.typeLabel;
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+console.log('--- STORE addbooking.js ---');

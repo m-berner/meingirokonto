@@ -7,72 +7,46 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+interface IAddAccountSteady {
+  swiftLabel: string
+  accountNumberLabel: string
+  logoLabel: string
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IAddAccountStore {
+  _swift: string
+  _number: string
+  _logoUrl: string
+  _brandFetchName: string
+  _steady: IAddAccountSteady
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useAddAccountStore: StoreDefinition<'addaccount', IAddAccountStore> = defineStore('addaccount', {
+  state: (): IAddAccountStore => {
     return {
+      _swift: '',
+      _number: '',
+      _logoUrl: '',
+      _brandFetchName: '',
       _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+        swiftLabel: '',
+        accountNumberLabel: '',
+        logoLabel: ''
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
+    steady(state: IAddAccountStore) {
       return state._steady
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setSteady(value: IAddAccountSteady) {
+      this._steady.swiftLabel = value.swiftLabel
+      this._steady.accountNumberLabel = value.accountNumberLabel
+      this._steady.logoLabel = value.logoLabel
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE addaccount.js ---')

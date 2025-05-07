@@ -3,18 +3,16 @@ export const useHeaderBarStore = defineStore('headerbar', {
     state: () => {
         return {
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                home: '',
+                addAccount: '',
+                deleteAccount: '',
+                addBooking: '',
+                addBookingType: '',
+                deleteBookingType: '',
+                exportDatabase: '',
+                importDatabase: '',
+                showAccounting: '',
+                settings: ''
             }
         };
     },
@@ -25,12 +23,16 @@ export const useHeaderBarStore = defineStore('headerbar', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.home = value.home;
+            this._steady.addAccount = value.addAccount;
+            this._steady.deleteAccount = value.deleteAccount;
+            this._steady.addBooking = value.addBooking;
+            this._steady.addBookingType = value.addBookingType;
+            this._steady.deleteBookingType = value.deleteBookingType;
+            this._steady.exportDatabase = value.exportDatabase;
+            this._steady.importDatabase = value.importDatabase;
+            this._steady.showAccounting = value.showAccounting;
+            this._steady.settings = value.settings;
         }
     }
 });

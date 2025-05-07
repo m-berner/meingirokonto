@@ -3,18 +3,9 @@ export const useFooterBarStore = defineStore('footerbar', {
     state: () => {
         return {
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                help: '',
+                privacy: '',
+                mail: ''
             }
         };
     },
@@ -25,12 +16,9 @@ export const useFooterBarStore = defineStore('footerbar', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.help = value.help;
+            this._steady.privacy = value.privacy;
+            this._steady.mail = value.mail;
         }
     }
 });

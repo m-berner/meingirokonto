@@ -2,19 +2,12 @@ import { defineStore } from 'pinia';
 export const useOptionsIndexStore = defineStore('optionsindex', {
     state: () => {
         return {
+            _tab: 0,
+            _skin: '',
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                tabs: [],
+                themeKeys: [],
+                themeNames: []
             }
         };
     },
@@ -25,12 +18,9 @@ export const useOptionsIndexStore = defineStore('optionsindex', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.tabs = value.tabs;
+            this._steady.themeNames = value.themeNames;
+            this._steady.themeKeys = value.themeKeys;
         }
     }
 });

@@ -2,19 +2,13 @@ import { defineStore } from 'pinia';
 export const useHomeContentStore = defineStore('homecontent', {
     state: () => {
         return {
+            _search: '',
             _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+                bookingsHeaders: [],
+                searchLabel: '',
+                noDataText: '',
+                itemsPerPageText: '',
+                dotMenuItems: []
             }
         };
     },
@@ -25,12 +19,11 @@ export const useHomeContentStore = defineStore('homecontent', {
     },
     actions: {
         setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+            this._steady.bookingsHeaders = value.bookingsHeaders;
+            this._steady.searchLabel = value.searchLabel;
+            this._steady.noDataText = value.noDataText;
+            this._steady.itemsPerPageText = value.itemsPerPageText;
+            this._steady.dotMenuItems = value.dotMenuItems;
         }
     }
 });

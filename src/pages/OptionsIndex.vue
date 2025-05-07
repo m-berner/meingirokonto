@@ -6,44 +6,39 @@
   - Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
-import {onMounted, reactive, toRaw} from 'vue'
+import {onMounted} from 'vue'
+import {useOptionsIndexStore} from '@/stores/pages/optionsindex'
 
-interface IOptionsIndex {
-  tab: number
-  tabsLength: number
-  themeKeys: string[]
-  skin: string
-}
-
-const {t, tm} = useI18n()
+const {rt, tm} = useI18n()
 const theme = useTheme()
 
-const state: IOptionsIndex = reactive({
-  tab: 0,
-  tabsLength: 0,
-  themeKeys: [],
-  skin: ''
+const optionsindex = useOptionsIndexStore()
+const {_tab, _skin} = storeToRefs(optionsindex)
+
+optionsindex.setSteady({
+  tabs: tm('optionsPage.tabs'),
+  themeNames: tm(`optionsPage.themeNames`),
+  themeKeys: Object.keys((theme.themes.value))
 })
 
 const setSkin = (skin: string): Promise<void> => {
-  console.log('OPTIONSINDEX: setSkin')
+  console.info('OPTIONS_INDEX: setSkin', skin)
   return new Promise(async (resolve) => {
-    state.skin = skin
+    _skin.value = skin
     await browser.storage.local.set({sSkin: skin})
     resolve()
   })
 }
 
 onMounted((): Promise<void> => {
-  console.log('OPTIONSINDEX: onMounted')
+  console.log('OPTIONS_INDEX: onMounted')
   return new Promise(async (resolve) => {
     const skin = await browser.storage.local.get(['sSkin'])
-    state.tab = 1
-    state.tabsLength = tm('optionsPage.tabs').length
-    state.themeKeys = Object.keys(toRaw(theme.themes.value))
-    state.skin = skin.sSkin
+    _tab.value = 0
+    _skin.value = skin.sSkin
     resolve()
   })
 })
@@ -55,25 +50,24 @@ console.info('--- OptionsIndex.vue setup ---', window.location.href)
   <v-app v-bind:flat="true">
     <v-main>
       <v-container>
-        <v-tabs v-model="state.tab" show-arrows>
+        <v-tabs v-model="_tab" show-arrows>
           <v-row class="pa-2" justify="space-between">
-            <v-tab v-for="i in state.tabsLength" v-bind:key="i" v-bind:value="i">
-              {{ t(`optionsPage.tabs[${i - 1}].title`) }}
+            <v-tab v-for="(item, i) in optionsindex.steady.tabs" v-bind:key="item.id" v-bind:value="i">
+              {{ rt(item.title) }}
             </v-tab>
           </v-row>
         </v-tabs>
-        <v-window v-model="state.tab" class="pa-5">
+        <v-window v-model="_tab" class="pa-5">
           <v-window-item v-bind:value="1">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group v-model="state.skin" column>
-                  <h2>{{ t('optionsPage.capitals.skins') }}</h2>
+                <v-radio-group column v-bind:modelValue="_skin">
                   <v-radio
-                    v-for="i in state.themeKeys.length"
-                    v-bind:key="i"
-                    v-bind:label="t(`optionsPage.themeNames.${state.themeKeys[i - 1]}`)"
-                    v-bind:value="state.themeKeys[i - 1]"
-                    v-on:click="setSkin(state.themeKeys[i - 1])"
+                    v-for="item in optionsindex.steady.themeKeys"
+                    v-bind:key="item"
+                    v-bind:label="rt(optionsindex.steady.themeNames[item])"
+                    v-bind:value="item"
+                    v-on:click="async () => await setSkin(item)"
                   ></v-radio>
                 </v-radio-group>
               </v-col>
