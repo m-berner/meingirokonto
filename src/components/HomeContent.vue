@@ -32,7 +32,7 @@ const {bookingsPerPage} = storeToRefs(settings)
 const {_search} = storeToRefs(homecontent)
 
 homecontent.setSteady({
-  bookingHeaders: tm('appPage.headers').map((item: IHeader): IHeader => {
+  bookingsHeaders: tm('appPage.headers').map((item: IHeader): IHeader => {
     return {
       title: rt(item.title),
       align: rt(item.align),
@@ -62,7 +62,7 @@ console.log('--- HomeContent.vue setup ---')
   <v-data-table
     density="compact"
     item-key="cID"
-    v-bind:headers="homecontent.steady.bookingHeaders"
+    v-bind:headers="homecontent.steady.bookingsHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
     v-bind:items="bookingsPerAccount as readonly IBooking[]"
