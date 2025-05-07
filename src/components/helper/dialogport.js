@@ -1,37 +1,32 @@
 import { defineStore } from 'pinia';
-export const usePrivacyPageStore = defineStore('privacypage', {
+export const useDialogPortStore = defineStore('dialogport', {
     state: () => {
         return {
-            _steady: {
-                local: {
-                    title: '',
-                    content: ''
-                },
-                public: {
-                    title: '',
-                    content: ''
-                },
-                connections: {
-                    title: '',
-                    content: ''
-                }
+            _teleport: {
+                dialog_name: '',
+                show_ok_button: true,
+                show_header_dialog: false,
+                show_option_dialog: false
             }
         };
     },
     getters: {
-        steady(state) {
-            return state._steady;
+        teleport(state) {
+            return state._teleport;
         }
     },
     actions: {
-        setSteady(value) {
-            this._steady.local.title = value.local.title;
-            this._steady.local.content = value.local.content;
-            this._steady.public.title = value.public.title;
-            this._steady.public.content = value.public.content;
-            this._steady.connections.title = value.connections.title;
-            this._steady.connections.content = value.connections.content;
+        setTeleport(entry) {
+            this._teleport = entry;
+        },
+        resetTeleport() {
+            this._teleport = {
+                dialog_name: '',
+                show_ok_button: true,
+                show_header_dialog: false,
+                show_option_dialog: false
+            };
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+console.log('--- STORE dialogport.js ---');

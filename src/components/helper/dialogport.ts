@@ -3,76 +3,51 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 
-interface IPrivacyPageStore {
-  _steady: {
-    local: {
-      title: string
-      content: string
-    }
-    public: {
-      title: string
-      content: string
-    }
-    connections: {
-      title: string
-      content: string
-    }
-  }
+
+interface ITelePort {
+  dialog_name: string
+  show_ok_button: boolean
+  show_header_dialog: boolean
+  show_option_dialog: boolean
 }
 
-interface IPrivacyPageSteady {
-  local: {
-    title: string
-    content: string
-  }
-  public: {
-    title: string
-    content: string
-  }
-  connections: {
-    title: string
-    content: string
-  }
+interface IDialogPortStore {
+  _teleport: ITelePort
 }
 
-export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
-  state: (): IPrivacyPageStore => {
+export const useDialogPortStore: StoreDefinition<'dialogport', IDialogPortStore> = defineStore('dialogport', {
+  state: (): IDialogPortStore => {
     return {
-      _steady: {
-        local: {
-          title: '',
-          content: ''
-        },
-        public: {
-          title: '',
-          content: ''
-        },
-        connections: {
-          title: '',
-          content: ''
-        }
+      _teleport: {
+        dialog_name: '',
+        show_ok_button: true,
+        show_header_dialog: false,
+        show_option_dialog: false
       }
     }
   },
   getters: {
-    steady(state: IPrivacyPageStore) {
-      return state._steady
+    teleport(state: IDialogPortStore) {
+      return state._teleport
     }
   },
   actions: {
-    setSteady(value: IPrivacyPageSteady) {
-      this._steady.local.title = value.local.title
-      this._steady.local.content = value.local.content
-      this._steady.public.title = value.public.title
-      this._steady.public.content = value.public.content
-      this._steady.connections.title = value.connections.title
-      this._steady.connections.content = value.connections.content
+    setTeleport(entry: ITelePort) {
+      this._teleport = entry
+    },
+    resetTeleport(): void {
+      this._teleport = {
+        dialog_name: '',
+        show_ok_button: true,
+        show_header_dialog: false,
+        show_option_dialog: false
+      }
     }
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+console.log('--- STORE dialogport.js ---')

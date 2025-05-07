@@ -9,13 +9,13 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useHeaderBarStore} from '@/components/headerbar'
+import {useDialogPortStore} from '@/components/helper/dialogport'
 
 const {t} = useI18n()
 const {CONS} = useApp()
-const runtime = useRuntimeStore()
 const headerbar = useHeaderBarStore()
+const dialogport = useDialogPortStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
   console.info('HEADERBAR: onIconClick', ev)
@@ -23,7 +23,7 @@ const onIconClick = (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           showOkButton: true,
           showHeaderDialog: true,
@@ -31,7 +31,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
           showOkButton: true,
           showHeaderDialog: true,
@@ -39,7 +39,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -47,7 +47,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -55,7 +55,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.ADD_BOOKING:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
           showOkButton: true,
           showHeaderDialog: true,
@@ -63,7 +63,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.EXPORT_DATABASE:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.EXPORT_DATABASE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -71,7 +71,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.IMPORT_DATABASE:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DATABASE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -79,7 +79,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.SHOW_ACCOUNTING:
-        runtime.setTeleport({
+        dialogport.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
           showOkButton: false,
           showHeaderDialog: true,
@@ -254,5 +254,5 @@ console.log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
-  <DialogPort v-if="runtime.teleport.showHeaderDialog"></DialogPort>
+  <DialogPort v-if="dialogport.teleport.showHeaderDialog"></DialogPort>
 </template>

@@ -143,13 +143,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         this._booking_sum = 0
       }
     },
-    // setBookingsSum(): void {
-    //   if (this._bookings.all.length > 0) {
-    //     this._booking_sum = this._bookings.all.map((entry: IBooking) => {
-    //       return entry.cCredit - entry.cDebit
-    //     }).reduce((acc: number, cur: number) => acc + cur, 0)
-    //   }
-    // },
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
     },
