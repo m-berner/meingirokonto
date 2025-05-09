@@ -304,30 +304,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
-      log('RECORDS: updateAccount', {info: data})
-      return new Promise(async (resolve, reject) => {
-        if (this._dbi != null) {
-          const onSuccess = (): void => {
-            requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false)
-            if (msg) {
-              //await notice(['sm_msg_updaterecord'])
-            }
-            resolve('Account updated')
-          }
-          const onError = (ev: Event): void => {
-            requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false)
-            requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false)
-            reject(ev)
-          }
-          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false)
-          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({...data})
-          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false)
-          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false)
-        }
-      })
-    },
     deleteAccount(ident: number): Promise<string> {
       const indexOfAccount = this._accounts.all.findIndex((account: IAccount) => {
         return account.cID === ident
@@ -374,27 +350,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
-      log('RECORDS: updateBookingType', {info: data})
-      return new Promise(async (resolve, reject) => {
-        if (this._dbi != null) {
-          const onSuccess = (): void => {
-            if (msg) {
-              //await notice(['sm_msg_updaterecord'])
-            }
-            resolve('Account type updated')
-          }
-          const onError = (ev: Event): void => {
-            reject(ev)
-          }
-          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).put({...data})
-          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        }
-      })
-    },
     deleteBookingType(ident: number): Promise<string> {
       const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
         return bookingType.cID === ident
@@ -426,6 +381,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 cID: ev.target.result
               }
               this._bookings.all.push(memRecord)
+              this._bookings.per_account.push(memRecord)
+              this._booking_sum = this._bookings.per_account.map((entry: IBooking) => {
+                return entry.cCredit - entry.cDebit
+              }).reduce((acc: number, cur: number) => acc + cur, 0)
               resolve(CONS.RESULTS.SUCCESS)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -441,27 +400,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
-    updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
-      log('RECORDS: updateBooking', {info: data})
-      return new Promise(async (resolve, reject) => {
-        if (this._dbi != null) {
-          const onSuccess = (): void => {
-            if (msg) {
-              //await notice(['sm_msg_updaterecord'])
-            }
-            resolve('Booking updated')
-          }
-          const onError = (ev: Event): void => {
-            reject(ev)
-          }
-          const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put({...data})
-          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        }
-      })
-    },
     deleteBooking(ident: number): Promise<string> {
       const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         return booking.cID === ident
@@ -470,6 +408,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._bookings.all.splice(indexOfBooking, 1)
+            this.sumBookings()
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {
@@ -486,4 +425,4 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
   }
 })
 
-console.log('--- STORE records.js ---')
+log('--- STORE records.js ---')

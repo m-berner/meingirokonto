@@ -11,7 +11,7 @@ import {useApp} from '@/pages/background'
 import {useFooterBarStore} from '@/components/footerbar'
 
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const footerbar = useFooterBarStore()
 
 footerbar.setSteady({
@@ -19,7 +19,7 @@ footerbar.setSteady({
   privacy: t('footer.privacy'),
   mail: t('footer.mail')
 })
-console.log('--- FooterBar.vue setup ---')
+log('--- FooterBar.vue setup ---')
 </script>
 
 <template>

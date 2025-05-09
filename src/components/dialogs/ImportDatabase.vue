@@ -94,7 +94,7 @@ const title = t('dialogs.importDatabase.title')
 
 defineExpose({ok, title})
 
-console.log('--- ImportDatabase.vue setup ---')
+log('--- ImportDatabase.vue setup ---')
 </script>
 
 <template>

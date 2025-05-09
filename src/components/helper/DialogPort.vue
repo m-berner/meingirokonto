@@ -14,8 +14,6 @@ const {t} = useI18n()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
 const dialogport = useDialogPortStore()
-
-console.log('--- DialogPort.vue setup ---')
 </script>
 
 <template>

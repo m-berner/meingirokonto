@@ -291,8 +291,6 @@ interface IUseApp {
   log: (msg: string, mode?: { info: unknown }) => void
 }
 
-const t = browser.storage.local.get(['sDebug'])
-
 export const useApp = (): IUseApp => {
   return {
     CONS: Object.freeze({
@@ -669,7 +667,7 @@ export const useApp = (): IUseApp => {
       return new Date(`${iso}T00:00:00.000`)
     },
     log: async (msg, mode = { info: null })  => {
-      if ((await t)['sDebug']) {
+      if ((await debug)['sDebug']) {
         if (mode.info !== null) {
           console.info(msg, mode.info)
         } else {
@@ -681,6 +679,7 @@ export const useApp = (): IUseApp => {
 }
 
 const {CONS, log} = useApp()
+const debug = browser.storage.local.get(['sDebug'])
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   log('BACKGROUND: add listener')
@@ -928,6 +927,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onMessage.addListener(onSettings)
+  console.log('--- PAGE_SCRIPT background.js ---', {info: window.location.href})
 }
 
-log('--- background.js ---', {info: window.location.href})
+console.log('--- PAGE_SCRIPT background.js + useApp ---')

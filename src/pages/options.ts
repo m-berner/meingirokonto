@@ -23,4 +23,4 @@ op.use(i18nPlugin.i18n)
 op.use(piniaPlugin.pinia)
 op.mount('#options')
 
-console.log('--- PAGE_SCRIPT options.js ---')
+console.log('--- PAGE_SCRIPT options.js ---', {info: window.location.href})

@@ -114,7 +114,7 @@ headerbar.setSteady({
   showAccounting: t('headerBar.showAccounting'),
   settings: t('headerBar.settings')
 })
-console.log('--- HeaderBar.vue setup ---')
+log('--- HeaderBar.vue setup ---')
 </script>
 
 <template>

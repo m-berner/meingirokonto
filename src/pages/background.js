@@ -1,4 +1,3 @@
-const t = browser.storage.local.get(['sDebug']);
 export const useApp = () => {
     return {
         CONS: Object.freeze({
@@ -367,7 +366,7 @@ export const useApp = () => {
             return new Date(`${iso}T00:00:00.000`);
         },
         log: async (msg, mode = { info: null }) => {
-            if ((await t)['sDebug']) {
+            if ((await debug)['sDebug']) {
                 if (mode.info !== null) {
                     console.info(msg, mode.info);
                 }
@@ -379,6 +378,7 @@ export const useApp = () => {
     };
 };
 const { CONS, log } = useApp();
+const debug = browser.storage.local.get(['sDebug']);
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     log('BACKGROUND: add listener');
     const onInstall = () => {
@@ -507,5 +507,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onMessage.addListener(onSettings);
+    console.log('--- PAGE_SCRIPT background.js ---', { info: window.location.href });
 }
-log('--- background.js ---', { info: window.location.href });
+console.log('--- PAGE_SCRIPT background.js + useApp ---');

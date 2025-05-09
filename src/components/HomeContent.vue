@@ -22,7 +22,7 @@ interface IHeader {
 }
 
 const {d, n, rt, t, tm} = useI18n()
-const {CONS, utcDate} = useApp()
+const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const homecontent = useHomeContentStore()
@@ -46,7 +46,7 @@ homecontent.setSteady({
   dotMenuItems: tm('appPage.menuItems')
 })
 
-console.log('--- HomeContent.vue setup ---')
+log('--- HomeContent.vue setup ---')
 </script>
 
 <template>

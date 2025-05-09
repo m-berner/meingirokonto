@@ -8,8 +8,10 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {usePrivacyPageStore} from '@/components/privacycontent'
+import {useApp} from '@/pages/background'
 
 const {t} = useI18n()
+const {log} = useApp()
 
 const privacypage = usePrivacyPageStore()
 privacypage.setSteady({
@@ -26,7 +28,7 @@ privacypage.setSteady({
     content: t('privacyContent.connections.content')
   }
 })
-console.log('--- PrivacyContent.vue setup ---')
+log('--- PrivacyContent.vue setup ---')
 </script>
 
 <template>

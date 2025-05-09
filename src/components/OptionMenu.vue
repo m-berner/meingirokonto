@@ -50,7 +50,7 @@ const onIconClick = (ev: Event): Promise<void> => {
   })
 }
 
-console.log('--- OptionMenu.vue setup ---')
+log('--- OptionMenu.vue setup ---')
 </script>
 
 <template>

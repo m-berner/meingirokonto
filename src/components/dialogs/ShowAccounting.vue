@@ -34,7 +34,7 @@ onMounted(() => {
   }
 })
 
-console.log('--- ShowAccounting.vue setup ---')
+log('--- ShowAccounting.vue setup ---')
 </script>
 
 <template>

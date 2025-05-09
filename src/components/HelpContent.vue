@@ -8,8 +8,10 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useHelpPageStore} from '@/components/helpcontent'
+import {useApp} from '@/pages/background'
 
 const {rt, t, tm} = useI18n()
+const {log} = useApp()
 
 const helppage = useHelpPageStore()
 helppage.setSteady({
@@ -22,7 +24,7 @@ helppage.setSteady({
   footerBarTitle: t('helpContent.transferBarTitle'),
   footerBar: tm('helpContent.transferBar')
 })
-console.log('--- HelpContent.vue setup ---')
+log('--- HelpContent.vue setup ---')
 </script>
 
 <template>

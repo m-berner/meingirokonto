@@ -88,7 +88,7 @@ onBeforeMount((): Promise<void> => {
   })
 })
 
-console.log('--- AppIndex.vue setup ---')
+log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>
 
 <template>

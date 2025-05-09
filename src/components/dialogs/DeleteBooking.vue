@@ -40,7 +40,7 @@ const title = t('dialogs.deleteBooking.title')
 
 defineExpose({ok, title})
 
-console.log('--- DeleteBooking.vue setup ---')
+log('--- DeleteBooking.vue setup ---')
 </script>
 
 <template>

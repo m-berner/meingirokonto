@@ -53,7 +53,7 @@ onMounted(() => {
   formRef.value?.reset()
 })
 
-console.log('--- DeleteBookingType.vue setup ---')
+log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>

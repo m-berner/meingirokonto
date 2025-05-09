@@ -267,29 +267,6 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        updateAccount(data, msg = false) {
-            log('RECORDS: updateAccount', { info: data });
-            return new Promise(async (resolve, reject) => {
-                if (this._dbi != null) {
-                    const onSuccess = () => {
-                        requestUpdate.removeEventListener(CONS.EVENTS.SUC, onSuccess, false);
-                        if (msg) {
-                        }
-                        resolve('Account updated');
-                    };
-                    const onError = (ev) => {
-                        requestTransaction.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                        requestUpdate.removeEventListener(CONS.EVENTS.ERR, onError, false);
-                        reject(ev);
-                    };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, false);
-                    const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({ ...data });
-                    requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, false);
-                    requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, false);
-                }
-            });
-        },
         deleteAccount(ident) {
             const indexOfAccount = this._accounts.all.findIndex((account) => {
                 return account.cID === ident;
@@ -337,26 +314,6 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        updateBookingType(data, msg = false) {
-            log('RECORDS: updateBookingType', { info: data });
-            return new Promise(async (resolve, reject) => {
-                if (this._dbi != null) {
-                    const onSuccess = () => {
-                        if (msg) {
-                        }
-                        resolve('Account type updated');
-                    };
-                    const onError = (ev) => {
-                        reject(ev);
-                    };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).put({ ...data });
-                    requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                    requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
         deleteBookingType(ident) {
             const indexOfBookingType = this._booking_types.all.findIndex((bookingType) => {
                 return bookingType.cID === ident;
@@ -388,6 +345,10 @@ export const useRecordsStore = defineStore('records', {
                                 cID: ev.target.result
                             };
                             this._bookings.all.push(memRecord);
+                            this._bookings.per_account.push(memRecord);
+                            this._booking_sum = this._bookings.per_account.map((entry) => {
+                                return entry.cCredit - entry.cDebit;
+                            }).reduce((acc, cur) => acc + cur, 0);
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -404,26 +365,6 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
-        updateBooking(data, msg = false) {
-            log('RECORDS: updateBooking', { info: data });
-            return new Promise(async (resolve, reject) => {
-                if (this._dbi != null) {
-                    const onSuccess = () => {
-                        if (msg) {
-                        }
-                        resolve('Booking updated');
-                    };
-                    const onError = (ev) => {
-                        reject(ev);
-                    };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put({ ...data });
-                    requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                    requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
         deleteBooking(ident) {
             const indexOfBooking = this._bookings.all.findIndex((booking) => {
                 return booking.cID === ident;
@@ -432,6 +373,7 @@ export const useRecordsStore = defineStore('records', {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._bookings.all.splice(indexOfBooking, 1);
+                        this.sumBookings();
                         resolve('Booking deleted');
                     };
                     const onError = (ev) => {
@@ -447,4 +389,4 @@ export const useRecordsStore = defineStore('records', {
         }
     }
 });
-console.log('--- STORE records.js ---');
+log('--- STORE records.js ---');

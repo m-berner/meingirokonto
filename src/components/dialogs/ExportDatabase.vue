@@ -109,7 +109,7 @@ const title = t('dialogs.exportDatabase.title')
 
 defineExpose({ok, title})
 
-console.log('--- ExportDatabase.vue setup ---')
+log('--- ExportDatabase.vue setup ---')
 </script>
 
 <template>

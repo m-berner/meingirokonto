@@ -17,7 +17,7 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const titlebar = useTitleBarStore()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 const {_active_account_id} = storeToRefs(settings)
 titlebar.setSteady({
@@ -25,7 +25,7 @@ titlebar.setSteady({
   bookings_sum_label: t('titleBar.bookingsSumLabel'),
   account_label: t('titleBar.selectAccountLabel')
 })
-console.log('--- TitleBar.vue setup ---')
+log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
