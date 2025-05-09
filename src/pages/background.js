@@ -109,7 +109,7 @@ export const useApp = () => {
                             D: 'cDebit',
                             DESC: 'cDescription',
                             T: 'cType',
-                            AN: 'cAccountNumber'
+                            AN: 'cAccountNumberID'
                         }
                     },
                     BOOKING_TYPES: {
@@ -117,6 +117,7 @@ export const useApp = () => {
                         FIELDS: {
                             ID: 'cID',
                             N: 'cName',
+                            AN: 'cAccountNumberID'
                         },
                         START_ENTRY: 'Start'
                     }
@@ -386,22 +387,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         return new Promise(async (resolve) => {
             const storageLocal = await browser.storage.local.get();
             const onSuccess = (ev) => {
-                log('BACKGROUND: onInstall: onSuccess');
-                if (ev.target instanceof IDBRequest) {
-                    const openDB = ev.target.result;
-                    const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                    const onComplete = () => {
-                        openDB.close();
-                        log('BACKGROUND: onInstall: Transaction completed.');
-                    };
-                    const onError = () => {
-                        openDB.close();
-                        console.error('BACKGROUND: onInstall: Transaction not opened due to error. Duplicate items not allowed.');
-                    };
-                    transaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                    transaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    transaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ cName: CONS.DB.STORES.BOOKING_TYPES.START_ENTRY });
-                }
+                log('BACKGROUND: onInstall: onSuccess', { info: ev });
             };
             const onError = (ev) => {
                 console.error('BACKGROUND: onError: ', ev);
@@ -426,7 +412,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
                         requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
                         requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: true });
+                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, { unique: false });
+                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.AN, { unique: false });
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });

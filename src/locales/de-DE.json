@@ -65,9 +65,9 @@
       },
       {
         "title": "Konto",
-        "align": "start",
+        "align": " d-none",
         "sortable": false,
-        "key": "cAccountID"
+        "key": "cAccountNumberID"
       }
     ],
     "menuItems": [

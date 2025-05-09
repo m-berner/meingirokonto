@@ -64,7 +64,7 @@ const ok = (): Promise<void> => {
         cCredit: records.bookings.all[i].cCredit,
         cDescription: records.bookings.all[i].cDescription,
         cType: records.bookings.all[i].cType,
-        cAccountNumber: records.bookings.all[i].cAccountNumber
+        cAccountNumberID: records.bookings.all[i].cAccountNumberID
       })
       if (i === records.bookings.all.length - 1) {
         buffer += '\n]\n'

@@ -22,17 +22,15 @@ interface IRecordStoreBooking {
   all: IBooking[]
   per_account: IBooking[]
   search: string
-  selected_index: number
 }
 
 interface IRecordStoreAccount {
   all: IAccount[]
-  selected_index: number
 }
 
 interface IRecordStoreBookingType {
   all: IBookingType[]
-  selected_index: number
+  per_account: IBookingType[]
 }
 
 const {CONS, log} = useApp()
@@ -41,21 +39,19 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
   state: (): IRecordsStore => {
     return {
       _accounts: {
-        all: [],
-        selected_index: -1
+        all: []
       },
       _dbi: null,
       _bookings: {
         all: [],
         per_account: [],
-        search: '',
-        selected_index: -1
+        search: ''
       },
       _booking_sum: 0,
       _booking_sum_field: '',
       _booking_types: {
         all: [],
-        selected_index: -1
+        per_account: []
       }
     }
   },
@@ -118,21 +114,21 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         throw new Error('sumBookings: No account found for given ID')
       }
       const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
-        return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber
+        return rec.cAccountNumberID === this._accounts.all[activeAccountIndex].cID
       })
-      bookings_per_account.sort((a: IBooking, b: IBooking) => {
-        const A = new Date(a.cDate).getTime()
-        const B = new Date(b.cDate).getTime()
-        return A - B
-      })
-      this._bookings.per_account = bookings_per_account
       if (bookings_per_account.length > 0) {
+        bookings_per_account.sort((a: IBooking, b: IBooking) => {
+          const A = new Date(a.cDate).getTime()
+          const B = new Date(b.cDate).getTime()
+          return A - B
+        })
+        this._bookings.per_account = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
       } else {
+        this._bookings.per_account = []
         this._booking_sum = 0
-        throw new Error('sumBookings: No bookings found')
       }
     },
     setBookingSumField(value: string): void {
@@ -143,9 +139,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings.all.splice(0, this._bookings.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
       this._accounts.all.splice(0, this._accounts.all.length)
-      this._bookings.selected_index = 0
-      this._booking_types.selected_index = 0
-      this._booking_types.selected_index = 0
+      // this._bookings.selected_index = 0
+      // this._booking_types.selected_index = 0
+      // this._booking_types.selected_index = 0
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onError = (ev: Event): void => {
@@ -201,9 +197,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._accounts.all.splice(0, this._accounts.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
       this._bookings.all.splice(0, this._bookings.all.length)
-      this._bookings.selected_index = 0
-      this._booking_types.selected_index = 0
-      this._accounts.selected_index = 0
+      // this._bookings.selected_index = 0
+      // this._booking_types.selected_index = 0
+      // this._accounts.selected_index = 0
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = async (): Promise<void> => {
@@ -335,6 +331,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 cID: ev.target.result
               }
               this._booking_types.all.push(memRecord)
+              this._booking_types.per_account.push(memRecord)
               resolve(CONS.RESULTS.SUCCESS)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -354,10 +351,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
         return bookingType.cID === ident
       })
+      const indexOfBookingTypePerAccount = this._booking_types.per_account.findIndex((bookingType: IBookingType) => {
+        return bookingType.cID === ident
+      })
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._booking_types.all.splice(indexOfBookingType, 1)
+            this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1)
             resolve('Booking type deleted')
           }
           const onError = (ev: Event): void => {

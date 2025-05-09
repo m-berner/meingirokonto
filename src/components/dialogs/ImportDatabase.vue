@@ -61,10 +61,10 @@ const ok = (): Promise<string> => {
           const result = await records.storeIntoDatabase()
           if (result !== '') {
             if (settings.activeAccountId < 0) {
-              const lName = records.accounts.all[0].cSwift.substring(0, 4)
-              settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
-              settings.setActiveAccountId(result)
-              await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
+              //const lName = records.accounts.all[0].cSwift.substring(0, 4)
+              //settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
+              settings.setActiveAccountId(records.accounts.all[0].cID)
+              //await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
               await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
             }
             console.info('IMPORTDATABASE: onFileLoaded', result)

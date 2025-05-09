@@ -28,6 +28,7 @@ export const useTitleBarStore = defineStore('titlebar', {
             const records = useRecordsStore();
             const settings = useSettingsStore();
             if (settings.activeAccountId > -1) {
+                console.error(settings.activeAccountId);
                 this._logo = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl;
             }
         },

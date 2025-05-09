@@ -6,21 +6,19 @@ export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
             _accounts: {
-                all: [],
-                selected_index: -1
+                all: []
             },
             _dbi: null,
             _bookings: {
                 all: [],
                 per_account: [],
-                search: '',
-                selected_index: -1
+                search: ''
             },
             _booking_sum: 0,
             _booking_sum_field: '',
             _booking_types: {
                 all: [],
-                selected_index: -1
+                per_account: []
             }
         };
     },
@@ -79,22 +77,22 @@ export const useRecordsStore = defineStore('records', {
                 throw new Error('sumBookings: No account found for given ID');
             }
             const bookings_per_account = this._bookings.all.filter((rec) => {
-                return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber;
+                return rec.cAccountNumberID === this._accounts.all[activeAccountIndex].cID;
             });
-            bookings_per_account.sort((a, b) => {
-                const A = new Date(a.cDate).getTime();
-                const B = new Date(b.cDate).getTime();
-                return A - B;
-            });
-            this._bookings.per_account = bookings_per_account;
             if (bookings_per_account.length > 0) {
+                bookings_per_account.sort((a, b) => {
+                    const A = new Date(a.cDate).getTime();
+                    const B = new Date(b.cDate).getTime();
+                    return A - B;
+                });
+                this._bookings.per_account = bookings_per_account;
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
                 }).reduce((acc, cur) => acc + cur, 0);
             }
             else {
+                this._bookings.per_account = [];
                 this._booking_sum = 0;
-                throw new Error('sumBookings: No bookings found');
             }
         },
         setBookingSumField(value) {
@@ -105,9 +103,6 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.all.splice(0, this._bookings.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._accounts.all.splice(0, this._accounts.all.length);
-            this._bookings.selected_index = 0;
-            this._booking_types.selected_index = 0;
-            this._booking_types.selected_index = 0;
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onError = (ev) => {
@@ -161,9 +156,6 @@ export const useRecordsStore = defineStore('records', {
             this._accounts.all.splice(0, this._accounts.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._bookings.all.splice(0, this._bookings.all.length);
-            this._bookings.selected_index = 0;
-            this._booking_types.selected_index = 0;
-            this._accounts.selected_index = 0;
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = async () => {
@@ -292,6 +284,7 @@ export const useRecordsStore = defineStore('records', {
                                 cID: ev.target.result
                             };
                             this._booking_types.all.push(memRecord);
+                            this._booking_types.per_account.push(memRecord);
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -312,10 +305,14 @@ export const useRecordsStore = defineStore('records', {
             const indexOfBookingType = this._booking_types.all.findIndex((bookingType) => {
                 return bookingType.cID === ident;
             });
+            const indexOfBookingTypePerAccount = this._booking_types.per_account.findIndex((bookingType) => {
+                return bookingType.cID === ident;
+            });
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._booking_types.all.splice(indexOfBookingType, 1);
+                        this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1);
                         resolve('Booking type deleted');
                     };
                     const onError = (ev) => {

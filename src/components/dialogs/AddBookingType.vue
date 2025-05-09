@@ -12,11 +12,13 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
 import {useAddBookingTypeStore} from '@/components/dialogs/addbookingtype'
 import {storeToRefs} from 'pinia'
+import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
+const settings = useSettingsStore()
 
 const addbookingtype = useAddBookingTypeStore()
 const {_name} = storeToRefs(addbookingtype)
@@ -31,7 +33,7 @@ const ok = (): Promise<void> => {
     if (formIs.valid) {
       try {
         const records = useRecordsStore()
-        const result = await records.addBookingType({cName: _name.value.trim()})
+        const result = await records.addBookingType({cName: _name.value.trim(), cAccountNumberID: settings.activeAccountId})
         if (result === CONS.RESULTS.SUCCESS) {
           await notice([t('dialogs.addBookingType.success')])
           formRef.value!.reset()

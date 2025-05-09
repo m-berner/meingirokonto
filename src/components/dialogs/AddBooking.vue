@@ -37,7 +37,7 @@ const ok = (): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
       try {
-        const aNumber = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        //const aNumber = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
         const aDescription = _description.value !== undefined && _description.value !== null ? _description.value.trim() : ''
         const result = await records.addBooking({
           cDate: _date.value,
@@ -46,7 +46,7 @@ const ok = (): Promise<void> => {
           cDebit: _debit.value === null ? 0 : _debit.value,
           cDescription: aDescription,
           cType: _type.value,
-          cAccountNumber: aNumber
+          cAccountNumberID: settings.activeAccountId
         })
         if (result === CONS.RESULTS.SUCCESS) {
           _debit.value = 0
