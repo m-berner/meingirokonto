@@ -392,11 +392,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                     const onComplete = () => {
                         openDB.close();
-                        log('BACKGROUND: onUpgradeNeeded: Transaction completed.');
+                        log('BACKGROUND: onInstall: Transaction completed.');
                     };
                     const onError = () => {
                         openDB.close();
-                        console.error('BACKGROUND: onUpgradeNeeded: Transaction not opened due to error. Duplicate items not allowed.');
+                        console.error('BACKGROUND: onInstall: Transaction not opened due to error. Duplicate items not allowed.');
                     };
                     transaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     transaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
