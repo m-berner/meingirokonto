@@ -47,6 +47,7 @@ const ok = (): Promise<void> => {
       buffer += JSON.stringify({
         cID: records.bookingTypes.all[i].cID,
         cName: records.bookingTypes.all[i].cName,
+        cAccountNumberID: records.bookingTypes.all[i].cAccountNumberID,
       })
       if (i === records.bookingTypes.all.length - 1) {
         buffer += '\n],\n'
