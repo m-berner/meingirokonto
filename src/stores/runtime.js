@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {
@@ -16,4 +18,4 @@ export const useRuntimeStore = defineStore('runtime', {
         }
     }
 });
-console.log('--- STORE runtime.js ---');
+log('--- STORE runtime.js ---');

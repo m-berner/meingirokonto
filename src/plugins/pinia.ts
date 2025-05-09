@@ -6,13 +6,16 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {createPinia, type Pinia} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IPinia {
   pinia: Pinia
 }
 
+const {log} = useApp()
+
 export default<IPinia> {
   pinia: createPinia()
 }
 
-console.log('--- PLUGINS pinia.js ---')
+log('--- PLUGINS pinia.js ---')

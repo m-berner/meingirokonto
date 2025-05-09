@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IAddAccountSteady {
   swiftLabel: string
@@ -20,6 +21,8 @@ interface IAddAccountStore {
   _brandFetchName: string
   _steady: IAddAccountSteady
 }
+
+const {log} = useApp()
 
 export const useAddAccountStore: StoreDefinition<'addaccount', IAddAccountStore> = defineStore('addaccount', {
   state: (): IAddAccountStore => {
@@ -49,4 +52,4 @@ export const useAddAccountStore: StoreDefinition<'addaccount', IAddAccountStore>
   }
 })
 
-console.log('--- STORE addaccount.js ---')
+log('--- STORE addaccount.js ---')

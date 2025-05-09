@@ -6,10 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IShowAccountingStore {
   _result: Array<{title: string, subtitle: string}>
 }
+
+const {log} = useApp()
 
 export const useShowAccountingStore: StoreDefinition<'showaccounting', IShowAccountingStore> = defineStore('showaccounting', {
   state: (): IShowAccountingStore => {
@@ -29,4 +32,4 @@ export const useShowAccountingStore: StoreDefinition<'showaccounting', IShowAcco
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+log('--- STORE privacycontent.js ---')

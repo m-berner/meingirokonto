@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 
 interface IExportDatabaseSteady {
@@ -15,6 +16,8 @@ interface IExportDatabaseSteady {
 interface IExportDatabaseStore {
   _steady: IExportDatabaseSteady
 }
+
+const {log} = useApp()
 
 export const useExportDatabaseStore: StoreDefinition<'exportdatabase', IExportDatabaseStore> = defineStore('exportdatabase', {
   state: (): IExportDatabaseStore => {
@@ -36,4 +39,4 @@ export const useExportDatabaseStore: StoreDefinition<'exportdatabase', IExportDa
   }
 })
 
-console.log('--- STORE exportdatabase.js ---')
+log('--- STORE exportdatabase.js ---')

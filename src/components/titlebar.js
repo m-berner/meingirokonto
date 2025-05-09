@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { useRecordsStore } from '@/stores/records';
 import { useSettingsStore } from '@/stores/settings';
 import { useApp } from '@/pages/background';
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 export const useTitleBarStore = defineStore('titlebar', {
     state: () => {
         return {
@@ -48,4 +48,4 @@ export const useTitleBarStore = defineStore('titlebar', {
         }
     }
 });
-console.log('--- STORE titlebar.js ---');
+log('--- STORE titlebar.js ---');

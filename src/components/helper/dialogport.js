@@ -29,4 +29,3 @@ export const useDialogPortStore = defineStore('dialogport', {
         }
     }
 });
-console.log('--- STORE dialogport.js ---');

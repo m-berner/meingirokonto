@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useFooterBarStore = defineStore('footerbar', {
     state: () => {
         return {
@@ -22,4 +24,4 @@ export const useFooterBarStore = defineStore('footerbar', {
         }
     }
 });
-console.log('--- STORE footerbar.js ---');
+log('--- STORE footerbar.js ---');

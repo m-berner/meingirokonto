@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const usePrivacyPageStore = defineStore('privacypage', {
     state: () => {
         return {
@@ -34,4 +36,4 @@ export const usePrivacyPageStore = defineStore('privacypage', {
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+log('--- STORE privacycontent.js ---');

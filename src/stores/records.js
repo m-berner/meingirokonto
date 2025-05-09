@@ -5,40 +5,34 @@ const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
-            _dbi: null,
             _accounts: {
                 all: [],
                 selected_index: -1
             },
+            _dbi: null,
             _bookings: {
                 all: [],
                 per_account: [],
                 search: '',
                 selected_index: -1
             },
+            _booking_sum: 0,
+            _booking_sum_field: '',
             _booking_types: {
                 all: [],
                 selected_index: -1
-            },
-            _booking_sum: 0,
-            _booking_sum_field: ''
+            }
         };
     },
     getters: {
         accounts(state) {
             return state._accounts;
         },
-        bookingTypes(state) {
-            return state._booking_types;
+        dbi(state) {
+            return state._dbi;
         },
         bookings(state) {
             return state._bookings;
-        },
-        bookingsPerAccount(state) {
-            return state._bookings.per_account;
-        },
-        bookingsSearch(state) {
-            return state._bookings.search;
         },
         bookingSum(state) {
             return state._booking_sum;
@@ -46,8 +40,8 @@ export const useRecordsStore = defineStore('records', {
         bookingSumField(state) {
             return state._booking_sum_field;
         },
-        dbi(state) {
-            return state._dbi;
+        bookingTypes(state) {
+            return state._booking_types;
         }
     },
     actions: {

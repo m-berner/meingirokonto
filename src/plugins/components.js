@@ -9,7 +9,7 @@ import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 export default {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount);
@@ -23,4 +23,4 @@ export default {
         app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting);
     }
 };
-console.log('--- PLUGINS components.js ---');
+log('--- PLUGINS components.js ---');

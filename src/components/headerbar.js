@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useHeaderBarStore = defineStore('headerbar', {
     state: () => {
         return {
@@ -36,4 +38,4 @@ export const useHeaderBarStore = defineStore('headerbar', {
         }
     }
 });
-console.log('--- STORE headerbar.js ---');
+log('--- STORE headerbar.js ---');

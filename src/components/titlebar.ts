@@ -26,7 +26,8 @@ interface ITitleBarSteady {
   account_label: string
 }
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
+
 export const useTitleBarStore: StoreDefinition<'titlebar', ITitleBarStore> = defineStore('titlebar', {
   state: (): ITitleBarStore => {
     return {
@@ -73,4 +74,4 @@ export const useTitleBarStore: StoreDefinition<'titlebar', ITitleBarStore> = def
   }
 })
 
-console.log('--- STORE titlebar.js ---')
+log('--- STORE titlebar.js ---')

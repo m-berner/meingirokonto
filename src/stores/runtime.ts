@@ -6,10 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IRuntimeStore {
   _booking_id: number
 }
+
+const {log} = useApp()
 
 export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = defineStore('runtime', {
   state: (): IRuntimeStore => {
@@ -29,4 +32,4 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
   }
 })
 
-console.log('--- STORE runtime.js ---')
+log('--- STORE runtime.js ---')

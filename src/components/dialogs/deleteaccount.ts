@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
-
+import {useApp} from '@/pages/background'
 
 interface IDeleteAccountSteady {
   accountNumberLabel: string
@@ -16,6 +16,8 @@ interface IDeleteAccountStore {
   _selected: number
   _steady: IDeleteAccountSteady
 }
+
+const {log} = useApp()
 
 export const useDeleteAccountStore: StoreDefinition<'deleteaccount', IDeleteAccountStore> = defineStore('deleteaccount', {
   state: (): IDeleteAccountStore => {
@@ -38,4 +40,4 @@ export const useDeleteAccountStore: StoreDefinition<'deleteaccount', IDeleteAcco
   }
 })
 
-console.log('--- STORE deleteaccount.js ---')
+log('--- STORE deleteaccount.js ---')

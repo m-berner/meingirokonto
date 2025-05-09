@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IHelpPageStore {
   _steady: {
@@ -30,6 +31,8 @@ interface IHelpPageSteady {
   footerBarTitle: string
   footerBar: Record<string, string>[]
 }
+
+const {log} = useApp()
 
 export const useHelpPageStore: StoreDefinition<'helppage', IHelpPageStore> = defineStore('helppage', {
   state: (): IHelpPageStore => {
@@ -65,4 +68,4 @@ export const useHelpPageStore: StoreDefinition<'helppage', IHelpPageStore> = def
   }
 })
 
-console.log('--- STORE helpcontent.js ---')
+log('--- STORE helpcontent.js ---')

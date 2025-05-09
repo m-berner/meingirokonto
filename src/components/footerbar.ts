@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IFooterBarSteady {
   help: string
@@ -16,6 +17,8 @@ interface IFooterBarSteady {
 interface IFooterBarStore {
   _steady: IFooterBarSteady
 }
+
+const {log} = useApp()
 
 export const useFooterBarStore: StoreDefinition<'footerbar', IFooterBarStore> = defineStore('footerbar', {
   state: (): IFooterBarStore => {
@@ -41,4 +44,4 @@ export const useFooterBarStore: StoreDefinition<'footerbar', IFooterBarStore> = 
   }
 })
 
-console.log('--- STORE footerbar.js ---')
+log('--- STORE footerbar.js ---')

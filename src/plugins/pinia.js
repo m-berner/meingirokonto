@@ -1,5 +1,7 @@
 import { createPinia } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export default {
     pinia: createPinia()
 };
-console.log('--- PLUGINS pinia.js ---');
+log('--- PLUGINS pinia.js ---');

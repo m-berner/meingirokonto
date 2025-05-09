@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useAddBookingTypeStore = defineStore('addbookingtype', {
     state: () => {
         return {
@@ -19,4 +21,4 @@ export const useAddBookingTypeStore = defineStore('addbookingtype', {
         }
     }
 });
-console.log('--- STORE addbookingtype.js ---');
+log('--- STORE addbookingtype.js ---');

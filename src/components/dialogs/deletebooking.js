@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useDeleteBookingStore = defineStore('deletebooking', {
     state: () => {
         return {
@@ -18,4 +20,4 @@ export const useDeleteBookingStore = defineStore('deletebooking', {
         }
     }
 });
-console.log('--- STORE deletebooking.js ---');
+log('--- STORE deletebooking.js ---');

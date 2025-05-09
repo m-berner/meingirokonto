@@ -17,7 +17,7 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue'
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 export default <ObjectPlugin<[]>>{
   install: (app) => {
@@ -33,4 +33,4 @@ export default <ObjectPlugin<[]>>{
   }
 }
 
-console.log('--- PLUGINS components.js ---')
+log('--- PLUGINS components.js ---')

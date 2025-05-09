@@ -40,49 +40,49 @@ const {CONS, log} = useApp()
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
     return {
-      _dbi: null,
       _accounts: {
         all: [],
         selected_index: -1
       },
+      _dbi: null,
       _bookings: {
         all: [],
         per_account: [],
         search: '',
         selected_index: -1
       },
+      _booking_sum: 0,
+      _booking_sum_field: '',
       _booking_types: {
         all: [],
         selected_index: -1
-      },
-      _booking_sum: 0,
-      _booking_sum_field: ''
+      }
     }
   },
   getters: {
     accounts(state: IRecordsStore): IRecordStoreAccount {
       return state._accounts
     },
-    bookingTypes(state: IRecordsStore): IRecordStoreBookingType {
-      return state._booking_types
+    dbi(state: IRecordsStore): IDBDatabase | null {
+      return state._dbi
     },
     bookings(state: IRecordsStore): IRecordStoreBooking {
       return state._bookings
     },
-    bookingsPerAccount(state: IRecordsStore): IBooking[] {
-      return state._bookings.per_account
-    },
-    bookingsSearch(state: IRecordsStore): string {
-      return state._bookings.search
-    },
+    // bookingsPerAccount(state: IRecordsStore): IBooking[] {
+    //   return state._bookings.per_account
+    // },
+    // bookingsSearch(state: IRecordsStore): string {
+    //   return state._bookings.search
+    // },
     bookingSum(state: IRecordsStore): number {
       return state._booking_sum
     },
     bookingSumField(state: IRecordsStore): string {
       return state._booking_sum_field
     },
-    dbi(state: IRecordsStore): IDBDatabase | null {
-      return state._dbi
+    bookingTypes(state: IRecordsStore): IRecordStoreBookingType {
+      return state._booking_types
     }
   },
   actions: {

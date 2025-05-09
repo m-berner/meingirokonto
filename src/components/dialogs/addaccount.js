@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useAddAccountStore = defineStore('addaccount', {
     state: () => {
         return {
@@ -26,4 +28,4 @@ export const useAddAccountStore = defineStore('addaccount', {
         }
     }
 });
-console.log('--- STORE addaccount.js ---');
+log('--- STORE addaccount.js ---');

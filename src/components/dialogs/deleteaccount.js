@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useDeleteAccountStore = defineStore('deleteaccount', {
     state: () => {
         return {
@@ -19,4 +21,4 @@ export const useDeleteAccountStore = defineStore('deleteaccount', {
         }
     }
 });
-console.log('--- STORE deleteaccount.js ---');
+log('--- STORE deleteaccount.js ---');

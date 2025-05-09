@@ -5,6 +5,7 @@ import i18nPlugin from '@/plugins/i18n';
 import componentsPlugin from '@/plugins/components';
 import routerPlugin from '@/plugins/router';
 import piniaPlugin from '@/plugins/pinia';
+import { useApp } from '@/pages/background';
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
     console.error(err);
@@ -18,4 +19,5 @@ app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
 app.use(routerPlugin.router);
 app.mount('#app');
-console.log('--- PAGE_SCRIPT app.js ---');
+const { log } = useApp();
+log('--- PAGE_SCRIPT app.js ---');

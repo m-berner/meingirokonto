@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 
 interface IDeleteBookingTypeSteady {
@@ -16,6 +17,8 @@ interface IDeleteBookingTypeStore {
   _selected: number
   _steady: IDeleteBookingTypeSteady
 }
+
+const {log} = useApp()
 
 export const useDeleteBookingTypeStore: StoreDefinition<'deletebookingtype', IDeleteBookingTypeStore> = defineStore('deletebookingtype', {
   state: (): IDeleteBookingTypeStore => {
@@ -38,4 +41,4 @@ export const useDeleteBookingTypeStore: StoreDefinition<'deletebookingtype', IDe
   }
 })
 
-console.log('--- STORE deletebookingtype.js ---')
+log('--- STORE deletebookingtype.js ---')

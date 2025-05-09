@@ -40,10 +40,13 @@ import {
   mdiShieldAccount,
   mdiTableLargeRemove
 } from '@mdi/js'
+import {useApp} from '@/pages/background'
 
 interface IVuetify {
   vuetify: ObjectPlugin<[]>
 }
+
+const {log} = useApp()
 
 export default<IVuetify> {
   vuetify: createVuetify({
@@ -173,4 +176,4 @@ export default<IVuetify> {
   })
 }
 
-console.log('--- PLUGINS vuetify.js ---')
+log('--- PLUGINS vuetify.js ---')

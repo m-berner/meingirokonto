@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useShowAccountingStore = defineStore('showaccounting', {
     state: () => {
         return {
@@ -16,4 +18,4 @@ export const useShowAccountingStore = defineStore('showaccounting', {
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');
+log('--- STORE privacycontent.js ---');

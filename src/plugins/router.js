@@ -1,4 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export default {
     router: createRouter({
         history: createWebHashHistory(),
@@ -36,4 +38,4 @@ export default {
         ]
     })
 };
-console.log('--- PLUGINS router.js ---');
+log('--- PLUGINS router.js ---');

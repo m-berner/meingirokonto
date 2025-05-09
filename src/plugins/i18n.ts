@@ -19,7 +19,7 @@ interface IBrowserUI {
   locale: string
 }
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 const getUI = (): IBrowserUI => {
   const result = {
@@ -161,4 +161,4 @@ export default<II18n> {
   })
 }
 
-console.log('--- PLUGINS i18n.js ---')
+log('--- PLUGINS i18n.js ---')

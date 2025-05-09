@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IHomeContentSteady {
   bookingsHeaders: {
@@ -29,6 +30,8 @@ interface IHomeContentStore {
   _search: string
   _steady: IHomeContentSteady
 }
+
+const {log} = useApp()
 
 export const useHomeContentStore: StoreDefinition<'homecontent', IHomeContentStore> = defineStore('homecontent', {
   state: (): IHomeContentStore => {
@@ -59,4 +62,4 @@ export const useHomeContentStore: StoreDefinition<'homecontent', IHomeContentSto
   }
 })
 
-console.log('--- STORE homecontent.js ---')
+log('--- STORE homecontent.js ---')

@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IOptionsIndexSteady {
   tabs: string[]
@@ -18,6 +19,8 @@ interface IOptionsIndexStore {
   _skin: string
   _steady: IOptionsIndexSteady
 }
+
+const {log} = useApp()
 
 export const useOptionsIndexStore: StoreDefinition<'optionsindex', IOptionsIndexStore> = defineStore('optionsindex', {
   state: (): IOptionsIndexStore => {
@@ -45,4 +48,4 @@ export const useOptionsIndexStore: StoreDefinition<'optionsindex', IOptionsIndex
   }
 })
 
-console.log('--- STORE optionsindex.js ---')
+log('--- STORE optionsindex.js ---')

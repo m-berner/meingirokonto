@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IImportDatabaseSteady {
   label: string
@@ -15,6 +16,8 @@ interface IImportDatabaseStore {
   _choosen_file: Blob | null
   _steady: IImportDatabaseSteady
 }
+
+const {log} = useApp()
 
 export const useImportDatabaseStore: StoreDefinition<'importdatabase', IImportDatabaseStore> = defineStore('importdatabase', {
   state: (): IImportDatabaseStore => {
@@ -37,4 +40,4 @@ export const useImportDatabaseStore: StoreDefinition<'importdatabase', IImportDa
   }
 })
 
-console.log('--- STORE importdatabase.js ---')
+log('--- STORE importdatabase.js ---')

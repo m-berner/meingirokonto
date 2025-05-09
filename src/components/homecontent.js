@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useHomeContentStore = defineStore('homecontent', {
     state: () => {
         return {
@@ -27,4 +29,4 @@ export const useHomeContentStore = defineStore('homecontent', {
         }
     }
 });
-console.log('--- STORE homecontent.js ---');
+log('--- STORE homecontent.js ---');

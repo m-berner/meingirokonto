@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IAddBookingSteady {
   dateLabel: string
@@ -23,6 +24,8 @@ interface IAddBookingStore {
   _type: number
   _steady: IAddBookingSteady
 }
+
+const {log} = useApp()
 
 export const useAddBookingStore: StoreDefinition<'addbooking', IAddBookingStore> = defineStore('addbooking', {
   state: (): IAddBookingStore => {
@@ -57,4 +60,4 @@ export const useAddBookingStore: StoreDefinition<'addbooking', IAddBookingStore>
   }
 })
 
-console.log('--- STORE addbooking.js ---')
+log('--- STORE addbooking.js ---')

@@ -927,7 +927,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onMessage.addListener(onSettings)
-  console.log('--- PAGE_SCRIPT background.js ---', {info: window.location.href})
+  log('--- PAGE_SCRIPT background.js ---', {info: window.location.href})
 }
 
-console.log('--- PAGE_SCRIPT background.js + useApp ---')
+log('--- PAGE_SCRIPT background.js + useApp ---')

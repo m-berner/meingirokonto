@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useHelpPageStore = defineStore('helppage', {
     state: () => {
         return {
@@ -32,4 +34,4 @@ export const useHelpPageStore = defineStore('helppage', {
         }
     }
 });
-console.log('--- STORE helpcontent.js ---');
+log('--- STORE helpcontent.js ---');

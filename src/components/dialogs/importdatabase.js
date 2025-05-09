@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useImportDatabaseStore = defineStore('importdatabase', {
     state: () => {
         return {
@@ -19,4 +21,4 @@ export const useImportDatabaseStore = defineStore('importdatabase', {
         }
     }
 });
-console.log('--- STORE importdatabase.js ---');
+log('--- STORE importdatabase.js ---');

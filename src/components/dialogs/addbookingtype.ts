@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IAddBookingTypeSteady {
   bookingTypeLabel: string,
@@ -15,6 +16,8 @@ interface IAddBookingTypeStore {
   _name: string
   _steady: IAddBookingTypeSteady
 }
+
+const {log} = useApp()
 
 export const useAddBookingTypeStore: StoreDefinition<'addbookingtype', IAddBookingTypeStore> = defineStore('addbookingtype', {
   state: (): IAddBookingTypeStore => {
@@ -37,4 +40,4 @@ export const useAddBookingTypeStore: StoreDefinition<'addbookingtype', IAddBooki
   }
 })
 
-console.log('--- STORE addbookingtype.js ---')
+log('--- STORE addbookingtype.js ---')

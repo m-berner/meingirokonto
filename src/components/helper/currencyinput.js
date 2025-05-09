@@ -34,4 +34,3 @@ export const usePrivacyPageStore = defineStore('privacypage', {
         }
     }
 });
-console.log('--- STORE privacycontent.js ---');

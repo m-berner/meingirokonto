@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 export const useOptionsIndexStore = defineStore('optionsindex', {
     state: () => {
         return {
@@ -24,4 +26,4 @@ export const useOptionsIndexStore = defineStore('optionsindex', {
         }
     }
 });
-console.log('--- STORE optionsindex.js ---');
+log('--- STORE optionsindex.js ---');

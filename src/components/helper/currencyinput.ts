@@ -74,5 +74,3 @@ export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageSto
     }
   }
 })
-
-console.log('--- STORE privacycontent.js ---')

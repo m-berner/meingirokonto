@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IHeaderBarSteady {
   home: string
@@ -23,6 +24,8 @@ interface IHeaderBarSteady {
 interface IHeaderBarStore {
   _steady: IHeaderBarSteady
 }
+
+const {log} = useApp()
 
 export const useHeaderBarStore: StoreDefinition<'headerbar', IHeaderBarStore> = defineStore('headerbar', {
   state: (): IHeaderBarStore => {
@@ -62,4 +65,4 @@ export const useHeaderBarStore: StoreDefinition<'headerbar', IHeaderBarStore> = 
   }
 })
 
-console.log('--- STORE headerbar.js ---')
+log('--- STORE headerbar.js ---')

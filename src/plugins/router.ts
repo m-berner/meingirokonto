@@ -6,10 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
  */
 import {createRouter, createWebHashHistory, type Router} from 'vue-router'
+import {useApp} from '@/pages/background'
 
 interface IRouter {
   router: Router
 }
+
+const {log} = useApp()
 
 export default<IRouter> {
   router: createRouter({
@@ -49,4 +52,4 @@ export default<IRouter> {
   })
 }
 
-console.log('--- PLUGINS router.js ---')
+log('--- PLUGINS router.js ---')

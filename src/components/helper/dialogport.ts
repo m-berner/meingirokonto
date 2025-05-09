@@ -49,5 +49,3 @@ export const useDialogPortStore: StoreDefinition<'dialogport', IDialogPortStore>
     }
   }
 })
-
-console.log('--- STORE dialogport.js ---')

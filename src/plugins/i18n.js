@@ -1,7 +1,7 @@
 import { createI18n } from 'vue-i18n';
 import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useApp } from '@/pages/background';
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 const getUI = () => {
     const result = {
         lang: '',
@@ -141,4 +141,4 @@ export default {
         }
     })
 };
-console.log('--- PLUGINS i18n.js ---');
+log('--- PLUGINS i18n.js ---');

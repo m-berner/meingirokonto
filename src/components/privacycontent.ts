@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
+import {useApp} from '@/pages/background'
 
 interface IPrivacyPageStore {
   _steady: {
@@ -38,6 +39,8 @@ interface IPrivacyPageSteady {
     content: string
   }
 }
+
+const {log} = useApp()
 
 export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageStore> = defineStore('privacypage', {
   state: (): IPrivacyPageStore => {
@@ -75,4 +78,4 @@ export const usePrivacyPageStore: StoreDefinition<'privacypage', IPrivacyPageSto
   }
 })
 
-console.log('--- STORE privacycontent.js ---')
+log('--- STORE privacycontent.js ---')
