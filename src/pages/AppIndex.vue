@@ -12,19 +12,22 @@ import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
 import {useTitleBarStore} from '@/components/titlebar'
+import {storeToRefs} from 'pinia'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const titlebar = useTitleBarStore()
 const theme = useTheme()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
+
+const {_debug} = storeToRefs(settings)
 
 onBeforeMount((): Promise<void> => {
-  console.log('APPINDEX: onBeforeMount: before')
+  log('APPINDEX: onBeforeMount: before')
   return new Promise(async (resolve) => {
     const keyStrokeController: string[] = []
     const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
-      console.info('APPINDEX: onStorageChange', area)
+      log('APPINDEX: onStorageChange', {info: area})
       switch (true) {
         case changes.sSkin?.oldValue !== undefined:
           theme.global.name.value = changes.sSkin.newValue
@@ -33,7 +36,7 @@ onBeforeMount((): Promise<void> => {
       }
     }
     const onBeforeUnload = (): Promise<void> => {
-      console.log('APPINDEX: onBeforeUnload')
+      log('APPINDEX: onBeforeUnload')
       return new Promise(async (resolve) => {
         const foundTabs = await browser.tabs.query({url: 'about:addons'})
         if (foundTabs.length > 0) {
@@ -45,6 +48,7 @@ onBeforeMount((): Promise<void> => {
     }
     const onKeyDown = (ev: KeyboardEvent): void => {
       keyStrokeController.push(ev.key)
+      log('APPINDEX: onKeyDown')
       if (
         keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
@@ -55,8 +59,10 @@ onBeforeMount((): Promise<void> => {
       if (
         keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
-        ev.key === 'd'
+        ev.key === 'd' && _debug
       ) {
+        browser.storage.local.set({sDebug: false})
+      } else {
         browser.storage.local.set({sDebug: true})
       }
     }
@@ -77,7 +83,7 @@ onBeforeMount((): Promise<void> => {
     await records.openDatabase()
     await records.databaseIntoStore()
     titlebar.updateTitlebar()
-    console.log('APPINDEX: onBeforeMount: after')
+    log('APPINDEX: onBeforeMount: after')
     resolve()
   })
 })

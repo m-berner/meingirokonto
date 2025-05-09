@@ -13,12 +13,12 @@ import {useHeaderBarStore} from '@/components/headerbar'
 import {useDialogPortStore} from '@/components/helper/dialogport'
 
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const headerbar = useHeaderBarStore()
 const dialogport = useDialogPortStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
-  console.info('HEADERBAR: onIconClick', ev)
+  log('HEADERBAR: onIconClick')
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {

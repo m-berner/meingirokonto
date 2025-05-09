@@ -15,7 +15,7 @@ import {useAddAccountStore} from '@/components/dialogs/addaccount'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
-const {notice, VALIDATORS} = useApp()
+const {log, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const addaccount = useAddAccountStore()
 const {_logoUrl, _number, _swift, _brandFetchName} = storeToRefs(addaccount)
@@ -45,7 +45,7 @@ const ibanMask = (iban: string) => {
 }
 
 const ok = (): Promise<void> => {
-  console.log('ADD_ACCOUNT: ok')
+  log('ADD_ACCOUNT: ok')
   return new Promise(async (resolve): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
@@ -80,11 +80,11 @@ const title = t('dialogs.addAccount.title')
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('ADD_ACCOUNT: onMounted', formRef)
+  log('ADD_ACCOUNT: onMounted')
   formRef.value!.reset()
 })
 
-console.log('--- AddAccount.vue setup ---')
+log('--- AddAccount.vue setup ---')
 </script>
 
 <template>

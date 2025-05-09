@@ -20,11 +20,11 @@ interface PropsOptionMenu {
 const _props = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const dialogport = useDialogPortStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
-  console.info('OPTIONMENU: onIconClick', ev, _props.recordID)
+  log('OPTIONMENU: onIconClick', {info: _props.recordID})
   runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return

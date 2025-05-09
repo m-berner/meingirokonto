@@ -27,8 +27,8 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const homecontent = useHomeContentStore()
 
-const {bookingsPerAccount} = storeToRefs(records)
-const {bookingsPerPage} = storeToRefs(settings)
+const {_bookings} = storeToRefs(records)
+const {_bookings_per_page} = storeToRefs(settings)
 const {_search} = storeToRefs(homecontent)
 
 homecontent.setSteady({
@@ -65,8 +65,8 @@ console.log('--- HomeContent.vue setup ---')
     v-bind:headers="homecontent.steady.bookingsHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="bookingsPerAccount as readonly IBooking[]"
-    v-bind:items-per-page="bookingsPerPage"
+    v-bind:items="_bookings.per_account"
+    v-bind:items-per-page="_bookings_per_page"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="homecontent.steady.itemsPerPageText"
     v-bind:no-data-text="homecontent.steady.noDataText"

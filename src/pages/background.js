@@ -1,3 +1,4 @@
+const t = browser.storage.local.get(['sDebug']);
 export const useApp = () => {
     return {
         CONS: Object.freeze({
@@ -364,24 +365,34 @@ export const useApp = () => {
         },
         utcDate: (iso) => {
             return new Date(`${iso}T00:00:00.000`);
+        },
+        log: async (msg, mode = { info: null }) => {
+            if ((await t)['sDebug']) {
+                if (mode.info !== null) {
+                    console.info(msg, mode.info);
+                }
+                else {
+                    console.log(msg);
+                }
+            }
         }
     };
 };
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    console.log('BACKGROUND: listener attached');
+    log('BACKGROUND: add listener');
     const onInstall = () => {
-        console.log('BACKGROUND: onInstall');
+        log('BACKGROUND: onInstall');
         return new Promise(async (resolve) => {
             const storageLocal = await browser.storage.local.get();
             const onSuccess = (ev) => {
-                console.log('BACKGROUND: onInstall: onSuccess');
+                log('BACKGROUND: onInstall: onSuccess');
                 if (ev.target instanceof IDBRequest) {
                     const openDB = ev.target.result;
                     const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                     const onComplete = () => {
                         openDB.close();
-                        console.log('BACKGROUND: onUpgradeNeeded: Transaction completed.');
+                        log('BACKGROUND: onUpgradeNeeded: Transaction completed.');
                     };
                     const onError = () => {
                         openDB.close();
@@ -397,9 +408,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             };
             const onUpgradeNeeded = async (ev) => {
                 if (ev instanceof IDBVersionChangeEvent) {
-                    console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion);
+                    log('BACKGROUND: onInstall: onUpgradeNeeded', { info: ev.newVersion });
                     const createDB = () => {
-                        console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                        log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
                         const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
                             keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
                             autoIncrement: true
@@ -448,7 +459,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         });
     };
     const onClick = () => {
-        console.log('BACKGROUND: onClick');
+        log('BACKGROUND: onClick');
         return new Promise(async (resolve) => {
             const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
             if (foundTabs.length === 0) {
@@ -467,7 +478,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         });
     };
     const onSettings = (data) => {
-        console.info('BACKGROUND: onSettings', data.type);
+        log('BACKGROUND: onSettings', { info: data.type });
         const startSettings = () => {
             return new Promise(async (resolve) => {
                 const storageLocal = await browser.storage.local.get();
@@ -475,7 +486,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID;
                 const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE;
                 const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG;
-                console.info('BACKGROUND: onSettings: startSettings', skin, activeAccountId, bookingsPerPage, debug);
+                log('BACKGROUND: onSettings: startSettings');
                 resolve({
                     skin,
                     activeAccountId,
@@ -497,4 +508,4 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onMessage.addListener(onSettings);
 }
-console.info('--- background.js ---', window.location.href);
+log('--- background.js ---', { info: window.location.href });

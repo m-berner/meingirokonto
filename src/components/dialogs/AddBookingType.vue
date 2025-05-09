@@ -14,7 +14,7 @@ import {useAddBookingTypeStore} from '@/components/dialogs/addbookingtype'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
-const {CONS, notice, VALIDATORS} = useApp()
+const {CONS, log, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 
@@ -25,7 +25,7 @@ addbookingtype.setSteady({
   bookingTypeLabel: t('dialogs.addBookingType.label')
 })
 const ok = (): Promise<void> => {
-  console.log('ADD_BOOKING_TYPE: ok')
+  log('ADD_BOOKING_TYPE: ok')
   return new Promise(async (resolve): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
@@ -49,11 +49,11 @@ const title = t('dialogs.addBookingType.title')
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('ADD_BOOKING_TYPE: onMounted', formRef)
+  log('ADD_BOOKING_TYPE: onMounted')
   formRef.value!.reset()
 })
 
-console.log('--- AddBookingType.vue setup ---')
+log('--- AddBookingType.vue setup ---')
 </script>
 
 <template>

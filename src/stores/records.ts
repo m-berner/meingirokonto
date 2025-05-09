@@ -35,7 +35,7 @@ interface IRecordStoreBookingType {
   selected_index: number
 }
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
@@ -101,17 +101,21 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return ''
       }
     },
-    getBookingTextById(ident: number): string {
+    getBookingTextById(ident: number): string | Error {
       const tmp = this._bookings.all.filter((entry: IBooking) => {
         return entry.cID === ident
       })
-      return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
+      if (tmp.length > 0) {
+        return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
+      } else {
+        throw new Error('getBookingTextById: No booking found for given ID')
+      }
     },
-    sumBookings(): void {
+    sumBookings(): void | Error {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
-        return
+        throw new Error('sumBookings: No account found for given ID')
       }
       const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
         return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber
@@ -128,13 +132,14 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }).reduce((acc: number, cur: number) => acc + cur, 0)
       } else {
         this._booking_sum = 0
+        throw new Error('sumBookings: No bookings found')
       }
     },
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
     },
     cleanStoreAndDatabase(): Promise<string> {
-      console.log('RECORDS: cleanStoreAndDatabase')
+      log('RECORDS: cleanStoreAndDatabase')
       this._bookings.all.splice(0, this._bookings.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
       this._accounts.all.splice(0, this._accounts.all.length)
@@ -151,15 +156,15 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
           }
           const onSuccessClearBooking = (): void => {
             requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false)
-            console.info('RECORDS: bookings dropped')
+            log('RECORDS: bookings dropped')
           }
           const onSuccessClearAccount = (): void => {
             requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false)
-            console.info('RECORDS: accounts dropped')
+            log('RECORDS: accounts dropped')
           }
           const onSuccessClearAccountType = (): void => {
             requestClearBookingTypes.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false)
-            console.info('RECORDS: booking types dropped')
+            log('RECORDS: booking types dropped')
           }
 
           const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
@@ -191,7 +196,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     databaseIntoStore(): Promise<string> {
-      console.log('RECORDS: databaseIntoStore')
+      log('RECORDS: databaseIntoStore')
       // const runtime = useRuntimeStore()
       this._accounts.all.splice(0, this._accounts.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
@@ -202,7 +207,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = async (): Promise<void> => {
-            console.info('RECORDS: databaseIntoStore: all database records loaded into memory!')
+            log('RECORDS: databaseIntoStore: all database records loaded into memory!')
             resolve('RECORDS: databaseIntoStore: all database records loaded into memory!')
           }
           const onAbort = (): void => {
@@ -240,7 +245,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     storeIntoDatabase(): Promise<string> {
-      console.log('RECORDS: storeIntoDatabase')
+      log('RECORDS: storeIntoDatabase')
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = (): void => {
@@ -300,7 +305,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     updateAccount(data: IAccount, msg: boolean = false): Promise<string> {
-      console.info('RECORDS: updateAccount', data)
+      log('RECORDS: updateAccount', {info: data})
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
@@ -370,7 +375,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     updateBookingType(data: IBookingType, msg: boolean = false): Promise<string> {
-      console.info('RECORDS: updateBookingType', data)
+      log('RECORDS: updateBookingType', {info: data})
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {
@@ -437,7 +442,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       })
     },
     updateBooking(data: IBooking, msg: boolean = false): Promise<string> {
-      console.info('RECORDS: updateBooking', data)
+      log('RECORDS: updateBooking', {info: data})
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onSuccess = (): void => {

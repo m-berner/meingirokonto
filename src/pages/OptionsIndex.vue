@@ -11,9 +11,11 @@ import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onMounted} from 'vue'
 import {useOptionsIndexStore} from '@/pages/optionsindex'
+import {useApp} from '@/pages/background'
 
 const {rt, tm} = useI18n()
 const theme = useTheme()
+const {log} = useApp()
 
 const optionsindex = useOptionsIndexStore()
 const {_tab, _skin} = storeToRefs(optionsindex)
@@ -25,7 +27,7 @@ optionsindex.setSteady({
 })
 
 const setSkin = (skin: string): Promise<void> => {
-  console.info('OPTIONS_INDEX: setSkin', skin)
+  log('OPTIONS_INDEX: setSkin', {info:skin})
   return new Promise(async (resolve) => {
     _skin.value = skin
     await browser.storage.local.set({sSkin: skin})
@@ -34,7 +36,7 @@ const setSkin = (skin: string): Promise<void> => {
 }
 
 onMounted((): Promise<void> => {
-  console.log('OPTIONS_INDEX: onMounted')
+  log('OPTIONS_INDEX: onMounted')
   return new Promise(async (resolve) => {
     const skin = await browser.storage.local.get(['sSkin'])
     _tab.value = 0
@@ -43,7 +45,7 @@ onMounted((): Promise<void> => {
   })
 })
 
-console.info('--- OptionsIndex.vue setup ---', window.location.href)
+log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>
 
 <template>

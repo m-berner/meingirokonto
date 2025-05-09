@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import {} from 'vuetify';
 import { useApp } from '@/pages/background';
 import { useRecordsStore } from '@/stores/records';
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {
@@ -35,7 +35,7 @@ export const useSettingsStore = defineStore('settings', {
             this._bookings_per_page = value;
         },
         initSettingsStore(theme, settings) {
-            console.log('SETTINGS: initSettingsStore');
+            log('SETTINGS: initSettingsStore');
             theme.global.name.value = settings.skin;
             this._skin = settings.skin;
             this._bookings_per_page = settings.bookingsPerPage;
@@ -43,7 +43,7 @@ export const useSettingsStore = defineStore('settings', {
             this._debug = settings.debug;
         },
         onUpdateAccount(value) {
-            console.info('SETTINGS: onUpdateAccount', value);
+            log('SETTINGS: onUpdateAccount', { info: value });
             const records = useRecordsStore();
             return new Promise(async (resolve) => {
                 const accountIndex = records.getAccountIndexById(value);

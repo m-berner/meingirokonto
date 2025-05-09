@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS } = useApp();
+const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -71,13 +71,18 @@ export const useRecordsStore = defineStore('records', {
             const tmp = this._bookings.all.filter((entry) => {
                 return entry.cID === ident;
             });
-            return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
+            if (tmp.length > 0) {
+                return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
+            }
+            else {
+                throw new Error('getBookingTextById: No booking found for given ID');
+            }
         },
         sumBookings() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
-                return;
+                throw new Error('sumBookings: No account found for given ID');
             }
             const bookings_per_account = this._bookings.all.filter((rec) => {
                 return rec.cAccountNumber === this._accounts.all[activeAccountIndex].cNumber;
@@ -95,13 +100,14 @@ export const useRecordsStore = defineStore('records', {
             }
             else {
                 this._booking_sum = 0;
+                throw new Error('sumBookings: No bookings found');
             }
         },
         setBookingSumField(value) {
             this._booking_sum_field = value;
         },
         cleanStoreAndDatabase() {
-            console.log('RECORDS: cleanStoreAndDatabase');
+            log('RECORDS: cleanStoreAndDatabase');
             this._bookings.all.splice(0, this._bookings.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._accounts.all.splice(0, this._accounts.all.length);
@@ -118,15 +124,15 @@ export const useRecordsStore = defineStore('records', {
                     };
                     const onSuccessClearBooking = () => {
                         requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false);
-                        console.info('RECORDS: bookings dropped');
+                        log('RECORDS: bookings dropped');
                     };
                     const onSuccessClearAccount = () => {
                         requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false);
-                        console.info('RECORDS: accounts dropped');
+                        log('RECORDS: accounts dropped');
                     };
                     const onSuccessClearAccountType = () => {
                         requestClearBookingTypes.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
-                        console.info('RECORDS: booking types dropped');
+                        log('RECORDS: booking types dropped');
                     };
                     const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
@@ -157,7 +163,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         databaseIntoStore() {
-            console.log('RECORDS: databaseIntoStore');
+            log('RECORDS: databaseIntoStore');
             this._accounts.all.splice(0, this._accounts.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._bookings.all.splice(0, this._bookings.all.length);
@@ -167,7 +173,7 @@ export const useRecordsStore = defineStore('records', {
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = async () => {
-                        console.info('RECORDS: databaseIntoStore: all database records loaded into memory!');
+                        log('RECORDS: databaseIntoStore: all database records loaded into memory!');
                         resolve('RECORDS: databaseIntoStore: all database records loaded into memory!');
                     };
                     const onAbort = () => {
@@ -204,7 +210,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         storeIntoDatabase() {
-            console.log('RECORDS: storeIntoDatabase');
+            log('RECORDS: storeIntoDatabase');
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = () => {
@@ -262,7 +268,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         updateAccount(data, msg = false) {
-            console.info('RECORDS: updateAccount', data);
+            log('RECORDS: updateAccount', { info: data });
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
@@ -332,7 +338,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         updateBookingType(data, msg = false) {
-            console.info('RECORDS: updateBookingType', data);
+            log('RECORDS: updateBookingType', { info: data });
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {
@@ -399,7 +405,7 @@ export const useRecordsStore = defineStore('records', {
             });
         },
         updateBooking(data, msg = false) {
-            console.info('RECORDS: updateBooking', data);
+            log('RECORDS: updateBooking', { info: data });
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onSuccess = () => {

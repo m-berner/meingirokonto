@@ -15,7 +15,7 @@ import {useDeleteAccountStore} from '@/components/dialogs/deleteaccount'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
-const {CONS, notice} = useApp()
+const {CONS, log, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -27,7 +27,7 @@ deleteaccount.setSteady({
 })
 
 const ok = (): Promise<void> => {
-  console.log('DELETE_ACCOUNT: ok')
+  log('DELETE_ACCOUNT: ok')
   return new Promise(async (resolve): Promise<void> => {
     try {
       const result = await records.deleteAccount(_selected.value)
@@ -51,11 +51,11 @@ const title = t('dialogs.deleteAccount.title')
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('DELETE_ACCOUNT: onMounted', formRef)
+  log('DELETE_ACCOUNT: onMounted')
   formRef.value?.reset()
 })
 
-console.log('--- DeleteAccount.vue setup ---')
+log('--- DeleteAccount.vue setup ---')
 </script>
 
 <template>

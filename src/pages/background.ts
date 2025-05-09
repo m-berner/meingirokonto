@@ -288,7 +288,10 @@ interface IUseApp {
   }>
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
+  log: (msg: string, mode?: { info: unknown }) => void
 }
+
+const t = browser.storage.local.get(['sDebug'])
 
 export const useApp = (): IUseApp => {
   return {
@@ -664,27 +667,36 @@ export const useApp = (): IUseApp => {
     },
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
+    },
+    log: async (msg, mode = { info: null })  => {
+      if ((await t)['sDebug']) {
+        if (mode.info !== null) {
+          console.info(msg, mode.info)
+        } else {
+          console.log(msg)
+        }
+      }
     }
   }
 }
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  console.log('BACKGROUND: listener attached')
+  log('BACKGROUND: add listener')
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = (): Promise<void> => {
-    console.log('BACKGROUND: onInstall')
+    log('BACKGROUND: onInstall')
     return new Promise(async (resolve): Promise<void> => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
       const onSuccess = (ev: Event): void => {
-        console.log('BACKGROUND: onInstall: onSuccess')
+        log('BACKGROUND: onInstall: onSuccess')
         if (ev.target instanceof IDBRequest) {
           const openDB = ev.target.result
           const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
           const onComplete = () => {
             openDB.close()
-            console.log('BACKGROUND: onUpgradeNeeded: Transaction completed.')
+            log('BACKGROUND: onUpgradeNeeded: Transaction completed.')
           }
           const onError = () => {
             openDB.close()
@@ -700,9 +712,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
       const onUpgradeNeeded = async (ev: Event): Promise<void> => {
         if (ev instanceof IDBVersionChangeEvent) {
-          console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion)
+          log('BACKGROUND: onInstall: onUpgradeNeeded', {info: ev.newVersion})
           const createDB = (): void => {
-            console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+            log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
             const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
               CONS.DB.STORES.ACCOUNTS.NAME,
               {
@@ -733,10 +745,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, {unique: false})
           }
           // const updateDB = (): void => {
-          //   console.log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
+          //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
           //   // const optFalse: IDBIndexParameters = {unique: false}
           //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
-          //   //   console.log(
+          //   //   log(
           //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
           //   //   )
           //   //   const cursor: IDBCursorWithValue | null = ev.target.result
@@ -751,7 +763,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           //   //       false
           //   //     )
           //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
-          //   //       console.log(
+          //   //       log(
           //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
           //   //       )
           //   //       const cursor: IDBCursorWithValue | null = ev.target.result
@@ -869,7 +881,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     })
   }
   const onClick = (): Promise<void> => {
-    console.log('BACKGROUND: onClick')
+    log('BACKGROUND: onClick')
     return new Promise(async (resolve) => {
       const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
       // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
@@ -888,16 +900,15 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     })
   }
   const onSettings = (data: { type: string }): Promise<ISettings | void> => {
-    console.info('BACKGROUND: onSettings', data.type)
+    log('BACKGROUND: onSettings', {info: data.type})
     const startSettings = (): Promise<ISettings> => {
       return new Promise(async (resolve) => {
         const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
         const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
-        //const logo = storageLocal.sLogo !== undefined ? storageLocal.sLogo : CONS.DEFAULTS.STORAGE.LOGO
         const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
         const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
         const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
-        console.info('BACKGROUND: onSettings: startSettings', skin, activeAccountId, bookingsPerPage, debug)
+        log('BACKGROUND: onSettings: startSettings')
         resolve({
           skin,
           activeAccountId,
@@ -919,4 +930,4 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onMessage.addListener(onSettings)
 }
 
-console.info('--- background.js ---', window.location.href)
+log('--- background.js ---', {info: window.location.href})

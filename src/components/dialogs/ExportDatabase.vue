@@ -12,7 +12,7 @@ import {useApp} from '@/pages/background'
 import {useExportDatabaseStore} from '@/components/dialogs/exportdatabase'
 
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const exportdatabase = useExportDatabaseStore()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
@@ -21,7 +21,7 @@ exportdatabase.setSteady({
   fileName: t('dialogs.exportDialog', { filename: fn })
 })
 const ok = (): Promise<void> => {
-  console.log('EXPORTDATABASE: ok')
+  log('EXPORTDATABASE: ok')
   const records = useRecordsStore()
   const {notice} = useApp()
   const stringifyDB = (): string => {
@@ -87,7 +87,7 @@ const ok = (): Promise<void> => {
     filename: fn
   }
   const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
-    console.log('HEADERBAR: onChanged')
+    log('HEADERBAR: onChanged')
     // noinspection JSDeprecatedSymbols
     browser.downloads.onChanged.removeListener(onDownloadChange)
     if (

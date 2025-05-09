@@ -10,17 +10,19 @@ import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useShowAccountingStore} from '@/components/dialogs/showaccounting'
+import {useApp} from '@/pages/background'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const showaccounting = useShowAccountingStore()
+const {log} = useApp()
 
 const title = t('dialogs.showAccounting.title')
 
 defineExpose({title})
 
 onMounted(() => {
-  console.log('SHOW_ACCOUNTING: onMounted')
+  log('SHOW_ACCOUNTING: onMounted')
   const sums = []
   for (let i = 1; i < records.bookingTypes.all.length; i++) {
     sums[i-1] = records.bookings.all.filter((entry: IBooking) => {

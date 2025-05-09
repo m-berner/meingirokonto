@@ -19,7 +19,7 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const settings = useSettingsStore()
 const titlebar = useTitleBarStore()
 const importdatabase = useImportDatabaseStore()
@@ -31,15 +31,15 @@ importdatabase.setSteady({
 })
 
 const ok = (): Promise<string> => {
-  console.info('IMPORTDATABASE: ok', _choosen_file.value)
+  log('IMPORTDATABASE: ok', {info: _choosen_file.value})
   return new Promise(async (resolve, reject) => {
-    const {notice} = useApp()
+    const {log, notice} = useApp()
     const records = useRecordsStore()
     const onError = (): void => {
       reject('IMPORTDATABASE: onError: FileReader')
     }
     const onFileLoaded = async (): Promise<void> => {
-      console.log('IMPORTDATABASE: onFileLoaded')
+      log('IMPORTDATABASE: onFileLoaded')
       if (typeof fr.result === 'string') {
         const bkupObject: IBackup = JSON.parse(fr.result)
         let account: IAccount

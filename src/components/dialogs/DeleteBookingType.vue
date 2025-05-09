@@ -14,7 +14,7 @@ import {useDeleteBookingTypeStore} from '@/components/dialogs/deletebookingtype'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
-const {CONS, notice} = useApp()
+const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 const deletebookingtype = useDeleteBookingTypeStore()
@@ -24,7 +24,7 @@ deletebookingtype.setSteady({
   label: t('deleteBooking.confirm')
 })
 const ok = (): Promise<void> => {
-  console.log('DELETE_BOOKING_TYPE: ok')
+  log('DELETE_BOOKING_TYPE: ok')
   return new Promise(async (resolve, reject): Promise<void> => {
     try {
       if (_selected.value !== null && _selected.value > 1) {
@@ -49,7 +49,7 @@ const title = t('dialogs.deleteBookingType.title')
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('DELETE_BOOKING_TYPE: onMounted', formRef)
+  log('DELETE_BOOKING_TYPE: onMounted')
   formRef.value?.reset()
 })
 

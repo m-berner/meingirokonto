@@ -13,7 +13,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useDeleteBookingStore} from '@/components/dialogs/deletebooking'
 
 const {t} = useI18n()
-const {notice} = useApp()
+const {log, notice} = useApp()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const deletebooking = useDeleteBookingStore()
@@ -22,7 +22,7 @@ deletebooking.setSteady({
   label: t('dialogs.deleteBooking.ask')
 })
 const ok = (): Promise<void> => {
-  console.log('DELETE_BOOKING: ok')
+  log('DELETE_BOOKING: ok')
   return new Promise(async (resolve): Promise<void> => {
     try {
       const result = await records.deleteBooking(runtime.bookingId)

@@ -18,7 +18,7 @@ interface ISettingsStore {
   _debug: boolean
 }
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 
 export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = defineStore('settings', {
   state: (): ISettingsStore => {
@@ -52,16 +52,15 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._bookings_per_page = value
     },
     initSettingsStore(theme: ThemeInstance, settings: ISettings): void {
-      console.log('SETTINGS: initSettingsStore')
+      log('SETTINGS: initSettingsStore')
       theme.global.name.value = settings.skin
       this._skin = settings.skin
       this._bookings_per_page = settings.bookingsPerPage
       this._active_account_id = settings.activeAccountId
-      //this._logo = settings.logo
       this._debug = settings.debug
     },
     onUpdateAccount(value: number): Promise<void> {
-      console.info('SETTINGS: onUpdateAccount', value)
+      log('SETTINGS: onUpdateAccount', {info: value})
       const records = useRecordsStore()
       return new Promise(async (resolve) => {
         const accountIndex = records.getAccountIndexById(value)

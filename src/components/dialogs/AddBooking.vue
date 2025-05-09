@@ -20,7 +20,7 @@ const {notice, VALIDATORS} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const addbooking = useAddBookingStore()
 const {_date, _credit, _debit, _description, _type} = storeToRefs(addbooking)
 
@@ -32,7 +32,7 @@ addbooking.setSteady({
   typeLabel: t('dialogs.addBooking.typeLabel'),
 })
 const ok = (): Promise<void> => {
-  console.log('ADD_BOOKING: ok')
+  log('ADD_BOOKING: ok')
   return new Promise(async (resolve): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
@@ -67,11 +67,11 @@ const title = t('dialogs.addBooking.title')
 defineExpose({ok, title})
 
 onMounted(() => {
-  console.log('ADD_BOOKING: onMounted', formRef)
+  log('ADD_BOOKING: onMounted')
   formRef.value!.reset()
 })
 
-console.log('--- AddBooking.vue setup ---')
+log('--- AddBooking.vue setup ---')
 </script>
 
 <template>
