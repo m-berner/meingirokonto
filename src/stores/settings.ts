@@ -52,19 +52,7 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._bookings_per_page = settings.bookingsPerPage
       this._active_account_id = settings.activeAccountId
       this._debug = settings.debug
-    },
-    // onUpdateAccount(value: number): Promise<void> {
-    //   log('SETTINGS: onUpdateAccount', {info: value})
-    //   const records = useRecordsStore()
-    //   return new Promise(async (resolve) => {
-    //     const accountIndex = records.getAccountIndexById(value)
-    //     const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
-    //     this._active_account_id = value
-    //     await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
-    //     await browser.storage.local.set({sActiveAccountId: value})
-    //     resolve()
-    //   })
-    // }
+    }
   }
 })
 

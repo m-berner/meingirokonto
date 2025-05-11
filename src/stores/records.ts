@@ -65,12 +65,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     bookings(state: IRecordsStore): IRecordStoreBooking {
       return state._bookings
     },
-    // bookingsPerAccount(state: IRecordsStore): IBooking[] {
-    //   return state._bookings.per_account
-    // },
-    // bookingsSearch(state: IRecordsStore): string {
-    //   return state._bookings.search
-    // },
     bookingSum(state: IRecordsStore): number {
       return state._booking_sum
     },
