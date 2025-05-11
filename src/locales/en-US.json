@@ -1,195 +1,29 @@
 {
   "titleBar": {
-    "title": "Stock management with near real-time prices from:",
-    "linkData": [
-      {
-        "title": "finance.net",
-        "content": "Price data, index data, material data",
-        "url": "https://www.finanzen.net/",
-        "icon": "fnet"
-      },
-      {
-        "title": "fx rate",
-        "content": "Exchange rate data",
-        "url": "https://fx-rate.net/",
-        "icon": "fx"
-      },
-      {
-        "title": "daily changes",
-        "content": "Course dates",
-        "url": "https://www.tagesschau.de/wirtschaft/boersenkurs/",
-        "icon": "ard"
-      },
-      {
-        "title": "tradegatexchange",
-        "content": "New share data",
-        "url": "https://www.tradegate.de/",
-        "icon": "tgate"
-      },
-      {
-        "title": "wall street online",
-        "content": "Course dates",
-        "url": "https://www.wallstreet-online.de/",
-        "icon": "wstreet"
-      },
-      {
-        "title": "Stock check",
-        "content": "Price data, 52 week high/low data",
-        "url": "https://www.aktiencheck.de/",
-        "icon": "acheck"
-      },
-      {
-        "title": "GOYAX",
-        "content": "Course dates",
-        "url": "https://www.goyax.de/",
-        "icon": "goyax"
-      }
-    ]
+    "title": "Mein Girokonto",
+    "bookingsSumLabel": "Account balance",
+    "selectAccountLabel": "IBAN",
+    "error": "No account has been created yet?"
   },
   "headerBar": {
-    "home": "Home page",
-    "transfersTable": "Bookings",
+    "home": "Homepage",
     "reload": "Update courses",
-    "addAccount": "Add company",
-    "deleteStock": "Remove company",
-    "fadeinStock": "Show company",
-    "cashPlus": "Deposit",
-    "cashMinus": "Payout",
-    "dailyChanges": "Daily changes",
-    "dailyChangesAll": "Daily changes (all)",
+    "addBookingType": "Add booking type",
+    "deleteBookingType": "Remove booking type",
+    "addAccount": "Add bank account",
+    "deleteAccount": "Remove bank account",
+    "addBooking": "Add booking",
     "exportDatabase": "Export database",
     "importDatabase": "Import database",
     "showAccounting": "Annual calculations",
     "settings": "Settings"
   },
-  "infoBar": {
-    "drawerTitles": {
-      "winloss": "Profit/loss",
-      "earnings": "Stock Proceeds",
-      "deposits": "Deposit",
-      "dividends": "Dividend",
-      "withdrawals": "Payout",
-      "fees": "Fee",
-      "taxes": "Tax",
-      "account": "Trading account",
-      "depot": "Depot account"
-    }
-  },
-  "stocksTable": {
-    "headers": [
-      {
-        "title": "ID",
-        "align": " d-none",
-        "sortable": false,
-        "key": "cID"
-      },
-      {
-        "title": "Actions",
-        "align": "start",
-        "sortable": false,
-        "key": "mAction"
-      },
-      {
-        "title": "Pursue",
-        "align": "start",
-        "sortable": true,
-        "key": "cCompany"
-      },
-      {
-        "title": "ISIN",
-        "align": "start",
-        "sortable": false,
-        "key": "cISIN"
-      },
-      {
-        "title": "Quarterly figures",
-        "align": "start",
-        "sortable": false,
-        "key": "cQuarterDay"
-      },
-      {
-        "title": "General meeting",
-        "align": "start",
-        "sortable": false,
-        "key": "cMeetingDay"
-      },
-      {
-        "title": "Portfolio",
-        "align": "start",
-        "sortable": true,
-        "key": "mPortfolio"
-      },
-      {
-        "title": "Purchase price",
-        "align": "start",
-        "sortable": false,
-        "key": "mBuyValue"
-      },
-      {
-        "title": "Win-loss",
-        "align": "start",
-        "sortable": false,
-        "key": "mEuroChange"
-      },
-      {
-        "title": "52-week low",
-        "align": "start",
-        "sortable": false,
-        "key": "mmin"
-      },
-      {
-        "title": "Course",
-        "align": "start",
-        "sortable": false,
-        "key": "mValue"
-      },
-      {
-        "title": "52-week high",
-        "align": "start",
-        "sortable": false,
-        "key": "mMax"
-      }
-    ],
-    "menuItems": [
-      {
-        "title": "Delete company",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "Buy stocks",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "Sell stocks",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "New dividend",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "Dividend overview",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "Configure company",
-        "icon": "$tableRemove"
-      },
-      {
-        "title": "Open external link",
-        "icon": "$tableRemove",
-        "url": ""
-      }
-    ],
-    "noDataText": "No entries found. ",
-    "itemsPerPageText": "Entries per page:"
-  },
-  "transfersTable": {
+  "appPage": {
     "search": "Seek",
     "headers": [
       {
         "title": "ID",
-        "align": " d-none",
+        "align": " D-None",
         "sortable": false,
         "key": "cID"
       },
@@ -198,12 +32,6 @@
         "align": "start",
         "sortable": false,
         "key": "mAction"
-      },
-      {
-        "title": "Pursue",
-        "align": "start",
-        "sortable": false,
-        "key": "mCompany"
       },
       {
         "title": "Date",
@@ -212,80 +40,41 @@
         "key": "cDate"
       },
       {
-        "title": "ex-day",
+        "title": "Debit",
         "align": "start",
         "sortable": false,
-        "key": "cExDay"
+        "key": "cDebit"
       },
       {
-        "title": "Price",
+        "title": "Credit",
         "align": "start",
         "sortable": false,
-        "key": "cUnitQuotation"
-      },
-      {
-        "title": "Deposit/Withdrawal",
-        "align": "start",
-        "sortable": false,
-        "key": "cAmount"
-      },
-      {
-        "title": "Number",
-        "align": "start",
-        "sortable": false,
-        "key": "cCount"
-      },
-      {
-        "title": "Fee",
-        "align": "start",
-        "sortable": false,
-        "key": "cFees"
-      },
-      {
-        "title": "Source tax",
-        "align": "start",
-        "sortable": false,
-        "key": "cSTax"
-      },
-      {
-        "title": "Transaction tax",
-        "align": "start",
-        "sortable": false,
-        "key": "cFTax"
-      },
-      {
-        "title": "Tax",
-        "align": "start",
-        "sortable": false,
-        "key": "cTax"
-      },
-      {
-        "title": "Soli",
-        "align": "start",
-        "sortable": false,
-        "key": "cSoli"
-      },
-      {
-        "title": "Trading place",
-        "align": "start",
-        "sortable": false,
-        "key": "cMarketPlace"
+        "key": "cCredit"
       },
       {
         "title": "Remark",
         "align": "start",
         "sortable": false,
         "key": "cDescription"
+      },
+      {
+        "title": "Booking type",
+        "align": "start",
+        "sortable": false,
+        "key": "cAccountType"
+      },
+      {
+        "title": "Account",
+        "align": " d-none",
+        "sortable": false,
+        "key": "cAccountNumberID"
       }
     ],
     "menuItems": [
       {
+        "id": "DeleteBooking",
         "title": "Delete booking",
         "icon": "$tableRemove"
-      },
-      {
-        "title": "Correct booking",
-        "icon": "$close"
       }
     ],
     "noDataText": "No entries found.",
@@ -294,214 +83,86 @@
   "dialogs": {
     "cancel": "Cancel",
     "ok": "OK",
+    "addBooking": {
+      "title": "Add booking",
+      "dateLabel": "Booking day",
+      "descriptionLabel": "Remark",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit",
+      "typeLabel": "Booking type",
+      "success": "Booking was added",
+      "error": "Enter error?"
+    },
+    "deleteBooking": {
+      "title": "Booking",
+      "ask": "Delete now?",
+      "success": "Booking was removed",
+      "error": "Enter error?"
+    },
     "addAccount": {
-      "title": "Add company",
-      "isin": "ISIN",
-      "company": "Pursue",
-      "wkn": "WKN",
-      "symbol": "Abbreviation",
-      "errors": [
-        "ISIN already exists!"
-      ]
+      "title": "Add bank account",
+      "swiftLabel": "BIC/SWIFT CODE",
+      "logoLabel": "Logo brandfetch.com",
+      "accountNumberLabel": "Account number",
+      "currencyPlaceholder": "f. e. USD",
+      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "success": "Account was added",
+      "error": "Account already exists"
     },
-    "fadeinStock": {
-      "title": "Show hidden company",
-      "company": "Pursue"
+    "deleteAccount": {
+      "title": "Remove bank account",
+      "accountNumberLabel": "Account number",
+      "success": "Account was removed",
+      "error": "Account was not removed?"
     },
-    "addDeposit": {
-      "title": "Deposit",
-      "amount": "Amount",
-      "date": "Date",
-      "description": "Remark",
-      "types": {
-        "transfer": "Transfer",
-        "fee": "Fee",
-        "stax": "Source tax",
-        "ftax": "Transaction tax",
-        "tax": "Tax",
-        "soli": "Solidarity surcharge"
-      }
+    "addBookingType": {
+      "title": "Add booking type",
+      "label": "Booking type",
+      "success": "Booking type was added",
+      "error": "Booking type already exists"
     },
-    "addWithdrawal": {
-      "title": "Payout",
-      "amount": "Amount",
-      "date": "Date",
-      "description": "Remark",
-      "types": {
-        "transfer": "Transfer",
-        "fee": "Fee",
-        "stax": "Source tax",
-        "ftax": "Transaction tax",
-        "tax": "Tax",
-        "soli": "Solidarity surcharge"
-      }
+    "deleteBookingType": {
+      "title": "Delete booking type",
+      "label": "Booking type",
+      "success": "Booking type was removed",
+      "error": "Booking type was not removed"
     },
     "showAccounting": {
-      "title": "Annual invoice",
-      "returnRate": "Return",
-      "efficiency": "Efficiency",
-      "year": "Year",
-      "deposits": "Deposit",
-      "withdrawals": "Payout",
-      "dividends": "Dividend",
-      "taxes": "Taxes/Soli",
-      "fees": "Fees",
-      "earnings": "Stock Proceeds"
-    },
-    "dailyChanges": {
-      "title": "Daily changes"
-    },
-    "dailyChangesAll": {
-      "title": "All daily changes"
+      "title": "Booking results",
+      "dateLabel": "Booking day",
+      "descriptionLabel": "Remark",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit",
+      "success": "Booking was added",
+      "error": "Enter error?"
     },
     "exportDatabase": {
       "title": "Export database",
-      "filename": "filename"
+      "filename": "File name"
     },
     "importDatabase": {
       "title": "Import database",
-      "filename": "filename",
+      "filename": "File name",
       "label": "from file"
     },
-    "deleteTransfer": {
-      "title": "Delete booking",
-      "message": [
-        "Should the booking be from",
-        "really be deleted?",
-        "Only the first booking can be deleted."
-      ]
-    },
-    "updateTransfer": {
-      "title": "Edit booking",
-      "bookDay": "Booking day",
-      "exDay": "Ex-day",
-      "unitQuotation": "Price",
-      "amount": "Amount",
-      "number": "Number",
-      "fees": "Fees",
-      "sTax": "Source tax",
-      "fTax": "Transaction tax",
-      "tax": "Tax",
-      "soli": "Solidarity surcharge",
-      "marketPlace": "Trading place",
-      "description": "Remark",
-      "validationError": "The booking cannot be validated."
-    },
-    "deleteStock": {
-      "title": "Delete company",
-      "messageA": "Should the company {company} really be deleted?",
-      "messageB": "There are bookings from {company}. ",
-      "msgPortfolio": "The share is included in the portfolio and cannot be hidden."
-    },
-    "addDividend": {
-      "title": "New dividend - {company}",
-      "bookDay": "Booking day",
-      "exDay": "Ex-day",
-      "count": "Number",
-      "unitQuotation": "Price",
-      "stax": "Withholding tax",
-      "tax": "Steer",
-      "soli": "Solidarity surcharge",
-      "description": "remark",
-      "validationError": "The dividend cannot be validated."
-    },
-    "viewDividend": {
-      "title": "Dividend Overview - {company}"
-    },
-    "sellStock": {
-      "title": "Sell shares - {company}",
-      "bookDay": "Booking day",
-      "count": "Number",
-      "unitQuotation": "Price",
-      "fees": "Fees",
-      "stax": "Withholding tax",
-      "tax": "Steer",
-      "soli": "Solos",
-      "marketplace": "Trading place",
-      "validationError": "The share cannot be validated.",
-      "loss": "Win/Loss"
-    },
-    "configStock": {
-      "title": "Configure share - {company}",
-      "company": "Pursue",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Abbreviation",
-      "firstPage": "First page",
-      "fadeOut": "Hide",
-      "qf": "Quarterly figures",
-      "gm": "General meeting",
-      "url": "Link to stock page",
-      "validationError": "The configuration cannot be validated."
-    },
-    "exportDialog": "When backed up, the file {filename} is created and saved in the user's Downloaded Files folder. ",
-    "buyStock": {
-      "title": "Buy shares - {company}",
-      "bookDay": "Booking day",
-      "count": "Number",
-      "unitQuotation": "Price",
-      "fees": "Fees",
-      "ftax": "Transaction tax",
-      "tax": "Steer",
-      "soli": "Solidarity surcharge",
-      "marketplace": "Trading place",
-      "validationError": "The share cannot be validated.",
-      "hint": "Information is required"
-    },
-    "validators": {
-      "standard": "Input is required",
-      "positiveInteger": "An integer is required",
-      "isoDate": "Date is required",
-      "isin": "ISIN format must be observed"
-    }
+    "exportDialog": "When backing up, the file {filename} is generated and saved in the folder - downloaded files - from the user. "
   },
   "footer": {
     "help": "Help",
     "privacy": "Data protection",
-    "partner": "partner",
     "mail": "E-mail"
   },
-  "header": {
-    "titleExample": "Stock management with almost real-time prices from: {service}",
-    "toolbar": {
-      "home": "Home page",
-      "transfersTable": "Bookings",
-      "reload": "Update courses",
-      "addAccount": "Add company",
-      "deleteStock": "Remove company",
-      "fadeinStock": "Show company",
-      "cashPlus": "Deposit",
-      "cashMinus": "Payout",
-      "dailyChanges": "Daily changes",
-      "dailyChangesAll": "Daily changes (all)",
-      "exportDatabase": "Export database",
-      "importDatabase": "Import database",
-      "showAccounting": "Annual calculations",
-      "settings": "Settings"
-    },
-    "drawer": {
-      "winloss": "Profit/loss",
-      "earnings": "Stock Proceeds",
-      "deposits": "Deposit",
-      "dividends": "Dividend",
-      "withdrawals": "Payout",
-      "fees": "Fee",
-      "taxes": "Tax",
-      "account": "Trading account",
-      "depot": "Depot account"
-    }
-  },
-  "helpPage": {
-    "title": "Stock manager help",
+  "helpContent": {
+    "title": "Mein GiroKonto help",
     "requestsTitle": "Requirements",
     "requests": [
       {
-        "title": "Settings - Privacy - History",
-        "content": "MeinGiroKonto does not work in private mode. ",
+        "title": "Settings - data protection - chronicle",
+        "content": "Mein Giro account does not work in private mode. ",
         "icon": ""
       },
       {
-        "title": "Start MeinGiroKonto",
+        "title": "Mein Girokonto start",
         "content": "The symbol shown appears in the Firefox toolbar after installation. ",
         "icon": "$sm"
       }
@@ -509,53 +170,53 @@
     "toolBarTitle": "Toolbar",
     "toolBar": [
       {
-        "title": "Home page",
-        "content": "Click to return to the home page.",
+        "title": "Homepage",
+        "content": "Click to return to the homepage.",
         "icon": "$home"
       },
       {
         "title": "Bookings",
-        "content": "Click to go to the booking page.",
+        "content": "Click to get to the booking page.",
         "icon": "$transfersTable"
       },
       {
         "title": "Update courses",
-        "content": "Click to update courses.",
+        "content": "Click to update the courses.",
         "icon": "$reload"
       },
       {
-        "title": "Add company",
+        "title": "Add companies",
         "content": "Click to open the required dialog.",
         "icon": "$addAccount"
       },
       {
-        "title": "Remove company",
+        "title": "Remove companies",
         "content": "Click to open the required dialog.",
         "icon": "$deleteStock"
       },
       {
-        "title": "Show company",
+        "title": "Show companies",
         "content": "Click to open the required dialog.",
-        "icon": "$faintstock"
+        "icon": "$fadeinStock"
       },
       {
         "title": "Deposit",
-        "content": "Click to open the required dialog.",
+        "content": "Click to open the required dialogue.",
         "icon": "$cashPlus"
       },
       {
-        "title": "Payout",
+        "title": "Pay",
         "content": "Click to open the required dialog.",
         "icon": "$cashMinus"
       },
       {
         "title": "Daily changes",
-        "content": "Click to see daily changes.",
+        "content": "Click to display the daily changes.",
         "icon": "$dailyChanges"
       },
       {
         "title": "Daily changes (all)",
-        "content": "Click to see all daily changes.",
+        "content": "Click to display all daily changes.",
         "icon": "$dailyChangesAll"
       },
       {
@@ -570,30 +231,29 @@
       },
       {
         "title": "Bookings",
-        "content": "Click to view bookings.",
+        "content": "Click to display the bookings.",
         "icon": "$transfersTable"
       },
       {
         "title": "Annual calculations",
-        "content": "Click to view annual calculations.",
+        "content": "Click to display the annual calculations.",
         "icon": "$showAccounting"
       },
       {
         "title": "Settings",
-        "content": "Click to display the Stock Manager Settings tab.",
+        "content": "Click to display the MeinGiro account settings.",
         "icon": "$settings"
       }
     ],
-    "companyBarTitle": "Company promotions",
-    "companyBarSubtitle": "Dialogues and links",
+    "companyBarTitle": "Companies actions",
     "companyBar": [
       {
-        "title": "Buy stocks",
+        "title": "Buy shares",
         "subtitle": "",
         "icon": "$addAccount"
       },
       {
-        "title": "Sell stocks",
+        "title": "Sell ​​shares",
         "subtitle": "",
         "icon": "$sellStock"
       },
@@ -605,20 +265,20 @@
       {
         "title": "Dividend overview",
         "subtitle": "",
-        "icon": "$showDividend"
+        "icon": "$addDividend"
       },
       {
-        "title": "Configure company",
+        "title": "Configure companies",
         "subtitle": "",
-        "icon": "$configs"
+        "icon": "$addDividend"
       },
       {
-        "title": "Company broker site",
+        "title": "Business broker page",
         "subtitle": "",
         "icon": "$link"
       }
     ],
-    "transferBarTitle": "Bookings promotions",
+    "transferBarTitle": "Bookings actions",
     "transferBar": [
       {
         "title": "Delete booking",
@@ -630,153 +290,46 @@
         "subtitle": "",
         "icon": "$editDocument"
       }
-    ],
-    "footerBarTitle": "Footer",
-    "footerBarSubtitle": "Open other pages",
-    "footerBar": [
-      {
-        "title": "Help",
-        "content": "Click to view this help page.",
-        "icon": "$help"
-      },
-      {
-        "title": "Data protection",
-        "content": "Click to view the data protection page.",
-        "icon": "$privacy"
-      },
-      {
-        "title": "Partner",
-        "content": "Click to view the partner page.",
-        "icon": "$partner"
-      }
     ]
   },
   "privacyContent": {
-    "title": "MeinGiroKonto data protection guidelines",
+    "title": "Mein Giro account data protection guidelines",
     "local": {
       "title": "Local data",
-      "content": "MeinGiroKonto saves all data locally in the browser. "
+      "content": "No data is sent to a server. "
     },
     "public": {
       "title": "Public data",
-      "content": "MeinGiroKonto uses price data from public price providers. "
+      "content": "Only Bank-logos from Brandfetsch.com are used and accessed on the Internet. "
     },
     "connections": {
       "title": "Internet connections",
-      "content": "to the course providers are made to receive:",
-      "dataList": [
-        "Course dates",
-        "Raw material data",
-        "Index data",
-        "Daily deltas",
-        "52 week high/low data",
-        "exchange rates"
-      ]
+      "content": "Connections are only made to download bank logos from Brandfetsch.com."
     }
-  },
-  "partnerPage": {
-    "title": "Stock manager partner",
-    "buttonText": "Open",
-    "linkData": [
-      {
-        "title": "Finance.net",
-        "content": "Price data, index data, material data",
-        "url": "https://www.finanzen.net/",
-        "icon": "fnet"
-      },
-      {
-        "title": "Fx rate",
-        "content": "Exchange rate data",
-        "url": "https://fx-rate.net/",
-        "icon": "fx"
-      },
-      {
-        "title": "Daily news",
-        "content": "Course dates",
-        "url": "https://www.tagesschau.de/wirtschaft/boersenkurs/",
-        "icon": "ard"
-      },
-      {
-        "title": "Tradegatexchange",
-        "content": "New share data",
-        "url": "https://www.tradegate.de/",
-        "icon": "tgate"
-      },
-      {
-        "title": "Wall street online",
-        "content": "Course dates",
-        "url": "https://www.wallstreet-online.de/",
-        "icon": "wstreet"
-      },
-      {
-        "title": "Stock check",
-        "content": "Price data, 52 week high/low data",
-        "url": "https://www.aktiencheck.de/",
-        "icon": "acheck"
-      },
-      {
-        "title": "GOYAX",
-        "content": "Course dates",
-        "url": "https://www.goyax.de/",
-        "icon": "goyax"
-      }
-    ]
   },
   "optionsPage": {
     "tabs": [
       {
-        "title": "Generally",
+        "title": "Themes",
         "id": "register_ge"
-      },
-      {
-        "title": "Marketplace",
-        "id": "register_mp"
-      },
-      {
-        "title": "Indices",
-        "id": "register_ind"
-      },
-      {
-        "title": "Raw materials",
-        "id": "register_mat"
-      },
-      {
-        "title": "Currencies",
-        "id": "register_ex"
       }
     ],
-    "capitals": {
-      "skins": "Topics",
-      "services": "Course provider"
-    },
     "themeNames": {
       "earth": "Earth",
-      "ocean": "ocean",
+      "ocean": "Ocean",
       "sky": "Heaven",
       "meadow": "Meadow",
       "dark": "Dark",
       "light": "Bright"
-    },
-    "materials": {
-      "au": "Gold",
-      "ag": "Silver",
-      "brent": "Oil (Brent)",
-      "cu": "copper",
-      "pt": "platinum",
-      "al": "aluminum",
-      "ni": "nickel",
-      "sn": "tin",
-      "pb": "Lead"
-    },
-    "exchanges": {
-      "title": "Exchange rate abbreviation",
-      "label": "Abbreviation",
-      "error": "The abbreviation is invalid."
-    },
-    "markets": {
-      "title": "Trading venues",
-      "label": "Trading place",
-      "error": "The trading venue is invalid."
     }
+  },
+  "validators": {
+    "ibanRules": "Iban is required | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
+    "nameRules": "Name is required | Nur 15 Zeichen | Nur Buchstaben",
+    "swiftRules": "Swift is required | Nur 12 Zeichen | Nur alphanumerisch",
+    "dateRules": "Date is required",
+    "currencyCodeRules": "Is required | 3 Zeichen | Nur Buchstaben",
+    "requiredRule": "Is required",
+    "brandNameRules": "Is required"
   }
 }

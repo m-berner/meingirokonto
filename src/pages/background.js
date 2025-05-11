@@ -266,7 +266,6 @@ export const useApp = () => {
 };
 const { CONS, log } = useApp();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    log('BACKGROUND: add listener');
     const onInstall = () => {
         log('BACKGROUND: onInstall');
         return new Promise(async (resolve) => {
@@ -382,6 +381,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onMessage.addListener(onSettings);
-    log('--- PAGE_SCRIPT background.js ---', { info: window.location.href });
+    log('BACKGROUND: attached listener', { info: window.location.href });
 }
-log('--- PAGE_SCRIPT background.js + useApp ---');
+log('--- PAGE_SCRIPT background.js --- CONS + useApp ---');

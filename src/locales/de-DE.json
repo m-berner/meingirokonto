@@ -150,11 +150,10 @@
   "footer": {
     "help": "Hilfe",
     "privacy": "Datenschutz",
-    "partner": "Partner",
     "mail": "Email"
   },
   "helpContent": {
-    "title": "MeinGiroKonto Hilfe",
+    "title": "Mein GiroKonto Hilfe",
     "requestsTitle": "Anforderungen",
     "requests": [
       {
@@ -163,7 +162,7 @@
         "icon": ""
       },
       {
-        "title": "MeinGiroKonto starten",
+        "title": "Mein GiroKonto starten",
         "content": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden.",
         "icon": "$sm"
       }

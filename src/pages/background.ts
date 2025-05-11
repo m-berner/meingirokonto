@@ -513,8 +513,8 @@ export const useApp = (): IUseApp => {
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
     },
-    log: async (msg, mode = { info: null })  => {
-      const storageLocal: Partial<IStorageLocal>= await browser.storage.local.get(['sDebug'])
+    log: async (msg, mode = {info: null}) => {
+      const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get(['sDebug'])
       if (storageLocal.sDebug) {
         if (mode.info !== null) {
           console.info(msg, mode.info)
@@ -529,7 +529,6 @@ export const useApp = (): IUseApp => {
 const {CONS, log} = useApp()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  log('BACKGROUND: add listener')
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = (): Promise<void> => {
     log('BACKGROUND: onInstall')
@@ -758,7 +757,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onMessage.addListener(onSettings)
-  log('--- PAGE_SCRIPT background.js ---', {info: window.location.href})
+  log('BACKGROUND: attached listener', {info: window.location.href})
 }
 
-log('--- PAGE_SCRIPT background.js + useApp ---')
+log('--- PAGE_SCRIPT background.js --- CONS + useApp ---')
