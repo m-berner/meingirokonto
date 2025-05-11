@@ -13,11 +13,13 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
 import {useAddAccountStore} from '@/components/dialogs/addaccount'
 import {storeToRefs} from 'pinia'
+import {useTitleBarStore} from '@/components/titlebar'
 
 const {t} = useI18n()
 const {log, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const addaccount = useAddAccountStore()
+const titlebar = useTitleBarStore()
 const {_logoUrl, _number, _swift, _brandFetchName} = storeToRefs(addaccount)
 
 addaccount.setSteady({
@@ -57,17 +59,15 @@ const ok = (): Promise<void> => {
           cNumber: _number.value.replace(/\s/g, ''),
           cLogoUrl: _logoUrl.value
         })
-        if (settings.activeAccountId < 0) {
-          const accountIndex = records.getAccountIndexById(result)
-          const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
-          settings.setLogo(lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg')
+        if (result > 0) {
           settings.setActiveAccountId(result)
-          await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
+          titlebar.setLogo()
           await browser.storage.local.set({sActiveAccountId: result})
+          await notice([t('dialogs.addAccount.success')])
+          formRef.value!.reset()
+          resolve()
         }
-        await notice([t('dialogs.addAccount.success')])
-        formRef.value!.reset()
-        resolve()
+
       } catch (e) {
         console.error(e)
         await notice([t('dialogs.addAccount.error')])

@@ -33,7 +33,7 @@ interface IRecordStoreBookingType {
   per_account: IBookingType[]
 }
 
-const {CONS, log} = useApp()
+const {CONS, log, notice} = useApp()
 
 export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = defineStore('records', {
   state: (): IRecordsStore => {
@@ -107,11 +107,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         throw new Error('getBookingTextById: No booking found for given ID')
       }
     },
-    sumBookings(): void | Error {
+    sumBookings(msg: string): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
-        throw new Error('sumBookings: No account found for given ID')
+        notice([msg]).then()
+        return
       }
       const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
         return rec.cAccountNumberID === this._accounts.all[activeAccountIndex].cID
@@ -183,10 +184,17 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         const onSuccess = (ev: Event): void => {
           if (ev.target instanceof IDBOpenDBRequest) {
             this._dbi = ev.target.result
+            const onVersionChangeSuccess = (): void => {
+              if (this._dbi != null) {
+                this._dbi.close()
+                notice(['Database is outdated, please reload the page.'])
+              }
+            }
+            this._dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE)
             resolve('RECORDS: database opened successfully!')
           }
         }
-        const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
+        const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
         openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
       })
@@ -274,7 +282,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     addAccount(record: Omit<IAccount, 'cID'>): Promise<string> {
       return new Promise(async (resolve, reject) => {
-        const settings = useSettingsStore()
+        //const settings = useSettingsStore()
         if (this._dbi != null) {
           const onSuccess = async (ev: Event): Promise<void> => {
             if (ev.target instanceof IDBRequest) {
@@ -283,8 +291,6 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
                 cID: ev.target.result
               }
               this._accounts.all.push(memRecord)
-              settings.setActiveAccountId(ev.target.result)
-              await browser.storage.local.set({sActiveAccountId: ev.target.result})
               resolve(ev.target.result)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -409,7 +415,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._bookings.all.splice(indexOfBooking, 1)
-            this.sumBookings()
+            this.sumBookings('Booking deleted')
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {

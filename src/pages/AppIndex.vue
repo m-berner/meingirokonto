@@ -11,8 +11,8 @@ import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
-import {useTitleBarStore} from '@/components/titlebar'
 import {storeToRefs} from 'pinia'
+import {useTitleBarStore} from '@/components/titlebar'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -59,10 +59,15 @@ onBeforeMount((): Promise<void> => {
       if (
         keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
-        ev.key === 'd' && _debug
+        ev.key === 'd' && _debug.value
       ) {
         browser.storage.local.set({sDebug: false})
-      } else {
+      }
+      if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'd' && !_debug.value
+      ) {
         browser.storage.local.set({sDebug: true})
       }
     }
@@ -82,7 +87,8 @@ onBeforeMount((): Promise<void> => {
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
     await records.openDatabase()
     await records.databaseIntoStore()
-    titlebar.updateTitlebar()
+    titlebar.setLogo()
+    records.sumBookings()
     log('APPINDEX: onBeforeMount: after')
     resolve()
   })

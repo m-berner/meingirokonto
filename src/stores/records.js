@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS, log } = useApp();
+const { CONS, log, notice } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -70,11 +70,12 @@ export const useRecordsStore = defineStore('records', {
                 throw new Error('getBookingTextById: No booking found for given ID');
             }
         },
-        sumBookings() {
+        sumBookings(msg) {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
-                throw new Error('sumBookings: No account found for given ID');
+                notice([msg]).then();
+                return;
             }
             const bookings_per_account = this._bookings.all.filter((rec) => {
                 return rec.cAccountNumberID === this._accounts.all[activeAccountIndex].cID;
@@ -143,10 +144,17 @@ export const useRecordsStore = defineStore('records', {
                 const onSuccess = (ev) => {
                     if (ev.target instanceof IDBOpenDBRequest) {
                         this._dbi = ev.target.result;
+                        const onVersionChangeSuccess = () => {
+                            if (this._dbi != null) {
+                                this._dbi.close();
+                                notice(['Database is outdated, please reload the page.']);
+                            }
+                        };
+                        this._dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
                         resolve('RECORDS: database opened successfully!');
                     }
                 };
-                const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
+                const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
                 openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                 openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
             });
@@ -226,7 +234,6 @@ export const useRecordsStore = defineStore('records', {
         },
         addAccount(record) {
             return new Promise(async (resolve, reject) => {
-                const settings = useSettingsStore();
                 if (this._dbi != null) {
                     const onSuccess = async (ev) => {
                         if (ev.target instanceof IDBRequest) {
@@ -235,8 +242,6 @@ export const useRecordsStore = defineStore('records', {
                                 cID: ev.target.result
                             };
                             this._accounts.all.push(memRecord);
-                            settings.setActiveAccountId(ev.target.result);
-                            await browser.storage.local.set({ sActiveAccountId: ev.target.result });
                             resolve(ev.target.result);
                         }
                         else {
@@ -364,7 +369,7 @@ export const useRecordsStore = defineStore('records', {
                 if (this._dbi != null) {
                     const onSuccess = () => {
                         this._bookings.all.splice(indexOfBooking, 1);
-                        this.sumBookings();
+                        this.sumBookings('Booking deleted');
                         resolve('Booking deleted');
                     };
                     const onError = (ev) => {

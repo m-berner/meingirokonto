@@ -8,13 +8,11 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
 import {useApp} from '@/pages/background'
-import {useRecordsStore} from '@/stores/records'
 
 interface ISettingsStore {
   _skin: string
   _bookings_per_page: number
   _active_account_id: number
-  _logo: string
   _debug: boolean
 }
 
@@ -26,7 +24,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       _skin: CONS.DEFAULTS.STORAGE.SKIN,
       _bookings_per_page: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
       _active_account_id: -1,
-      _logo: '',
       _debug: false
     }
   },
@@ -45,9 +42,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     setActiveAccountId(value: number): void {
       this._active_account_id = value
     },
-    setLogo(value: string): void {
-      this._logo = value
-    },
     setBookingsPerPage(value: number): void {
       this._bookings_per_page = value
     },
@@ -59,19 +53,18 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._active_account_id = settings.activeAccountId
       this._debug = settings.debug
     },
-    onUpdateAccount(value: number): Promise<void> {
-      log('SETTINGS: onUpdateAccount', {info: value})
-      const records = useRecordsStore()
-      return new Promise(async (resolve) => {
-        const accountIndex = records.getAccountIndexById(value)
-        const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
-        this._active_account_id = value
-        this._logo = lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'
-        await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
-        await browser.storage.local.set({sActiveAccountId: value})
-        resolve()
-      })
-    }
+    // onUpdateAccount(value: number): Promise<void> {
+    //   log('SETTINGS: onUpdateAccount', {info: value})
+    //   const records = useRecordsStore()
+    //   return new Promise(async (resolve) => {
+    //     const accountIndex = records.getAccountIndexById(value)
+    //     const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4)
+    //     this._active_account_id = value
+    //     await browser.storage.local.set({sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg'})
+    //     await browser.storage.local.set({sActiveAccountId: value})
+    //     resolve()
+    //   })
+    // }
   }
 })
 

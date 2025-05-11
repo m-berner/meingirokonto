@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
 import { useApp } from '@/pages/background';
-import { useRecordsStore } from '@/stores/records';
 const { CONS, log } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
@@ -9,7 +8,6 @@ export const useSettingsStore = defineStore('settings', {
             _skin: CONS.DEFAULTS.STORAGE.SKIN,
             _bookings_per_page: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
             _active_account_id: -1,
-            _logo: '',
             _debug: false
         };
     },
@@ -28,9 +26,6 @@ export const useSettingsStore = defineStore('settings', {
         setActiveAccountId(value) {
             this._active_account_id = value;
         },
-        setLogo(value) {
-            this._logo = value;
-        },
         setBookingsPerPage(value) {
             this._bookings_per_page = value;
         },
@@ -42,19 +37,6 @@ export const useSettingsStore = defineStore('settings', {
             this._active_account_id = settings.activeAccountId;
             this._debug = settings.debug;
         },
-        onUpdateAccount(value) {
-            log('SETTINGS: onUpdateAccount', { info: value });
-            const records = useRecordsStore();
-            return new Promise(async (resolve) => {
-                const accountIndex = records.getAccountIndexById(value);
-                const lName = records.accounts.all[accountIndex].cSwift.substring(0, 4);
-                this._active_account_id = value;
-                this._logo = lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg';
-                await browser.storage.local.set({ sLogo: lName[0].toUpperCase() + lName.toLowerCase().slice(1) + 'Svg' });
-                await browser.storage.local.set({ sActiveAccountId: value });
-                resolve();
-            });
-        }
     }
 });
 log('--- STORE settings.js ---');

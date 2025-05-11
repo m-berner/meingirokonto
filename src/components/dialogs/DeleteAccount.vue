@@ -13,6 +13,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
 import {useDeleteAccountStore} from '@/components/dialogs/deleteaccount'
 import {storeToRefs} from 'pinia'
+import {useTitleBarStore} from '@/components/titlebar'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
@@ -20,6 +21,7 @@ const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const deleteaccount = useDeleteAccountStore()
+const titlebar = useTitleBarStore()
 const {_selected} = storeToRefs(deleteaccount)
 
 deleteaccount.setSteady({
@@ -33,10 +35,14 @@ const ok = (): Promise<void> => {
       const result = await records.deleteAccount(_selected.value)
       if (result === 'Account deleted') {
         formRef.value?.reset()
-        if (settings.activeAccountId === _selected.value && records.accounts.length > 0) {
+        if (records.accounts.length > 0) {
           settings.setActiveAccountId(records.accounts.all[0].cID)
           await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+        } else {
+          settings.setActiveAccountId(-1)
+          await browser.storage.local.set({sActiveAccountId: -1})
         }
+        titlebar.setLogo()
         await notice([t('dialogs.deleteAccount.success')])
         resolve()
       }

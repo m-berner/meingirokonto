@@ -12,18 +12,17 @@ import {useApp} from '@/pages/background'
 import {useExportDatabaseStore} from '@/components/dialogs/exportdatabase'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS, log, notice} = useApp()
+const records = useRecordsStore()
 const exportdatabase = useExportDatabaseStore()
 const prefix = new Date().toISOString().substring(0, 10)
-const fn = `${prefix}_${CONS.DB.VERSION}_${CONS.DB.BKFN}`
+const fn = `${prefix}_${records.dbi.version}_${CONS.DB.NAME}.json`
 
 exportdatabase.setSteady({
   fileName: t('dialogs.exportDialog', { filename: fn })
 })
 const ok = (): Promise<void> => {
   log('EXPORTDATABASE: ok')
-  const records = useRecordsStore()
-  const {notice} = useApp()
   const stringifyDB = (): string => {
     let buffer: string
     let i: number
@@ -77,7 +76,7 @@ const ok = (): Promise<void> => {
     return buffer
   }
   let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${
-    CONS.DB.VERSION
+    records.dbi.version
   }, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'

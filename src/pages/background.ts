@@ -61,20 +61,14 @@ interface IStorageLocal {
 
 interface IUseApp {
   CONS: Readonly<{
-    CURRENCIES: {
-      EUR: string
-      USD: string
-      CODE: Map<string, string>
-    }
     DATE: {
       DEFAULT: number
-      DEFAULTSTR: string
-      FYEAR: number
-      MILLIPERDAY: number
-      MILLIPERMIN: number
+      DEFAULT_ISO: string
+      DEFAULT_YEAR: number
+      MILLI_PER_DAY: number
+      MILLI_PER_MIN: number
     }
     DB: {
-      BKFN: string
       NAME: string
       STORES: {
         ACCOUNTS: {
@@ -105,11 +99,10 @@ interface IUseApp {
             N: string
             AN: string
           }
-          START_ENTRY: string
         }
       }
-      VERSION: number
-      MINVERSION: number
+      MIN_VERSION: number
+      START_VERSION: number
     }
     DEFAULTS: {
       BACKGROUND: string
@@ -217,22 +210,11 @@ interface IUseApp {
       ERROR: string
       SUCCESS: string
     }
-    STATES: {
-      DONE: string
-      SRV: number
-      SUCCESS: number
-      PAUSE: string
-      MUTATE: string
-      NORENDER: string
-    }
     SYSTEM: {
       COPYRIGHT: string
-      DELAY: number
-      EMAIL: string
       MAILTO: string
       GET: string
-      HTMLENTITY: string
-      ISINLENGTH: number
+      HTML_ENTITY: string
       KEYS: {
         ENTER: string
         TAB: string
@@ -251,31 +233,8 @@ interface IUseApp {
         WRONGPARAM: string
         SEND: string
       }
-      ROWS: number
-      TYPE: number
       ONCE: {
         once: boolean
-      }
-    }
-    RECORDS: {
-      CONTROLLER: {
-        TOTAL: {
-          efficiency: number
-          returnRate: number
-          buy: number
-          sell: number
-          dividends: number
-          deposits: number
-          withdrawals: number
-          taxes: number
-          fees: number
-          earnings: number
-          account: number
-          depot: number
-          winloss: number
-          winlossPercent: number
-          depotBuyValue: number
-        }
       }
     }
   }>
@@ -296,94 +255,14 @@ interface IUseApp {
 export const useApp = (): IUseApp => {
   return {
     CONS: Object.freeze({
-      CURRENCIES: {
-        EUR: 'EUR',
-        USD: 'USD',
-        CODE: new Map([
-          ['ar', 'ARS'],
-          ['at', 'EUR'],
-          ['au', 'AUD'],
-          ['be', 'EUR'],
-          ['bg', 'BGN'],
-          ['bo', 'BOB'],
-          ['br', 'BRL'],
-          ['bz', 'BZD'],
-          ['ca', 'CAD'],
-          ['ch', 'CHF'],
-          ['cl', 'CLP'],
-          ['chs', 'CNY'],
-          ['cht', 'CNY'],
-          ['co', 'COU'],
-          ['cr', 'CRC'],
-          ['cs', 'CZK'],
-          ['cy', 'EUR'],
-          ['da', 'DKK'],
-          ['de', 'EUR'],
-          ['do', 'DOP'],
-          ['ec', 'USD'],
-          ['ee', 'EUR'],
-          ['el', 'EUR'],
-          ['es', 'EUR'],
-          ['et', 'EUR'],
-          ['fi', 'EUR'],
-          ['fr', 'EUR'],
-          ['gb', 'GBP'],
-          ['gr', 'EUR'],
-          ['gt', 'GTQ'],
-          ['hk', 'HKD'],
-          ['hn', 'HNL'],
-          ['hu', 'HUF'],
-          ['ie', 'EUR'],
-          ['in', 'INR'],
-          ['is', 'ISK'],
-          ['it', 'EUR'],
-          ['ja', 'JPY'],
-          ['jm', 'JMD'],
-          ['ko', 'KRW'],
-          ['li', 'EUR'],
-          ['lt', 'EUR'],
-          ['lu', 'EUR'],
-          ['mc', 'EUR'],
-          ['mo', 'MOP'],
-          ['mt', 'EUR'],
-          ['mx', 'MXN'],
-          ['ni', 'NIO'],
-          ['nl', 'EUR'],
-          ['no', 'NOK'],
-          ['nz', 'NZD'],
-          ['pa', 'PAB'],
-          ['pe', 'PEN'],
-          ['ph', 'PHP'],
-          ['pl', 'PLN'],
-          ['pr', 'USD'],
-          ['pt', 'EUR'],
-          ['py', 'PYG'],
-          ['ro', 'RON'],
-          ['ru', 'RUB'],
-          ['se', 'SEK'],
-          ['sg', 'SGD'],
-          ['sk', 'EUR'],
-          ['sl', 'EUR'],
-          ['sp', 'RSD'],
-          ['sv', 'USD'],
-          ['tr', 'TRY'],
-          ['tt', 'TTD'],
-          ['tw', 'TWD'],
-          ['uy', 'UYU'],
-          ['ve', 'VES'],
-          ['za', 'ZAR'],
-          ['zw', 'ZWD']
-        ])
-      },
       DATE: {
         DEFAULT: 0,
-        DEFAULTSTR: '1.1.1970',
-        FYEAR: 1970,
-        MILLIPERDAY: 86400000,
-        MILLIPERMIN: 60000
+        DEFAULT_ISO: '1970-01-01',
+        DEFAULT_YEAR: 1970,
+        MILLI_PER_DAY: 86400000,
+        MILLI_PER_MIN: 60000
       },
       DB: {
-        BKFN: 'meingirokonto.json',
         NAME: 'meingirokonto.db',
         STORES: {
           // <do not change! (part of database)
@@ -414,13 +293,12 @@ export const useApp = (): IUseApp => {
               ID: 'cID',
               N: 'cName',
               AN: 'cAccountNumberID'
-            },
-            START_ENTRY: 'Start'
+            }
           }
           // do not change! (part of database)>
         },
-        VERSION: 1,
-        MINVERSION: 1
+        MIN_VERSION: 1,
+        START_VERSION: 1
       },
       DEFAULTS: {
         BACKGROUND: '_generated_background_page.html',
@@ -546,23 +424,12 @@ export const useApp = (): IUseApp => {
         ERROR: 'ERR',
         SUCCESS: 'SUCCESS'
       },
-      STATES: {
-        DONE: 'complete',
-        SRV: 500,
-        SUCCESS: 200,
-        PAUSE: 'resting',
-        MUTATE: 'mutation',
-        NORENDER: 'norender'
-      },
       SYSTEM: {
         COPYRIGHT: '2013-2025 Martin Berner',
-        DELAY: 600,
-        EMAIL: 'mailto:meingirokonto@gmx.de',
         MAILTO: 'mailto:meingirokonto@gmx.de',
         GET: 'GET',
-        HTMLENTITY:
+        HTML_ENTITY:
           '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
-        ISINLENGTH: 12,
         KEYS: {
           ENTER: 'Enter',
           TAB: 'Tab',
@@ -581,30 +448,7 @@ export const useApp = (): IUseApp => {
           WRONGPARAM: 'Wrong parameter!',
           SEND: 'Send message failed!'
         },
-        ROWS: 10,
-        TYPE: 599,
         ONCE: {once: true}
-      },
-      RECORDS: {
-        CONTROLLER: {
-          TOTAL: {
-            efficiency: 0,
-            returnRate: 0,
-            buy: 0,
-            sell: 0,
-            dividends: 0,
-            deposits: 0,
-            withdrawals: 0,
-            taxes: 0,
-            fees: 0,
-            earnings: 0,
-            account: 0,
-            depot: 0,
-            winloss: 0,
-            winlossPercent: 0,
-            depotBuyValue: 0
-          }
-        }
       }
     }),
     VALIDATORS: Object.freeze({
@@ -670,7 +514,8 @@ export const useApp = (): IUseApp => {
       return new Date(`${iso}T00:00:00.000`)
     },
     log: async (msg, mode = { info: null })  => {
-      if ((await debug)['sDebug']) {
+      const storageLocal: Partial<IStorageLocal>= await browser.storage.local.get(['sDebug'])
+      if (storageLocal.sDebug) {
         if (mode.info !== null) {
           console.info(msg, mode.info)
         } else {
@@ -682,7 +527,6 @@ export const useApp = (): IUseApp => {
 }
 
 const {CONS, log} = useApp()
-const debug = browser.storage.local.get(['sDebug'])
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   log('BACKGROUND: add listener')
@@ -692,22 +536,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     return new Promise(async (resolve): Promise<void> => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
       const onSuccess = (ev: Event): void => {
+        if (ev.target instanceof IDBRequest) {
+          ev.target.result.close()
+        }
         log('BACKGROUND: onInstall: onSuccess', {info: ev})
-        // if (ev.target instanceof IDBRequest) {
-        //   const openDB = ev.target.result
-        //   const transaction = openDB.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-        //   const onComplete = () => {
-        //     openDB.close()
-        //     log('BACKGROUND: onInstall: Transaction completed.')
-        //   }
-        //   const onError = () => {
-        //     openDB.close()
-        //     console.error('BACKGROUND: onInstall: Transaction not opened due to error. Duplicate items not allowed.')
-        //   }
-        //   transaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-        //   transaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        //   //transaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({cName: CONS.DB.STORES.BOOKING_TYPES.START_ENTRY})
-        // }
       }
       const onError = (ev: Event): void => {
         console.error('BACKGROUND: onError: ', ev)
@@ -856,9 +688,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             createDB()
           } else {
             // updateDB()
-            // remove historical values TODO move into updateDB...
-            //await browser.storage.local
-            //  .remove(CONS.SYSTEM.STORAGE_OLD)
           }
           if (storageLocal.sSkin === undefined) {
             await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
@@ -874,12 +703,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         }
       }
-
-      const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION)
+      const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
       dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
       dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
       dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
-
       resolve()
     })
   }

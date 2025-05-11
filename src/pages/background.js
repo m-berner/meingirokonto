@@ -1,94 +1,14 @@
 export const useApp = () => {
     return {
         CONS: Object.freeze({
-            CURRENCIES: {
-                EUR: 'EUR',
-                USD: 'USD',
-                CODE: new Map([
-                    ['ar', 'ARS'],
-                    ['at', 'EUR'],
-                    ['au', 'AUD'],
-                    ['be', 'EUR'],
-                    ['bg', 'BGN'],
-                    ['bo', 'BOB'],
-                    ['br', 'BRL'],
-                    ['bz', 'BZD'],
-                    ['ca', 'CAD'],
-                    ['ch', 'CHF'],
-                    ['cl', 'CLP'],
-                    ['chs', 'CNY'],
-                    ['cht', 'CNY'],
-                    ['co', 'COU'],
-                    ['cr', 'CRC'],
-                    ['cs', 'CZK'],
-                    ['cy', 'EUR'],
-                    ['da', 'DKK'],
-                    ['de', 'EUR'],
-                    ['do', 'DOP'],
-                    ['ec', 'USD'],
-                    ['ee', 'EUR'],
-                    ['el', 'EUR'],
-                    ['es', 'EUR'],
-                    ['et', 'EUR'],
-                    ['fi', 'EUR'],
-                    ['fr', 'EUR'],
-                    ['gb', 'GBP'],
-                    ['gr', 'EUR'],
-                    ['gt', 'GTQ'],
-                    ['hk', 'HKD'],
-                    ['hn', 'HNL'],
-                    ['hu', 'HUF'],
-                    ['ie', 'EUR'],
-                    ['in', 'INR'],
-                    ['is', 'ISK'],
-                    ['it', 'EUR'],
-                    ['ja', 'JPY'],
-                    ['jm', 'JMD'],
-                    ['ko', 'KRW'],
-                    ['li', 'EUR'],
-                    ['lt', 'EUR'],
-                    ['lu', 'EUR'],
-                    ['mc', 'EUR'],
-                    ['mo', 'MOP'],
-                    ['mt', 'EUR'],
-                    ['mx', 'MXN'],
-                    ['ni', 'NIO'],
-                    ['nl', 'EUR'],
-                    ['no', 'NOK'],
-                    ['nz', 'NZD'],
-                    ['pa', 'PAB'],
-                    ['pe', 'PEN'],
-                    ['ph', 'PHP'],
-                    ['pl', 'PLN'],
-                    ['pr', 'USD'],
-                    ['pt', 'EUR'],
-                    ['py', 'PYG'],
-                    ['ro', 'RON'],
-                    ['ru', 'RUB'],
-                    ['se', 'SEK'],
-                    ['sg', 'SGD'],
-                    ['sk', 'EUR'],
-                    ['sl', 'EUR'],
-                    ['sp', 'RSD'],
-                    ['sv', 'USD'],
-                    ['tr', 'TRY'],
-                    ['tt', 'TTD'],
-                    ['tw', 'TWD'],
-                    ['uy', 'UYU'],
-                    ['ve', 'VES'],
-                    ['za', 'ZAR'],
-                    ['zw', 'ZWD']
-                ])
-            },
             DATE: {
                 DEFAULT: 0,
-                DEFAULTSTR: '1.1.1970',
-                FYEAR: 1970,
-                MILLIPERDAY: 86400000,
-                MILLIPERMIN: 60000
+                DEFAULT_ISO: '1970-01-01',
+                DEFAULT_YEAR: 1970,
+                MILLI_PER_DAY: 86400000,
+                MILLI_PER_MIN: 60000
             },
             DB: {
-                BKFN: 'meingirokonto.json',
                 NAME: 'meingirokonto.db',
                 STORES: {
                     ACCOUNTS: {
@@ -118,12 +38,11 @@ export const useApp = () => {
                             ID: 'cID',
                             N: 'cName',
                             AN: 'cAccountNumberID'
-                        },
-                        START_ENTRY: 'Start'
+                        }
                     }
                 },
-                VERSION: 1,
-                MINVERSION: 1
+                MIN_VERSION: 1,
+                START_VERSION: 1
             },
             DEFAULTS: {
                 BACKGROUND: '_generated_background_page.html',
@@ -245,22 +164,11 @@ export const useApp = () => {
                 ERROR: 'ERR',
                 SUCCESS: 'SUCCESS'
             },
-            STATES: {
-                DONE: 'complete',
-                SRV: 500,
-                SUCCESS: 200,
-                PAUSE: 'resting',
-                MUTATE: 'mutation',
-                NORENDER: 'norender'
-            },
             SYSTEM: {
                 COPYRIGHT: '2013-2025 Martin Berner',
-                DELAY: 600,
-                EMAIL: 'mailto:meingirokonto@gmx.de',
                 MAILTO: 'mailto:meingirokonto@gmx.de',
                 GET: 'GET',
-                HTMLENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
-                ISINLENGTH: 12,
+                HTML_ENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
                 KEYS: {
                     ENTER: 'Enter',
                     TAB: 'Tab',
@@ -279,30 +187,7 @@ export const useApp = () => {
                     WRONGPARAM: 'Wrong parameter!',
                     SEND: 'Send message failed!'
                 },
-                ROWS: 10,
-                TYPE: 599,
                 ONCE: { once: true }
-            },
-            RECORDS: {
-                CONTROLLER: {
-                    TOTAL: {
-                        efficiency: 0,
-                        returnRate: 0,
-                        buy: 0,
-                        sell: 0,
-                        dividends: 0,
-                        deposits: 0,
-                        withdrawals: 0,
-                        taxes: 0,
-                        fees: 0,
-                        earnings: 0,
-                        account: 0,
-                        depot: 0,
-                        winloss: 0,
-                        winlossPercent: 0,
-                        depotBuyValue: 0
-                    }
-                }
             }
         }),
         VALIDATORS: Object.freeze({
@@ -367,7 +252,8 @@ export const useApp = () => {
             return new Date(`${iso}T00:00:00.000`);
         },
         log: async (msg, mode = { info: null }) => {
-            if ((await debug)['sDebug']) {
+            const storageLocal = await browser.storage.local.get(['sDebug']);
+            if (storageLocal.sDebug) {
                 if (mode.info !== null) {
                     console.info(msg, mode.info);
                 }
@@ -379,7 +265,6 @@ export const useApp = () => {
     };
 };
 const { CONS, log } = useApp();
-const debug = browser.storage.local.get(['sDebug']);
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     log('BACKGROUND: add listener');
     const onInstall = () => {
@@ -387,6 +272,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         return new Promise(async (resolve) => {
             const storageLocal = await browser.storage.local.get();
             const onSuccess = (ev) => {
+                if (ev.target instanceof IDBRequest) {
+                    ev.target.result.close();
+                }
                 log('BACKGROUND: onInstall: onSuccess', { info: ev });
             };
             const onError = (ev) => {
@@ -438,7 +326,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 }
             };
-            const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.VERSION);
+            const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
             dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
             dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
             dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
