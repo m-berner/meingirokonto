@@ -45,12 +45,16 @@ const ok = (): Promise<string> => {
         let account: IAccount
         let booking: IBooking
         let bookingType: IBookingType
+        let stock: IStock
         if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
           await notice(['IMPORTDATABASE: onFileLoaded', 'Invalid backup file version'])
           reject('Invalid backup file version')
         } else {
           for (account of bkupObject.accounts) {
             records.accounts.all.push(account)
+          }
+          for (stock of bkupObject.stocks) {
+            records.stocks.all.push(stock)
           }
           for (bookingType of bkupObject.booking_types) {
             records.bookingTypes.all.push(bookingType)
@@ -83,7 +87,6 @@ const ok = (): Promise<string> => {
     if (_choosen_file.value !== null) {
       await records.cleanStoreAndDatabase()
       fr.readAsText(_choosen_file.value, 'UTF-8')
-      //titlebar.updateTitlebar()
     }
   })
 }

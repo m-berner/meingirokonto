@@ -36,7 +36,7 @@ export const useSettingsStore = defineStore('settings', {
             this._bookings_per_page = settings.bookingsPerPage;
             this._active_account_id = settings.activeAccountId;
             this._debug = settings.debug;
-        },
+        }
     }
 });
 log('--- STORE settings.js ---');

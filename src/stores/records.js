@@ -19,6 +19,9 @@ export const useRecordsStore = defineStore('records', {
             _booking_types: {
                 all: [],
                 per_account: []
+            },
+            _stocks: {
+                all: []
             }
         };
     },
@@ -31,6 +34,9 @@ export const useRecordsStore = defineStore('records', {
         },
         bookings(state) {
             return state._bookings;
+        },
+        stocks(state) {
+            return state._stocks;
         },
         bookingSum(state) {
             return state._booking_sum;
@@ -104,6 +110,7 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.all.splice(0, this._bookings.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._accounts.all.splice(0, this._accounts.all.length);
+            this._stocks.all.splice(0, this._accounts.all.length);
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onError = (ev) => {
@@ -112,27 +119,29 @@ export const useRecordsStore = defineStore('records', {
                     const onComplete = () => {
                         resolve('RECORDS: all stores (databases and memory) are clean!');
                     };
-                    const onSuccessClearBooking = () => {
-                        requestClearBooking.removeEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false);
+                    const onSuccessClearBookings = () => {
                         log('RECORDS: bookings dropped');
                     };
-                    const onSuccessClearAccount = () => {
-                        requestClearAccount.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false);
+                    const onSuccessClearAccounts = () => {
                         log('RECORDS: accounts dropped');
                     };
-                    const onSuccessClearAccountType = () => {
-                        requestClearBookingTypes.removeEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
+                    const onSuccessClearBookingTypes = () => {
                         log('RECORDS: booking types dropped');
                     };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
+                    const onSuccessClearStocks = () => {
+                        log('RECORDS: stocks dropped');
+                    };
+                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestClearBooking = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                    requestClearBooking.addEventListener(CONS.EVENTS.SUC, onSuccessClearBooking, false);
+                    const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                    requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
                     const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccount, false);
+                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
                     const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccountType, false);
+                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                    const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                    requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                 }
             });
         },
@@ -164,6 +173,7 @@ export const useRecordsStore = defineStore('records', {
             this._accounts.all.splice(0, this._accounts.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._bookings.all.splice(0, this._bookings.all.length);
+            this._stocks.all.splice(0, this._stocks.all.length);
             return new Promise(async (resolve, reject) => {
                 if (this._dbi != null) {
                     const onComplete = async () => {
@@ -173,7 +183,7 @@ export const useRecordsStore = defineStore('records', {
                     const onAbort = () => {
                         reject(requestTransaction.error);
                     };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME], 'readonly');
+                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
                     const onSuccessAccountOpenCursor = (ev) => {
@@ -182,7 +192,7 @@ export const useRecordsStore = defineStore('records', {
                             ev.target.result.continue();
                         }
                     };
-                    const onSuccessAccountTypeOpenCursor = (ev) => {
+                    const onSuccessBookingTypeOpenCursor = (ev) => {
                         if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
                             this._booking_types.all.push(ev.target.result.value);
                             ev.target.result.continue();
@@ -194,12 +204,20 @@ export const useRecordsStore = defineStore('records', {
                             ev.target.result.continue();
                         }
                     };
+                    const onSuccessStockOpenCursor = (ev) => {
+                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            this._stocks.all.push(ev.target.result.value);
+                            ev.target.result.continue();
+                        }
+                    };
                     const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
                     requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                    const requestAccountTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
-                    requestAccountTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountTypeOpenCursor, false);
+                    const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
+                    requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
                     const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
                     requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
+                    const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
+                    requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
                 }
             });
         },
@@ -216,12 +234,15 @@ export const useRecordsStore = defineStore('records', {
                     const onError = (ev) => {
                         reject(ev);
                     };
-                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                    const requestTransaction = this._dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
                     for (let i = 0; i < this._accounts.all.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...this._accounts.all[i] });
+                    }
+                    for (let i = 0; i < this._stocks.all.length; i++) {
+                        requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...this._stocks.all[i] });
                     }
                     for (let i = 0; i < this._booking_types.all.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...this._booking_types.all[i] });

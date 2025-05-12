@@ -41,6 +41,27 @@ const ok = (): Promise<void> => {
       }
     }
     buffer += i === 0 ? '],\n' : ''
+    buffer += '"stocks":[\n'
+    for (i = 0; i < records.stocks.all.length; i++) {
+      buffer += JSON.stringify({
+        cID: records.stocks.all[i].cID,
+        cISIN: records.stocks.all[i].cISIN,
+        cWKN: records.stocks.all[i].cWKN,
+        cSymbol: records.stocks.all[i].cSymbol,
+        cFadeOut: records.stocks.all[i].cFadeOut,
+        cFirstPage: records.stocks.all[i].cFirstPage,
+        cCompany: records.stocks.all[i].cCompany,
+        cMeetingDay: records.stocks.all[i].cMeetingDay,
+        cQuarterDay: records.stocks.all[i].cQuarterDay,
+        cURL: records.stocks.all[i].cURL
+      })
+      if (i === records.stocks.all.length - 1) {
+        buffer += '\n],\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    buffer += i === 0 ? '],\n' : ''
     buffer += '"booking_types":[\n'
     for (i = 0; i < records.bookingTypes.all.length; i++) {
       buffer += JSON.stringify({

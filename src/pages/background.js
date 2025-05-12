@@ -39,6 +39,21 @@ export const useApp = () => {
                             N: 'cName',
                             AN: 'cAccountNumberID'
                         }
+                    },
+                    STOCKS: {
+                        NAME: 'stocks',
+                        FIELDS: {
+                            ID: 'cID',
+                            ISIN: 'cISIN',
+                            SYM: 'cSym',
+                            FADE_OUT: 'cFadeOut',
+                            FIRST_PAGE: 'cFirstPage',
+                            URL: 'cURL',
+                            MEETING_DAY: 'cMeetingDay',
+                            QUARTER_DAY: 'cQuarterDay',
+                            WKN: 'cWKN',
+                            COMPANY: 'cCompany'
+                        }
                     }
                 },
                 MIN_VERSION: 1,
@@ -296,6 +311,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                             keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
                             autoIncrement: true
                         });
+                        const requestCreateStockStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
+                            keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+                            autoIncrement: true
+                        });
                         requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
                         requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, { unique: true });
                         requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
@@ -304,7 +323,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, { unique: false });
                         requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, { unique: false });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, { unique: false });
+                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, { unique: true });
+                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
+                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYM, { unique: true });
+                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
+                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
                     };
                     if (ev.oldVersion === 0) {
                         createDB();

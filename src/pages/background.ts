@@ -32,6 +32,19 @@ declare global {
     cAccountNumberID: number
   }
 
+  interface IStock {
+    cID: number
+    cCompany: string
+    cISIN: string
+    cWKN: string
+    cSymbol: string
+    cFirstPage: number
+    cFadeOut: number
+    cMeetingDay: number
+    cQuarterDay: number
+    cURL: string
+  }
+
   interface IBackup {
     sm: {
       cVersion: number
@@ -41,6 +54,7 @@ declare global {
     accounts: IAccount[]
     bookings: IBooking[]
     booking_types: IBookingType[]
+    stocks: IStock[]
   }
 
   interface ISettings {
@@ -98,6 +112,21 @@ interface IUseApp {
             ID: string
             N: string
             AN: string
+          }
+        }
+        STOCKS: {
+          NAME: string
+          FIELDS: {
+            ID: string
+            ISIN: string
+            SYM: string
+            FADE_OUT: string
+            FIRST_PAGE: string
+            URL: string
+            MEETING_DAY: string
+            QUARTER_DAY: string
+            WKN: string
+            COMPANY: string
           }
         }
       }
@@ -293,6 +322,21 @@ export const useApp = (): IUseApp => {
               ID: 'cID',
               N: 'cName',
               AN: 'cAccountNumberID'
+            }
+          },
+          STOCKS: {
+            NAME: 'stocks',
+            FIELDS: {
+              ID: 'cID',
+              ISIN: 'cISIN',
+              SYM: 'cSym',
+              FADE_OUT: 'cFadeOut',
+              FIRST_PAGE: 'cFirstPage',
+              URL: 'cURL',
+              MEETING_DAY: 'cMeetingDay',
+              QUARTER_DAY: 'cQuarterDay',
+              WKN: 'cWKN',
+              COMPANY: 'cCompany'
             }
           }
           // do not change! (part of database)>
@@ -568,6 +612,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 autoIncrement: true
               }
             )
+            const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
+              CONS.DB.STORES.STOCKS.NAME,
+              {
+                keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+                autoIncrement: true
+              }
+            )
             requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
             requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, {unique: true})
             requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
@@ -576,7 +627,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
             requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, {unique: false})
             requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, {unique: false})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.AN, {unique: false})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, {unique: true})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, {unique: true})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYM, {unique: true})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
           }
           // const updateDB = (): void => {
           //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
