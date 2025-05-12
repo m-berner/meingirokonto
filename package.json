@@ -1,5 +1,5 @@
 {
-  "author": "Martin Berner, meingirokonto@gmx.de",
+  "author": "Martin Berner, kontenmanager@gmx.de",
   "packageManager": "yarn@4.4.0",
   "type": "module",
   "devDependencies": {
@@ -46,6 +46,6 @@
   },
   "scripts": {
     "build": "tsc && vue-tsc --noemit && vite build",
-    "verify": "addons-linter ./releases/firefox/meingirokonto@gmx.de.xpi"
+    "verify": "addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi"
   }
 }

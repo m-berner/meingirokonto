@@ -19,7 +19,7 @@
     "./public",
     "./releases",
     "./resources",
-    "./meingirokonto@gmx.de"
+    "./kontenmanager@gmx.de"
   ],
   "compilerOptions": {
     "baseUrl": "./src",

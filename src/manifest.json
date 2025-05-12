@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "MeinGiroKonto",
+  "name": "KontenManager",
   "version": "2025.1001",
   "author": "Martin Berner",
   "icons": {
@@ -10,7 +10,7 @@
     "default_icon": {
       "64": "assets/icon64.png"
     },
-    "default_title": "MeinGiroKonto"
+    "default_title": "KontenManager"
   },
   "background": {
     "scripts": [
@@ -29,7 +29,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "meingirokonto@gmx.de",
+      "id": "kontenmanager@gmx.de",
       "strict_min_version": "132.0"
     }
   }

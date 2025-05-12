@@ -9,7 +9,7 @@ export const useApp = () => {
                 MILLI_PER_MIN: 60000
             },
             DB: {
-                NAME: 'meingirokonto.db',
+                NAME: 'kontenmanager.db',
                 STORES: {
                     ACCOUNTS: {
                         NAME: 'accounts',
@@ -181,7 +181,7 @@ export const useApp = () => {
             },
             SYSTEM: {
                 COPYRIGHT: '2013-2025 Martin Berner',
-                MAILTO: 'mailto:meingirokonto@gmx.de',
+                MAILTO: 'mailto:kontenmanager@gmx.de',
                 GET: 'GET',
                 HTML_ENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
                 KEYS: {
@@ -256,7 +256,7 @@ export const useApp = () => {
                 const notificationOption = {
                     type: 'basic',
                     iconUrl: 'assets/icon16.png',
-                    title: 'MeinGiroKonto',
+                    title: 'KontenManager',
                     message: msg
                 };
                 await browser.notifications.create(notificationOption);

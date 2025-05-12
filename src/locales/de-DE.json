@@ -1,6 +1,6 @@
 {
   "titleBar": {
-    "title": "Mein Girokonto",
+    "title": "KontenManager",
     "bookingsSumLabel": "Kontostand",
     "selectAccountLabel": "IBAN",
     "error": "Es wurde noch kein Konto angelegt?"
@@ -158,7 +158,7 @@
     "requests": [
       {
         "title": "Einstellungen - Datenschutz - Chronik",
-        "content": "MeinGiroKonto funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
+        "content": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
         "icon": ""
       },
       {
@@ -241,7 +241,7 @@
       },
       {
         "title": "Einstellungen",
-        "content": "Klicken um das MeinGiroKonto Einstellungen-Tab anzuzeigen.",
+        "content": "Klicken um das KontenManager Einstellungen-Tab anzuzeigen.",
         "icon": "$settings"
       }
     ],
@@ -293,14 +293,14 @@
     ]
   },
   "privacyContent": {
-    "title": "MeinGiroKonto Datenschutz Richtlinien",
+    "title": "KontenManager Datenschutz Richtlinien",
     "local": {
       "title": "Lokale Daten",
-      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. MeinGiroKonto personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
+      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
     },
     "public": {
       "title": "Öffentliche Daten",
-      "content": "Nur Bank-Logos von brandfetsch.com werden verwendet und über das Internet abgerufen. MeinGiroKonto übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
+      "content": "Nur Bank-Logos von brandfetsch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
     },
     "connections": {
       "title": "Internetverbindungen",

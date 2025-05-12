@@ -21,20 +21,20 @@ export default defineConfig({
             targets: [
                 {
                     src: 'manifest.json',
-                    dest: '../meingirokonto@gmx.de/',
+                    dest: '../kontenmanager@gmx.de/',
                     overwrite: true
                 },
                 {
-                    src: '../meingirokonto@gmx.de',
+                    src: '../kontenmanager@gmx.de',
                     dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
                     overwrite: true
                 }
             ]
         }),
         zipPack({
-            inDir: './meingirokonto@gmx.de',
-            outDir: 'C:/Users/Martin/Projekte/Privat/meingirokonto/releases/firefox',
-            outFileName: 'meingirokonto@gmx.de.xpi'
+            inDir: './kontenmanager@gmx.de',
+            outDir: 'C:/Users/Martin/Projekte/Privat/kontenmanager/releases/firefox',
+            outFileName: 'kontenmanager@gmx.de.xpi'
         })
     ],
     root: './src',
@@ -54,7 +54,7 @@ export default defineConfig({
         assetsDir: 'assets',
         assetsInlineLimit: 0,
         emptyOutDir: false,
-        outDir: '../meingirokonto@gmx.de',
+        outDir: '../kontenmanager@gmx.de',
         modulePreload: false,
         rollupOptions: {
             input: {

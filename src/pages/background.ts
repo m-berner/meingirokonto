@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+ * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 declare global {
   interface IAccount {
@@ -292,7 +292,7 @@ export const useApp = (): IUseApp => {
         MILLI_PER_MIN: 60000
       },
       DB: {
-        NAME: 'meingirokonto.db',
+        NAME: 'kontenmanager.db',
         STORES: {
           // <do not change! (part of database)
           ACCOUNTS: {
@@ -470,7 +470,7 @@ export const useApp = (): IUseApp => {
       },
       SYSTEM: {
         COPYRIGHT: '2013-2025 Martin Berner',
-        MAILTO: 'mailto:meingirokonto@gmx.de',
+        MAILTO: 'mailto:kontenmanager@gmx.de',
         GET: 'GET',
         HTML_ENTITY:
           '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
@@ -547,7 +547,7 @@ export const useApp = (): IUseApp => {
           {
             type: 'basic',
             iconUrl: 'assets/icon16.png',
-            title: 'MeinGiroKonto',
+            title: 'KontenManager',
             message: msg
           }
         await browser.notifications.create(notificationOption)

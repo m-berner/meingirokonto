@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, meingirokonto@gmx.de. All rights reserved.
+ * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createI18n, type I18n} from 'vue-i18n'
 import messages from '@intlify/unplugin-vue-i18n/messages'
