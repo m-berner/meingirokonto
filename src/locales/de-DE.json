@@ -103,6 +103,7 @@
       "title": "Bankkonto hinzufügen",
       "swiftLabel": "BIC/SWIFT Code",
       "logoLabel": "Logo brandfetch.com",
+      "stockAccountLabel": "Aktien Verrechnungskonto",
       "accountNumberLabel": "Kontonummer",
       "currencyPlaceholder": "z. B. EUR",
       "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",

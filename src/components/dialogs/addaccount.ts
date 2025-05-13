@@ -12,6 +12,7 @@ interface IAddAccountSteady {
   swiftLabel: string
   accountNumberLabel: string
   logoLabel: string
+  stockAccountLabel: string
 }
 
 interface IAddAccountStore {
@@ -19,6 +20,7 @@ interface IAddAccountStore {
   _number: string
   _logoUrl: string
   _brandFetchName: string
+  _stockAccount: number
   _steady: IAddAccountSteady
 }
 
@@ -31,10 +33,12 @@ export const useAddAccountStore: StoreDefinition<'addaccount', IAddAccountStore>
       _number: '',
       _logoUrl: '',
       _brandFetchName: '',
+      _stockAccount: 0,
       _steady: {
         swiftLabel: '',
         accountNumberLabel: '',
-        logoLabel: ''
+        logoLabel: '',
+        stockAccountLabel: ''
       }
     }
   },
@@ -48,6 +52,7 @@ export const useAddAccountStore: StoreDefinition<'addaccount', IAddAccountStore>
       this._steady.swiftLabel = value.swiftLabel
       this._steady.accountNumberLabel = value.accountNumberLabel
       this._steady.logoLabel = value.logoLabel
+      this._steady.stockAccountLabel = value.stockAccountLabel
     }
   }
 })

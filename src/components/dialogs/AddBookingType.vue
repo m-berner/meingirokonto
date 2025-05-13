@@ -63,7 +63,7 @@ log('--- AddBookingType.vue setup ---')
     <v-combobox
       v-model="_name"
       ref="name-input"
-      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:label="addbookingtype.steady.bookingTypeLabel"
       v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"

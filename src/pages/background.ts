@@ -12,6 +12,7 @@ declare global {
     cSwift: string
     cNumber: string
     cLogoUrl: string
+    cStockAccount: boolean
   }
 
   interface IBookingType {
@@ -30,6 +31,11 @@ declare global {
     cDescription?: string
     cType: number
     cAccountNumberID: number
+    cStockID: number
+    cTax: number
+    cFee: number
+    cSourceTax: number
+    cTransactionTax: number
   }
 
   interface IStock {
@@ -69,7 +75,6 @@ interface IStorageLocal {
   sActiveAccountId: number
   sBookingsPerPage: number
   sDebug: boolean
-  sLogo: string
   sSkin: string
 }
 
@@ -89,29 +94,35 @@ interface IUseApp {
           NAME: string
           FIELDS: {
             ID: string
-            S: string
-            L: string
-            N: string
+            SWIFT: string
+            LOGO_URL: string
+            NUMBER: string
+            STOCK_ACCOUNT: string
           }
         }
         BOOKINGS: {
           NAME: string
           FIELDS: {
             ID: string
-            DAT: string
-            C: string
-            D: string
+            DATE: string
+            CREDIT: string
+            DEBIT: string
             DESC: string
-            T: string
-            AN: string
+            TYPE: string
+            ACCOUNT_NUMBER_ID: string
+            STOCK_ID: string
+            TAX: string
+            FEE: string
+            SOURCE_TAX: string
+            TRANSACTION_TAX: string
           }
         }
         BOOKING_TYPES: {
           NAME: string
           FIELDS: {
             ID: string
-            N: string
-            AN: string
+            NAME: string
+            ACCOUNT_NUMBER: string
           }
         }
         STOCKS: {
@@ -119,7 +130,7 @@ interface IUseApp {
           FIELDS: {
             ID: string
             ISIN: string
-            SYM: string
+            SYMBOL: string
             FADE_OUT: string
             FIRST_PAGE: string
             URL: string
@@ -299,29 +310,35 @@ export const useApp = (): IUseApp => {
             NAME: 'accounts',
             FIELDS: {
               ID: 'cID',
-              S: 'cSwift',
-              L: 'cLogoUrl',
-              N: 'cNumber'
+              SWIFT: 'cSwift',
+              LOGO_URL: 'cLogoUrl',
+              NUMBER: 'cNumber',
+              STOCK_ACCOUNT: 'cStockAccount'
             }
           },
           BOOKINGS: {
             NAME: 'bookings',
             FIELDS: {
               ID: 'cID',
-              DAT: 'cDate',
-              C: 'cCredit',
-              D: 'cDebit',
+              DATE: 'cDate',
+              CREDIT: 'cCredit',
+              DEBIT: 'cDebit',
               DESC: 'cDescription',
-              T: 'cType',
-              AN: 'cAccountNumberID'
+              TYPE: 'cType',
+              ACCOUNT_NUMBER_ID: 'cAccountNumberID',
+              STOCK_ID: 'cStockID',
+              TAX: 'cTax',
+              FEE: 'cFee',
+              SOURCE_TAX: 'cSourceTax',
+              TRANSACTION_TAX: 'cTransactionTax'
             }
           },
           BOOKING_TYPES: {
             NAME: 'booking_types',
             FIELDS: {
               ID: 'cID',
-              N: 'cName',
-              AN: 'cAccountNumberID'
+              NAME: 'cName',
+              ACCOUNT_NUMBER: 'cAccountNumberID'
             }
           },
           STOCKS: {
@@ -329,7 +346,7 @@ export const useApp = (): IUseApp => {
             FIELDS: {
               ID: 'cID',
               ISIN: 'cISIN',
-              SYM: 'cSym',
+              SYMBOL: 'cSymbol',
               FADE_OUT: 'cFadeOut',
               FIRST_PAGE: 'cFirstPage',
               URL: 'cURL',
@@ -620,16 +637,16 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
               }
             )
             requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
-            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.N, {unique: true})
+            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, {unique: true})
             requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
-            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.N, {unique: false})
-            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.AN, {unique: false})
+            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, {unique: false})
+            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, {unique: false})
             requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DAT, {unique: false})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.T, {unique: false})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, {unique: false})
+            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.TYPE, {unique: false})
             requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, {unique: true})
             requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, {unique: true})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYM, {unique: true})
+            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, {unique: true})
             requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
             requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
           }

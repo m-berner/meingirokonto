@@ -70,7 +70,7 @@ log('--- DeleteAccount.vue setup ---')
       v-model="_selected"
       density="compact"
       required
-      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.N"
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts.all"
       v-bind:label="deleteaccount.steady.accountNumberlabel"

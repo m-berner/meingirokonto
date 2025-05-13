@@ -32,6 +32,7 @@ const ok = (): Promise<void> => {
         cSwift: records.accounts.all[i].cSwift,
         cNumber: records.accounts.all[i].cNumber,
         cLogoUrl: records.accounts.all[i].cLogoUrl,
+        cStockAccount: records.accounts.all[i].cStockAccount,
         cID: records.accounts.all[i].cID
       })
       if (i === records.accounts.all.length - 1) {

@@ -62,7 +62,7 @@ log('--- DeleteBookingType.vue setup ---')
       v-model="_selected"
       density="compact"
       required
-      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:items="records.bookingTypes.all"
       v-bind:label="deletebookingtype.steady.t('dialogs.deleteBookingType.label')"

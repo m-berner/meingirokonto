@@ -110,7 +110,7 @@ log('--- AddBooking.vue setup ---')
       v-model="_type"
       density="compact"
       max-width="300"
-      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.N"
+      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
       v-bind:label="addbooking.steady.typeLabel"

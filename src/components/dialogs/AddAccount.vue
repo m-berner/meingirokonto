@@ -20,12 +20,13 @@ const {log, notice, VALIDATORS} = useApp()
 const formRef = useTemplateRef('form-ref')
 const addaccount = useAddAccountStore()
 const titlebar = useTitleBarStore()
-const {_logoUrl, _number, _swift, _brandFetchName} = storeToRefs(addaccount)
+const {_logoUrl, _number, _swift, _brandFetchName, _stockAccount} = storeToRefs(addaccount)
 
 addaccount.setSteady({
   swiftLabel: t('dialogs.addAccount.swiftLabel'),
-  accountNumberLabel:t('dialogs.addAccount.accountNumberPlaceholder'),
-  logoLabel: t('dialogs.addAccount.logoLabel')
+  accountNumberLabel: t('dialogs.addAccount.accountNumberPlaceholder'),
+  logoLabel: t('dialogs.addAccount.logoLabel'),
+  stockAccountLabel: t('dialogs.addAccount.stockAccountLabel'),
 })
 const onInput = () => {
   _logoUrl.value = `https://cdn.brandfetch.io/${_brandFetchName.value}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
@@ -57,7 +58,8 @@ const ok = (): Promise<void> => {
         const result = await records.addAccount({
           cSwift: _swift.value.trim().toUpperCase(),
           cNumber: _number.value.replace(/\s/g, ''),
-          cLogoUrl: _logoUrl.value
+          cLogoUrl: _logoUrl.value,
+          cStockAccount: _stockAccount.value ? 1 : 0
         })
         if (result > 0) {
           settings.setActiveAccountId(result)
@@ -84,11 +86,15 @@ onMounted(() => {
   formRef.value!.reset()
 })
 
-log('--- AddAccount.vue setup ---')
+log('--- AddAccount.vue setup ---', {info:addaccount.steady.stockAccountLabel})
 </script>
 
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+    <v-switch
+      v-model="_stockAccount"
+      color="red"
+      v-bind:label="addaccount.steady.stockAccountLabel"></v-switch>
     <v-text-field
       ref="swift-input"
       v-model="_swift"

@@ -8,10 +8,12 @@ export const useAddAccountStore = defineStore('addaccount', {
             _number: '',
             _logoUrl: '',
             _brandFetchName: '',
+            _stockAccount: 0,
             _steady: {
                 swiftLabel: '',
                 accountNumberLabel: '',
-                logoLabel: ''
+                logoLabel: '',
+                stockAccountLabel: ''
             }
         };
     },
@@ -25,6 +27,7 @@ export const useAddAccountStore = defineStore('addaccount', {
             this._steady.swiftLabel = value.swiftLabel;
             this._steady.accountNumberLabel = value.accountNumberLabel;
             this._steady.logoLabel = value.logoLabel;
+            this._steady.stockAccountLabel = value.stockAccountLabel;
         }
     }
 });
