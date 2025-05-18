@@ -10,32 +10,27 @@ import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onMounted, reactive, toRaw} from 'vue'
-import {useOptionsIndexStore} from '@/pages/optionsindex'
 import {useApp} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IOptionsIndex {
   _tab: number
-  _service: string
-  _skin: string
-  _tabs: string[]
+  _tabs: Array<{ title: string, id: string }>
   _themeKeys: string[]
-  _themeNames: []
-  _serviceKeys: []
-  _indexesA: []
-  _indexesB: []
-  _materialsA: []
-  _materialsB: []
+  _themeNames: { [p: string]: string }
+  _serviceKeys: string[]
+  _indexesA: string[]
+  _indexesB: string[]
+  _materialsA: string[]
+  _materialsB: string[]
 }
 
 const {rt, t, tm} = useI18n()
 const theme = useTheme()
 const {CONS, log} = useApp()
 const settings = useSettingsStore()
-const optionsindex = useOptionsIndexStore()
-const {_tab, _service, _skin} = storeToRefs(optionsindex)
-const {_exchanges, _indexes, _markets, _materials} = storeToRefs(settings)
+const {_service, _skin, _exchanges, _indexes, _markets, _materials} = storeToRefs(settings)
 
 const indexes_keys_a = []
 const indexes_keys_b = []
@@ -67,11 +62,9 @@ for (let i = 0; i < all_service_keys.length - 2; i++) {
 
 const state: IOptionsIndex = reactive({
   _tab: 0,
-  _skin: '',
-  _service: '',
   _tabs: tm('optionsPage.tabs'),
   _themeKeys: Object.keys(theme.themes.value),
-  _themeNames: [],
+  _themeNames: tm(`optionsPage.themeNames`),
   _serviceKeys: service_keys,
   _indexesA: indexes_keys_a,
   _indexesB: indexes_keys_b,
@@ -88,21 +81,18 @@ const setMaterials = async (): Promise<void> => {
 }
 
 const setSkin = async (skin: string): Promise<void> => {
-  log('OPTIONS_INDEX: setSkin', {info: skin})
-  state._skin = skin
+  theme.global.name.value = skin
   await browser.storage.local.set({sSkin: skin})
 }
 
 const setService = async (service: string): Promise<void> => {
-  log('OPTIONS_INDEX: setService', {info: service})
-  state._service = service
   await browser.storage.local.set({sService: service})
 }
 
 onMounted(async (): Promise<void> => {
   log('OPTIONS_INDEX: onMounted')
   const localStorage = await browser.storage.local.get()
-  _tab.value = 0
+  state._tab = 0
   _skin.value = localStorage.sSkin
   _service.value = localStorage.sService
   _indexes.value = localStorage.sIndexes
@@ -118,20 +108,20 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
   <v-app v-bind:flat="true">
     <v-main>
       <v-container>
-        <v-tabs v-model="_tab" show-arrows>
-            <v-tab v-for="(item, i) in optionsindex.steady.tabs" v-bind:key="item.id" v-bind:value="i">
-              {{ rt(item.title) }}
-            </v-tab>
+        <v-tabs v-model="state._tab" show-arrows>
+          <v-tab v-for="(item, i) in state._tabs" v-bind:key="item.id" v-bind:value="i">
+            {{ rt(item.title) }}
+          </v-tab>
         </v-tabs>
-        <v-tabs-window v-model="_tab" class="pa-5">
+        <v-tabs-window v-model="state._tab" class="pa-5">
           <v-tabs-window-item v-bind:value="0">
             <v-row>
               <v-col cols="12" md="6" sm="6">
                 <v-radio-group column v-bind:modelValue="_skin">
                   <v-radio
-                    v-for="item in optionsindex.steady.themeKeys"
+                    v-for="item in state._themeKeys"
                     v-bind:key="item"
-                    v-bind:label="rt(optionsindex.steady.themeNames[item])"
+                    v-bind:label="rt(state._themeNames[item])"
                     v-bind:value="item"
                     v-on:click="async () => await setSkin(item)"
                   ></v-radio>
@@ -140,7 +130,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="6" sm="6">
                 <v-radio-group v-model="_service" column>
                   <v-radio
-                    v-for="item in optionsindex.steady.serviceKeys"
+                    v-for="item in state._serviceKeys"
                     v-bind:key="item"
                     v-bind:label="CONS.SERVICES[item].NAME ?? ''"
                     v-bind:value="item"
@@ -166,7 +156,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row>
               <v-col>
                 <v-checkbox
-                  v-for="item in optionsindex.steady.indexes_a"
+                  v-for="item in state._indexesA"
                   v-bind:key="item"
                   v-model="_indexes"
                   hide-details
@@ -177,7 +167,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               </v-col>
               <v-col>
                 <v-checkbox
-                  v-for="item in optionsindex.steady.indexes_b"
+                  v-for="item in state._indexesB"
                   v-bind:key="item"
                   v-model="_indexes"
                   hide-details
@@ -192,7 +182,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row>
               <v-col>
                 <v-checkbox
-                  v-for="item in optionsindex.steady.materials_a"
+                  v-for="item in state._materialsA"
                   v-bind:key="item"
                   v-model="_materials"
                   hide-details
@@ -203,7 +193,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               </v-col>
               <v-col>
                 <v-checkbox
-                  v-for="item in optionsindex.steady.materials_b"
+                  v-for="item in state._materialsB"
                   v-bind:key="item"
                   v-model="_materials"
                   hide-details

@@ -80,7 +80,7 @@ log('--- DynamicList.vue setup ---')
         v-bind:label="state._label"
         v-bind:placeholder="state._placeholder">
         <template v-slot:append>
-          <v-btn
+          <v-btn color="primary"
             class="ml-3"
             icon="$add"
             v-on:click="mAddItem(state._newItem)"></v-btn>
