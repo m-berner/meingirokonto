@@ -37,22 +37,6 @@ const optionsindex = useOptionsIndexStore()
 const {_tab, _service, _skin} = storeToRefs(optionsindex)
 const {_exchanges, _indexes, _markets, _materials} = storeToRefs(settings)
 
-const state: IOptionsIndex = reactive({
-  _tab: 0,
-  _skin: '',
-  _service: '',
-  _tabs: [],
-  _themeKeys: [],
-  _themeNames: [],
-  _serviceKeys: [],
-  _indexesA: [],
-  _indexesB: [],
-  _materialsA: [],
-  _materialsB: []
-})
-
-
-
 const indexes_keys_a = []
 const indexes_keys_b = []
 const indexes_keys = Object.keys(CONS.SETTINGS.INDEXES)
@@ -78,22 +62,22 @@ for (let i = 0; i < materials_keys.length; i++) {
 const service_keys = []
 const all_service_keys = Object.keys(CONS.SERVICES)
 for (let i = 0; i < all_service_keys.length - 2; i++) {
-    service_keys.push(all_service_keys[i])
+  service_keys.push(all_service_keys[i])
 }
 
-optionsindex.setSteady({
-  tabs: tm('optionsPage.tabs'),
-  themeNames: tm(`optionsPage.themeNames`),
-  themeKeys: Object.keys(theme.themes.value),
-  serviceKeys: service_keys,
-  indexes_a: indexes_keys_a,
-  indexes_b: indexes_keys_b,
-  materials_a: materials_keys_a,
-  materials_b: materials_keys_b
+const state: IOptionsIndex = reactive({
+  _tab: 0,
+  _skin: '',
+  _service: '',
+  _tabs: tm('optionsPage.tabs'),
+  _themeKeys: Object.keys(theme.themes.value),
+  _themeNames: [],
+  _serviceKeys: service_keys,
+  _indexesA: indexes_keys_a,
+  _indexesB: indexes_keys_b,
+  _materialsA: materials_keys_a,
+  _materialsB: materials_keys_b
 })
-
-console.error(service_keys, all_service_keys, optionsindex.steady.serviceKeys)
-
 
 const setIndexes = async (): Promise<void> => {
   await browser.storage.local.set({sIndexes: toRaw(settings.indexes)})
@@ -105,13 +89,13 @@ const setMaterials = async (): Promise<void> => {
 
 const setSkin = async (skin: string): Promise<void> => {
   log('OPTIONS_INDEX: setSkin', {info: skin})
-  _skin.value = skin
+  state._skin = skin
   await browser.storage.local.set({sSkin: skin})
 }
 
 const setService = async (service: string): Promise<void> => {
   log('OPTIONS_INDEX: setService', {info: service})
-  _service.value = service
+  state._service = service
   await browser.storage.local.set({sService: service})
 }
 
