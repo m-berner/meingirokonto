@@ -311,8 +311,24 @@
   "optionsPage": {
     "tabs": [
       {
-        "title": "Themen",
+        "title": "Themen & Dienste",
         "id": "register_ge"
+      },
+      {
+        "title": "Marktplätze",
+        "id": "register_mp"
+      },
+      {
+        "title": "Indizes",
+        "id": "register_ind"
+      },
+      {
+        "title": "Rohstoffe",
+        "id": "register_mat"
+      },
+      {
+        "title": "Währungen",
+        "id": "register_ex"
       }
     ],
     "themeNames": {
@@ -322,6 +338,27 @@
       "meadow": "Wiese",
       "dark": "Dunkel",
       "light": "Hell"
+    },
+    "markets" : {
+      "title": "Marktplätze",
+      "label": "Neuer Marktplatz"
+    },
+    "exchanges" : {
+      "title": "Wechselkurse",
+      "label": "Neues Wechselkurs-Kürzel"
+    },
+    "materials": {
+      "au": "Gold",
+      "ag": "Silber",
+      "brent": "Ölpreis (Brent)",
+      "wti": "Ölpreis (WTI)",
+      "cu": "Kupfer",
+      "pt": "Platin",
+      "al": "Aluminium",
+      "ni": "Nickel",
+      "sn": "Zinn",
+      "pb": "Blei",
+      "pd": "Palladium"
     }
   },
   "validators": {

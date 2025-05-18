@@ -63,19 +63,33 @@ declare global {
     stocks: IStock[]
   }
 
+  interface IStorageLocal {
+    sActiveAccountId: number
+    sBookingsPerPage: number
+    sStocksPerPage: number
+    sPartner: boolean
+    sDebug: boolean
+    sSkin: string
+    sService: string
+    sExchanges: string[]
+    sMaterials: string[]
+    sIndexes: string[]
+    sMarkets: string[]
+  }
+
   interface ISettings {
     activeAccountId: number
     bookingsPerPage: number
+    stocksPerPage: number
+    partner: boolean
     debug: boolean
     skin: string
+    service: string
+    exchanges: string[]
+    materials: string[]
+    indexes: string[]
+    markets: string[]
   }
-}
-
-interface IStorageLocal {
-  sActiveAccountId: number
-  sBookingsPerPage: number
-  sDebug: boolean
-  sSkin: string
 }
 
 interface IUseApp {
@@ -153,8 +167,15 @@ interface IUseApp {
       STORAGE: {
         ACTIVE_ACCOUNT_ID: number
         BOOKINGS_PER_PAGE: number
+        STOCKS_PER_PAGE: number
+        PARTNER: boolean
         DEBUG: boolean
         SKIN: string
+        SERVICE: string
+        EXCHANGES: string[]
+        MATERIALS: string[]
+        INDEXES: string[]
+        MARKETS: string[]
       }
     }
     DIALOGS: {
@@ -191,11 +212,34 @@ interface IUseApp {
     MESSAGES: {
       GS: string
     }
+    SERVICES: {
+      [p: string]: Partial<{
+        NAME: string
+        HOME: string
+        QUOTE: string
+        INDEXES: string
+        DATES: string
+        MATERIALS: string
+        GM: string
+        QF: string
+        CHSURL: string
+        CHBURL: string
+        CHS: string[]
+        CHB: string[]
+        EXCHANGE: string
+        DELAY: number
+      }>
+    }
     SETTINGS: {
       ITEMS_PER_PAGE_OPTIONS: {
         value: number
         title: string
       }[]
+      MARKETS_TAB: string
+      EXCHANGES_TAB: string
+      INDEXES: Record<string, string>
+      MATERIALS: Record<string, string>
+      MATERIALS_ORG: Map<string, string>
     }
     RESOURCES: {
       SRC: string
@@ -289,6 +333,7 @@ interface IUseApp {
   }>
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
+  initStorageLocal: () => Promise<void>
   log: (msg: string, mode?: { info: unknown }) => void
 }
 
@@ -370,8 +415,15 @@ export const useApp = (): IUseApp => {
         STORAGE: {
           ACTIVE_ACCOUNT_ID: -1,
           BOOKINGS_PER_PAGE: 9,
+          STOCKS_PER_PAGE: 9,
           DEBUG: false,
-          SKIN: 'ocean'
+          SKIN: 'ocean',
+          MATERIALS: ['au', 'brent'],
+          INDEXES: ['dax', 'dow'],
+          EXCHANGES: ['EURUSD'],
+          MARKETS: ['Frankfurt', 'XETRA'],
+          SERVICE: 'wstreet',
+          PARTNER: false
         }
       },
       DIALOGS: {
@@ -408,6 +460,104 @@ export const useApp = (): IUseApp => {
       MESSAGES: {
         GS: 'GET_SETTINGS'
       },
+      SERVICES: {
+        goyax: {
+          NAME: 'Goyax',
+          HOME: 'https://www.goyax.de/',
+          QUOTE: 'https://www.goyax.de/aktien/',
+          DELAY: 50
+        },
+        fnet: {
+          NAME: 'Finanzen.Net',
+          HOME: 'https://www.finanzen.net/aktienkurse/',
+          INDEXES: 'https://www.finanzen.net/indizes/',
+          QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
+          DATES: 'https://www.finanzen.net/termine/',
+          MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+          GM: 'Hauptversammlung',
+          QF: 'Quartalszahlen',
+          DELAY: 750
+        },
+        wstreet: {
+          NAME: 'Wallstreet-Online',
+          HOME: 'https://www.wallstreet-online.de',
+          QUOTE:
+            'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
+          DELAY: 50
+        },
+        acheck: {
+          NAME: 'Aktien Check',
+          HOME: 'https://m.aktiencheck.de/',
+          QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
+          DELAY: 50
+        },
+        ard: {
+          NAME: 'ARD',
+          HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
+          QUOTE:
+            'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
+          DELAY: 50
+        },
+        tgate: {
+          NAME: 'Tradegate', // changes list, new stock
+          HOME: 'https://www.tradegate.de/',
+          QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
+          CHSURL: 'https://www.tradegate.de/indizes.php?index=',
+          CHBURL: 'https://www.tradegate.de/indizes.php?buchstabe=',
+          CHS: [
+            'DE000A1EXRV0',
+            'DE000A1EXRY4',
+            'DE000A1EXRW8',
+            'DE000A1EXRX6',
+            'EU0009658145',
+            'DE000A0SNK21',
+            'US0000000002'
+          ],
+          CHB: [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '7',
+            '8',
+            '9',
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z',
+            'Ö'
+          ]
+        },
+        fx: {
+          NAME: 'fx-rate',
+          HOME: 'https://fx-rate.net/qwsaq',
+          EXCHANGE: 'https://fx-rate.net/calculator/?c_input=',
+          DELAY: 50
+        }
+      },
       SETTINGS: {
         ITEMS_PER_PAGE_OPTIONS: [
           {
@@ -430,7 +580,55 @@ export const useApp = (): IUseApp => {
           //   value: -1,
           //   title: 'Alle'
           // }
-        ]
+        ],
+        MARKETS_TAB: 'markets',
+        EXCHANGES_TAB: 'exchanges',
+        INDEXES: {
+          dax: 'DAX',
+          dow: 'Dow Jones',
+          nasdaq: 'NASDAQ Comp.',
+          nikkei: 'NIKKEI 225',
+          hang: 'Hang Seng',
+          ibex: 'IBEX 35',
+          straits: 'Straits Times',
+          asx: 'Australia All Ordinaries',
+          rts: 'RTS',
+          bovespa: 'BOVESPA',
+          sensex: 'SENSEX',
+          sci: 'Shanghai Composite',
+          ftse: 'FTSE 100',
+          smi: 'SMI',
+          cac: 'CAC 40',
+          stoxx: 'Euro Stoxx 50',
+          tsx: 'S&P/TSX',
+          sp: 'S&P 500'
+        },
+        MATERIALS: {
+          au: 'Goldpreis',
+          ag: 'Silberpreis',
+          brent: 'Ölpreis (Brent)',
+          wti: 'Ölpreis (WTI)',
+          cu: 'Kupferpreis',
+          pt: 'Platinpreis',
+          al: 'Aluminiumpreis',
+          ni: 'Nickelpreis',
+          sn: 'Zinnpreis',
+          pb: 'Bleipreis',
+          pd: 'Palladiumpreis'
+        },
+        MATERIALS_ORG: new Map([
+          ['Goldpreis', 'au'],
+          ['Silberpreis', 'ag'],
+          ['Ölpreis (Brent)', 'brent'],
+          ['Ölpreis (WTI)', 'wti'],
+          ['Kupferpreis', 'cu'],
+          ['Platinpreis', 'pt'],
+          ['Aluminiumpreis', 'al'],
+          ['Nickelpreis', 'ni'],
+          ['Zinnpreis', 'sn'],
+          ['Bleipreis', 'pb'],
+          ['Palladiumpreis', 'pd']
+        ]),
       },
       RESOURCES: {
         SRC: 'assets',
@@ -574,6 +772,42 @@ export const useApp = (): IUseApp => {
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
     },
+    initStorageLocal: async () => {
+      const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
+      if (storageLocal.sSkin === undefined) {
+        await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
+      }
+      if (storageLocal.sActiveAccountId === undefined) {
+        await browser.storage.local.set({sActiveAccountId: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
+      }
+      if (storageLocal.sBookingsPerPage === undefined) {
+        await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+      }
+      if (storageLocal.sStocksPerPage === undefined) {
+        await browser.storage.local.set({sStocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
+      }
+      if (storageLocal.sPartner === undefined) {
+        await browser.storage.local.set({sPartner: CONS.DEFAULTS.STORAGE.PARTNER})
+      }
+      if (storageLocal.sService === undefined) {
+        await browser.storage.local.set({sService: CONS.DEFAULTS.STORAGE.SERVICE})
+      }
+      if (storageLocal.sDebug === undefined) {
+        await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
+      }
+      if (storageLocal.sExchanges === undefined) {
+        await browser.storage.local.set({sExchanges: CONS.DEFAULTS.STORAGE.EXCHANGES})
+      }
+      if (storageLocal.sIndexes === undefined) {
+        await browser.storage.local.set({sIndexes: CONS.DEFAULTS.STORAGE.INDEXES})
+      }
+      if (storageLocal.sMarkets === undefined) {
+        await browser.storage.local.set({sMarkets: CONS.DEFAULTS.STORAGE.MARKETS})
+      }
+      if (storageLocal.sMaterials === undefined) {
+        await browser.storage.local.set({sMaterials: CONS.DEFAULTS.STORAGE.MATERIALS})
+      }
+    },
     log: async (msg, mode = {info: null}) => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get(['sDebug'])
       if (storageLocal.sDebug) {
@@ -587,14 +821,14 @@ export const useApp = (): IUseApp => {
   }
 }
 
-const {CONS, log} = useApp()
+const {CONS,initStorageLocal, log} = useApp()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = (): Promise<void> => {
     log('BACKGROUND: onInstall')
     return new Promise(async (resolve): Promise<void> => {
-      const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
+      //const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
       const onSuccess = (ev: Event): void => {
         if (ev.target instanceof IDBRequest) {
           ev.target.result.close()
@@ -760,18 +994,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           } else {
             // updateDB()
           }
-          if (storageLocal.sSkin === undefined) {
-            await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
-          }
-          if (storageLocal.sActiveAccountId === undefined) {
-            await browser.storage.local.set({sActiveAccountId: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
-          }
-          if (storageLocal.sBookingsPerPage === undefined) {
-            await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
-          }
-          if (storageLocal.sDebug === undefined) {
-            await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
-          }
+          await initStorageLocal()
         }
       }
       const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
@@ -800,35 +1023,35 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       resolve()
     })
   }
-  const onSettings = (data: { type: string }): Promise<ISettings | void> => {
-    log('BACKGROUND: onSettings', {info: data.type})
-    const startSettings = (): Promise<ISettings> => {
-      return new Promise(async (resolve) => {
-        const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
-        const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
-        const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
-        const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
-        const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
-        log('BACKGROUND: onSettings: startSettings')
-        resolve({
-          skin,
-          activeAccountId,
-          bookingsPerPage,
-          debug
-        })
-      })
-    }
-    return new Promise(async (resolve): Promise<ISettings | void> => {
-      if (data.type === CONS.MESSAGES.GS) {
-        resolve(await startSettings())
-      } else {
-        resolve()
-      }
-    })
-  }
+  // const onSettings = (data: { type: string }): Promise<ISettings> => {
+  //   log('BACKGROUND: onSettings', {info: data.type})
+  //   const startSettings = (): Promise<ISettings> => {
+  //     return new Promise(async (resolve) => {
+  //       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
+  //       const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
+  //       const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
+  //       const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
+  //       const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
+  //       log('BACKGROUND: onSettings: startSettings')
+  //       resolve({
+  //         skin,
+  //         activeAccountId,
+  //         bookingsPerPage,
+  //         debug
+  //       })
+  //     })
+  //   }
+  //   return new Promise(async (resolve): Promise<ISettings | void> => {
+  //     if (data.type === CONS.MESSAGES.GS) {
+  //       resolve(await startSettings())
+  //     } else {
+  //       resolve()
+  //     }
+  //   })
+  // }
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
-  browser.runtime.onMessage.addListener(onSettings)
+  //browser.runtime.onMessage.addListener(onSettings)
   log('BACKGROUND: attached listener', {info: window.location.href})
 }
 

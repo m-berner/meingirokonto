@@ -112,11 +112,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         throw new Error('getBookingTextById: No booking found for given ID')
       }
     },
-    sumBookings(msg: string): void {
+    sumBookings(): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
       if (activeAccountIndex === -1) {
-        notice([msg]).then()
         return
       }
       const bookings_per_account = this._bookings.all.filter((rec: IBooking) => {
@@ -427,7 +426,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         if (this._dbi != null) {
           const onSuccess = (): void => {
             this._bookings.all.splice(indexOfBooking, 1)
-            this.sumBookings('Booking deleted')
+            this.sumBookings()
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {
