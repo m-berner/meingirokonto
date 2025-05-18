@@ -93,6 +93,7 @@ onMounted(async (): Promise<void> => {
   log('OPTIONS_INDEX: onMounted')
   const localStorage = await browser.storage.local.get()
   state._tab = 0
+  theme.global.name.value = localStorage.sSkin
   _skin.value = localStorage.sSkin
   _service.value = localStorage.sService
   _indexes.value = localStorage.sIndexes
