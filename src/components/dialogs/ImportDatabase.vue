@@ -10,9 +10,8 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
-import {useImportDatabaseStore} from '@/components/dialogs/importdatabase'
-import {storeToRefs} from 'pinia'
-import {useTitleBarStore} from '@/components/titlebar'
+import {useRuntimeStore} from '@/stores/runtime'
+import {reactive} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
@@ -21,74 +20,65 @@ interface IEventTarget extends HTMLInputElement {
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const settings = useSettingsStore()
-const importdatabase = useImportDatabaseStore()
 
-const {_choosen_file} = storeToRefs(importdatabase)
-
-importdatabase.setSteady({
-  label: t('dialogs.importDatabase.label'),
+const state = reactive({
+  _choosen_file: new Blob()
 })
 
-const ok = (): Promise<string> => {
-  log('IMPORTDATABASE: ok', {info: _choosen_file.value})
-  return new Promise(async (resolve, reject) => {
-    const {log, notice} = useApp()
-    const records = useRecordsStore()
-    const titlebar = useTitleBarStore()
-    const onError = (): void => {
-      reject('IMPORTDATABASE: onError: FileReader')
-    }
-    const onFileLoaded = async (): Promise<void> => {
-      log('IMPORTDATABASE: onFileLoaded')
-      if (typeof fr.result === 'string') {
-        const bkupObject: IBackup = JSON.parse(fr.result)
-        let account: IAccount
-        let booking: IBooking
-        let bookingType: IBookingType
-        let stock: IStock
-        if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
-          await notice(['IMPORTDATABASE: onFileLoaded', 'Invalid backup file version'])
-          reject('Invalid backup file version')
-        } else {
-          for (account of bkupObject.accounts) {
-            records.accounts.all.push(account)
-          }
-          for (stock of bkupObject.stocks) {
-            records.stocks.all.push(stock)
-          }
-          for (bookingType of bkupObject.booking_types) {
-            records.bookingTypes.all.push(bookingType)
-          }
-          for (booking of bkupObject.bookings) {
-            records.bookings.all.push(booking)
-          }
-          const result = await records.storeIntoDatabase()
-          if (result !== '') {
-            settings.setActiveAccountId(records.accounts.all[0].cID)
-            titlebar.setLogo()
-            records.sumBookings()
-            await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
-            log('IMPORTDATABASE: onFileLoaded', {info: result})
-            await notice(['IMPORTDATABASE: onFileLoaded', result])
-            resolve('Backup file loaded successfully!')
-          } else {
-            await notice(['IMPORTDATABASE: onLoad', result])
-            reject('ERROR: database could not be loaded!')
-          }
-        }
+const ok = async (): Promise<void> => {
+  log('IMPORTDATABASE: ok', {info: state._choosen_file})
+  const {notice} = useApp()
+  const records = useRecordsStore()
+  const runtime = useRuntimeStore()
+  const onError = async (): Promise<void> => {
+    await notice(['IMPORTDATABASE: onError: FileReader'])
+  }
+  const onFileLoaded = async (): Promise<void> => {
+    log('IMPORTDATABASE: onFileLoaded')
+    if (typeof fr.result === 'string') {
+      const bkupObject: IBackup = JSON.parse(fr.result)
+      let account: IAccount
+      let booking: IBooking
+      let bookingType: IBookingType
+      let stock: IStock
+      if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
+        await notice(['IMPORTDATABASE: onFileLoaded', 'Invalid backup file version'])
       } else {
-        await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
-        reject('Could not read backup file!')
+        for (account of bkupObject.accounts) {
+          records.accounts.all.push(account)
+        }
+        for (stock of bkupObject.stocks) {
+          records.stocks.all.push(stock)
+        }
+        for (bookingType of bkupObject.booking_types) {
+          records.bookingTypes.all.push(bookingType)
+        }
+        for (booking of bkupObject.bookings) {
+          records.bookings.all.push(booking)
+        }
+        const result = await records.storeIntoDatabase()
+        if (result !== '') {
+          settings.setActiveAccountId(records.accounts.all[0].cID)
+          runtime.setLogo()
+          records.sumBookings()
+          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+          log('IMPORTDATABASE: onFileLoaded', {info: result})
+          await notice(['IMPORTDATABASE: onFileLoaded', result])
+        } else {
+          await notice(['IMPORTDATABASE: onFileLoaded', result])
+        }
       }
+    } else {
+      await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
     }
-    const fr: FileReader = new FileReader()
-    fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
-    fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-    if (_choosen_file.value !== null) {
-      await records.cleanStoreAndDatabase()
-      fr.readAsText(_choosen_file.value, 'UTF-8')
-    }
-  })
+  }
+  const fr: FileReader = new FileReader()
+  fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
+  fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+  if (state._choosen_file !== null) {
+    await records.cleanStoreAndDatabase()
+    fr.readAsText(state._choosen_file, 'UTF-8')
+  }
 }
 const title = t('dialogs.importDatabase.title')
 
@@ -103,9 +93,9 @@ log('--- ImportDatabase.vue setup ---')
       <v-file-input
         accept=".json"
         v-bind:clearable="true"
-        v-bind:label="importdatabase.steady.label"
+        v-bind:label="t('dialogs.importDatabase.label')"
         variant="outlined"
-        v-on:change="(ev: IEventTarget) => { _choosen_file = ev.target.files[0] }"
+        v-on:change="(ev: IEventTarget) => { state._choosen_file = ev.target.files[0] }"
       ></v-file-input>
     </v-card-text>
   </v-form>

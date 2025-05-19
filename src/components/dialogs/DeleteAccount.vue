@@ -1,56 +1,49 @@
 <!--
-  -- This Source Code Form is subject to the terms of the Mozilla Public
-  -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
-  -- you could obtain one at https://mozilla.org/MPL/2.0/.
-  --
-  -- Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {useDeleteAccountStore} from '@/components/dialogs/deleteaccount'
-import {storeToRefs} from 'pinia'
-import {useTitleBarStore} from '@/components/titlebar'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const deleteaccount = useDeleteAccountStore()
-const titlebar = useTitleBarStore()
-const {_selected} = storeToRefs(deleteaccount)
+const runtime = useRuntimeStore()
 
-deleteaccount.setSteady({
-  accountNumberLabel: t('dialogs.deleteAccount.accountNumberLabel')
+const state = reactive({
+  _selected: -1
 })
 
-const ok = (): Promise<void> => {
+const ok = async (): Promise<void> => {
   log('DELETE_ACCOUNT: ok')
-  return new Promise(async (resolve): Promise<void> => {
-    try {
-      const result = await records.deleteAccount(_selected.value)
-      if (result === 'Account deleted') {
-        formRef.value?.reset()
-        if (records.accounts.length > 0) {
-          settings.setActiveAccountId(records.accounts.all[0].cID)
-          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
-        } else {
-          settings.setActiveAccountId(-1)
-          await browser.storage.local.set({sActiveAccountId: -1})
-        }
-        titlebar.setLogo()
-        await notice([t('dialogs.deleteAccount.success')])
-        resolve()
+  try {
+    const result = await records.deleteAccount(state._selected)
+    if (result === 'Account deleted') {
+      formRef.value?.reset()
+      if (records.accounts.length > 0) {
+        settings.setActiveAccountId(records.accounts.all[0].cID)
+        await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+      } else {
+        settings.setActiveAccountId(-1)
+        await browser.storage.local.set({sActiveAccountId: -1})
       }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.deleteAccount.error')])
+      runtime.setLogo()
+      await notice([t('dialogs.deleteAccount.success')])
     }
-  })
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.deleteAccount.error')])
+  }
 }
 const title = t('dialogs.deleteAccount.title')
 
@@ -67,13 +60,13 @@ log('--- DeleteAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="_selected"
+      v-model="state._selected"
       density="compact"
       required
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts.all"
-      v-bind:label="deleteaccount.steady.accountNumberlabel"
+      v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
       variant="outlined"
     ></v-select>
   </v-form>

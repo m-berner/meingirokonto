@@ -7,27 +7,11 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {usePrivacyPageStore} from '@/components/privacycontent'
 import {useApp} from '@/pages/background'
 
 const {t} = useI18n()
 const {log} = useApp()
 
-const privacypage = usePrivacyPageStore()
-privacypage.setSteady({
-  local: {
-    title: t('privacyContent.local.title'),
-    content: t('privacyContent.local.content')
-  },
-  public: {
-    title: t('privacyContent.public.title'),
-    content: t('privacyContent.public.content')
-  },
-  connections: {
-    title: t('privacyContent.connections.title'),
-    content: t('privacyContent.connections.content')
-  }
-})
 log('--- PrivacyContent.vue setup ---')
 </script>
 
@@ -37,26 +21,26 @@ log('--- PrivacyContent.vue setup ---')
       <v-col cols="7" sm="7">
         <v-card>
           <v-card-title>
-            {{ privacypage.steady.local.title }}
+            {{ t('privacyContent.local.title') }}
           </v-card-title>
           <v-card-text>
-            {{ privacypage.steady.local.content }}
+            {{ t('privacyContent.local.content') }}
           </v-card-text>
         </v-card>
         <v-card>
           <v-card-title>
-            {{ privacypage.steady.public.title }}
+            {{ t('privacyContent.public.title') }}
           </v-card-title>
           <v-card-text>
-            {{ privacypage.steady.public.content }}
+            {{ t('privacyContent.public.content') }}
           </v-card-text>
         </v-card>
         <v-card>
           <v-card-title>
-            {{ privacypage.steady.connections.title }}
+            {{ t('privacyContent.connections.title') }}
           </v-card-title>
           <v-card-text>
-            {{ privacypage.steady.connections.content }}
+            {{ t('privacyContent.connections.content') }}
           </v-card-text>
         </v-card>
       </v-col>

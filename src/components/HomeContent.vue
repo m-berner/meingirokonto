@@ -12,7 +12,7 @@ import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
-import {useHomeContentStore} from '@/components/homecontent'
+import {reactive} from 'vue'
 
 interface IHeader {
   title: string,
@@ -25,25 +25,12 @@ const {d, n, rt, t, tm} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const homecontent = useHomeContentStore()
 
 const {_bookings} = storeToRefs(records)
 const {_bookings_per_page} = storeToRefs(settings)
-const {_search} = storeToRefs(homecontent)
 
-homecontent.setSteady({
-  bookingsHeaders: tm('appPage.headers').map((item: IHeader): IHeader => {
-    return {
-      title: rt(item.title),
-      align: rt(item.align),
-      sortable: item.sortable,
-      key: rt(item.key)
-    }
-  }),
-  searchLabel: t('appPage.search'),
-  itemsPerPageText: t('appPage.itemsPerPageText'),
-  noDataText: t('appPage.noDataText'),
-  dotMenuItems: tm('appPage.menuItems')
+const state = reactive({
+  _search: ''
 })
 
 log('--- HomeContent.vue setup ---')
@@ -51,32 +38,39 @@ log('--- HomeContent.vue setup ---')
 
 <template>
   <v-text-field
-    v-model="_search"
+    v-model="state._search"
     density="compact"
     hide-details
     prepend-inner-icon="$magnify"
     single-line
-    v-bind:label="homecontent.steady.searchLabel"
+    v-bind:label="t('appPage.search')"
     variant="outlined"
   ></v-text-field>
   <v-data-table
     density="compact"
     item-key="cID"
-    v-bind:headers="homecontent.steady.bookingsHeaders"
+    v-bind:headers="tm('appPage.headers').map((item: IHeader): IHeader => {
+    return {
+      title: rt(item.title),
+      align: rt(item.align),
+      sortable: item.sortable,
+      key: rt(item.key)
+    }
+  })"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
     v-bind:items="_bookings.per_account"
     v-bind:items-per-page="_bookings_per_page"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="homecontent.steady.itemsPerPageText"
-    v-bind:no-data-text="homecontent.steady.noDataText"
-    v-bind:search="_search"
+    v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
+    v-bind:no-data-text="t('appPage.noDataText')"
+    v-bind:search="state._search"
     v-on:update:items-per-page="(count) => { settings.setBookingsPerPage(count) }">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td>
           <OptionMenu
-            v-bind:menuItems="homecontent.steady.dotMenuItems"
+            v-bind:menuItems="tm('appPage.menuItems')"
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>

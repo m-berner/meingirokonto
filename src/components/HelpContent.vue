@@ -7,23 +7,18 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useHelpPageStore} from '@/components/helpcontent'
 import {useApp} from '@/pages/background'
+
+interface IContent {
+  title: string
+  subtitle: string
+  content: string
+  icon: string
+}
 
 const {rt, t, tm} = useI18n()
 const {log} = useApp()
 
-const helppage = useHelpPageStore()
-helppage.setSteady({
-  titleBarTitle: t('helpContent.requestsTitle'),
-  titleBar: tm('helpContent.requests'),
-  toolBarTitle: t('helpContent.toolBarTitle'),
-  toolBar: tm('helpContent.toolBar'),
-  dotMenuTitle: t('helpContent.companyBarTitle'),
-  dotMenu: tm('helpContent.companyBar'),
-  footerBarTitle: t('helpContent.transferBarTitle'),
-  footerBar: tm('helpContent.transferBar')
-})
 log('--- HelpContent.vue setup ---')
 </script>
 
@@ -34,10 +29,17 @@ log('--- HelpContent.vue setup ---')
         <v-col cols="8" s="8">
           <v-card color="secondary">
             <v-card-title>
-              {{ helppage.steady.titleBarTitle }}
+              {{ t('helpContent.requestsTitle') }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in helppage.steady.titleBar" v-bind:key="item.title">
+          <v-card v-for="item in tm('helpContent.requests').map((entry: IContent): IContent => {
+            return {
+              title: rt(entry.title),
+              subtitle: '',
+              content: rt(entry.content),
+              icon: rt(entry.icon)
+            }
+          })" v-bind:key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -48,10 +50,17 @@ log('--- HelpContent.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ helppage.toolBarTitle }}
+              {{ t('helpContent.toolBarTitle') }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in helppage.steady.toolBar" v-bind:key="item.title">
+          <v-card v-for="item in tm('helpContent.toolBar').map((entry: IContent): IContent => {
+            return {
+              title: rt(entry.title),
+              content: rt(entry.content),
+              subtitle: '',
+              icon: rt(entry.icon)
+            }
+          })" v-bind:key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -62,10 +71,17 @@ log('--- HelpContent.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ helppage.steady.dotMenuBarTitle }}
+              {{ t('helpContent.companyBarTitle') }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in helppage.steady.dotMenu" v-bind:key="item.title">
+          <v-card v-for="item in tm('helpContent.companyBar').map((entry: IContent): IContent => {
+            return {
+              title: rt(entry.title),
+              content: '',
+              subtitle: rt(entry.subtitle),
+              icon: rt(entry.icon)
+            }
+          })" v-bind:key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -76,10 +92,17 @@ log('--- HelpContent.vue setup ---')
           </v-card>
           <v-card color="secondary">
             <v-card-title>
-              {{ helppage.footerBarTitle }}
+              {{ t('helpContent.transferBarTitle') }}
             </v-card-title>
           </v-card>
-          <v-card v-for="item in helppage.footerBar" v-bind:key="item.title">
+          <v-card v-for="item in tm('helpContent.transferBar').map((entry: IContent): IContent => {
+            return {
+              title: rt(entry.title),
+              content: '',
+              subtitle: rt(entry.subtitle),
+              icon: rt(entry.icon)
+            }
+          })" v-bind:key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}

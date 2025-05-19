@@ -9,19 +9,14 @@
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {useExportDatabaseStore} from '@/components/dialogs/exportdatabase'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
-const exportdatabase = useExportDatabaseStore()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${records.dbi.version}_${CONS.DB.NAME}.json`
 
-exportdatabase.setSteady({
-  fileName: t('dialogs.exportDialog', { filename: fn })
-})
-const ok = (): Promise<void> => {
+const ok = async (): Promise<void> => {
   log('EXPORTDATABASE: ok')
   const stringifyDB = (): string => {
     let buffer: string
@@ -121,11 +116,8 @@ const ok = (): Promise<void> => {
   }
   // noinspection JSDeprecatedSymbols
   browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up blob object after download.
-  return new Promise(async (resolve) => {
-    await browser.downloads.download(op) // writing blob object into download file
-    await notice(['Database exported!'])
-    resolve()
-  })
+  await browser.downloads.download(op) // writing blob object into download file
+  await notice(['Database exported!'])
 }
 const title = t('dialogs.exportDatabase.title')
 
@@ -139,7 +131,7 @@ log('--- ExportDatabase.vue setup ---')
     <v-card-text class="pa-5">
       <v-textarea
         v-bind:disabled="true"
-        v-bind:modelValue="exportdatabase.steady.fileName"
+        v-bind:modelValue="t('dialogs.exportDialog', { filename: fn })"
         variant="outlined"
       ></v-textarea>
     </v-card-text>

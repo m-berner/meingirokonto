@@ -12,11 +12,11 @@ import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {useTitleBarStore} from '@/components/titlebar'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
-const titlebar = useTitleBarStore()
+const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useApp()
 
@@ -129,7 +129,7 @@ onBeforeMount(async (): Promise<void> => {
   settings.initSettingsStore(theme, startSettings)
   await records.openDatabase()
   await records.databaseIntoStore()
-  titlebar.setLogo()
+  runtime.setLogo()
   records.sumBookings()
   log('APPINDEX: onBeforeMount: after')
 })

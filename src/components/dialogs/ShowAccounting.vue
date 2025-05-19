@@ -6,17 +6,26 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useShowAccountingStore} from '@/components/dialogs/showaccounting'
 import {useApp} from '@/pages/background'
+
+interface IShowAccounting {
+  _result: Array<{title: string, subtitle: string}>
+}
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const showaccounting = useShowAccountingStore()
 const {log} = useApp()
 
+const state: IShowAccounting = reactive({
+  _result: []
+})
+const cAddEntryToResult = (value: {title: string, subtitle: string}) => {
+  state._result.push(value)
+}
+//_result: Array<{title: string, subtitle: string}>
 const title = t('dialogs.showAccounting.title')
 
 defineExpose({title})
@@ -30,7 +39,7 @@ onMounted(() => {
     }).map((entry: IBooking) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)
-    showaccounting.addEntryToResult({title: records.bookingTypes.all[i].cName, subtitle: n(sums[i-1], 'currency')})
+    cAddEntryToResult({title: records.bookingTypes.all[i].cName, subtitle: n(sums[i-1], 'currency')})
   }
 })
 
@@ -41,7 +50,7 @@ log('--- ShowAccounting.vue setup ---')
   <v-form>
     <v-list height="440">
       <v-list-item
-        v-for="entry in showaccounting.getResult"
+        v-for="entry in state._result"
         :key="entry.title"
         :subtitle="entry.subtitle"
         :title="entry.title"></v-list-item>

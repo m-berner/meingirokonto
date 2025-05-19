@@ -8,17 +8,10 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {useFooterBarStore} from '@/components/footerbar'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const footerbar = useFooterBarStore()
 
-footerbar.setSteady({
-  help: t('footer.help'),
-  privacy: t('footer.privacy'),
-  mail: t('footer.mail')
-})
 log('--- FooterBar.vue setup ---')
 </script>
 
@@ -27,18 +20,18 @@ log('--- FooterBar.vue setup ---')
     <v-btn color="white">
       <router-link class="router-link-active" to="/help">
         <v-icon icon="$help"></v-icon>
-        <div>{{ footerbar.steady.help }}</div>
+        <div>{{ t('footer.help') }}</div>
       </router-link>
     </v-btn>
     <v-btn color="white">
       <router-link class="router-link-active" to="/privacy">
         <v-icon icon="$privacy"></v-icon>
-        <div>{{ footerbar.steady.privacy }}</div>
+        <div>{{ t('footer.privacy') }}</div>
       </router-link>
     </v-btn>
     <v-btn color="white" v-bind:href="CONS.SYSTEM.MAILTO">
       <v-icon icon="$mail"></v-icon>
-      <div>{{ footerbar.steady.mail }}</div>
+      <div>{{ t('footer.mail') }}</div>
     </v-btn>
     <v-btn color="white" v-bind:disabled="true">
       <v-icon icon="$mdiCopyright"></v-icon>

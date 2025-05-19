@@ -8,29 +8,29 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useTemplateRef} from 'vue'
-import {useDialogPortStore} from '@/components/helper/dialogport'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
 
-const dialogport = useDialogPortStore()
+const runtime = useRuntimeStore()
 </script>
 
 <template>
   <Teleport to="body">
-    <v-dialog v-bind:modelValue="dialogport.teleport.showHeaderDialog || dialogport.teleport.showOptionDialog" v-bind:persistent="true" width="500">
+    <v-dialog v-bind:modelValue="runtime.teleport.showHeaderDialog || runtime.teleport.showOptionDialog" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component v-bind:is="dialogport.teleport.dialogName" ref="dialog-ref"></component>
+          <component v-bind:is="runtime.teleport.dialogName" ref="dialog-ref"></component>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="dialogport.teleport.showOkButton"
+                v-if="runtime.teleport.showOkButton"
                 class="ml-auto"
                 icon="$check"
                 type="submit"
@@ -48,7 +48,7 @@ const dialogport = useDialogPortStore()
                 icon="$close"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="dialogport.resetTeleport"
+                v-on:click="runtime.resetTeleport"
               ></v-btn>
             </template>
           </v-tooltip>

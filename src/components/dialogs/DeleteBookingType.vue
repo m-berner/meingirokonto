@@ -6,43 +6,35 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, useTemplateRef} from 'vue'
+import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
-import {useDeleteBookingTypeStore} from '@/components/dialogs/deletebookingtype'
-import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
-const deletebookingtype = useDeleteBookingTypeStore()
 
-const {_selected} = storeToRefs(deletebookingtype)
-deletebookingtype.setSteady({
-  label: t('deleteBooking.confirm')
+const state = reactive({
+  _selected: -1
 })
-const ok = (): Promise<void> => {
+const ok = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE: ok')
-  return new Promise(async (resolve, reject): Promise<void> => {
-    try {
-      if (_selected.value !== null && _selected.value > 1) {
-        const result = await records.deleteBookingType(_selected.value)
-        if (result === 'Booking type deleted') {
-          formRef.value?.reset()
-          await notice([t('dialogs.deleteBookingType.success')])
-          resolve()
-        }
-      } else {
-        await notice(['Start kann nicht entfernt werden'])
-        reject()
+  try {
+    if (state._selected !== null && state._selected > 1) {
+      const result = await records.deleteBookingType(state._selected)
+      if (result === 'Booking type deleted') {
+        formRef.value?.reset()
+        await notice([t('dialogs.deleteBookingType.success')])
       }
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.deleteBookingType.error')])
+    } else {
+      await notice(['Start kann nicht entfernt werden'])
     }
-  })
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.deleteBookingType.error')])
+  }
 }
 const title = t('dialogs.deleteBookingType.title')
 
@@ -59,13 +51,13 @@ log('--- DeleteBookingType.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="_selected"
+      v-model="state._selected"
       density="compact"
       required
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
       v-bind:items="records.bookingTypes.all"
-      v-bind:label="deletebookingtype.steady.t('dialogs.deleteBookingType.label')"
+      v-bind:label="t('dialogs.deleteBookingType.label')"
       variant="outlined"
     ></v-select>
   </v-form>

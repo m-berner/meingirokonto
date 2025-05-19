@@ -10,7 +10,6 @@ import {useI18n} from 'vue-i18n'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useDialogPortStore} from '@/components/helper/dialogport'
 
 interface PropsOptionMenu {
   recordID: number | undefined
@@ -21,7 +20,6 @@ const _props = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
-const dialogport = useDialogPortStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
   log('OPTIONMENU: onIconClick', {info: _props.recordID})
@@ -30,7 +28,7 @@ const onIconClick = (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.DELETE_BOOKING:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING,
           showOkButton: true,
           showOptionDialog: true,
@@ -77,5 +75,5 @@ log('--- OptionMenu.vue setup ---')
       </v-hover>
     </v-list>
   </v-menu>
-  <DialogPort v-if="dialogport.teleport.showOptionDialog"></DialogPort>
+  <DialogPort v-if="runtime.teleport.showOptionDialog"></DialogPort>
 </template>

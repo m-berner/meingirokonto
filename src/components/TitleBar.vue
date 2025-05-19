@@ -11,45 +11,49 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {useTitleBarStore} from '@/components/titlebar'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const titlebar = useTitleBarStore()
+const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
 
 const {_active_account_id} = storeToRefs(settings)
-titlebar.setSteady({
-  title: t('titleBar.title'),
-  bookings_sum_label: t('titleBar.bookingsSumLabel'),
-  account_label: t('titleBar.selectAccountLabel')
-})
+
+const cUpdateTitlebar = async (): Promise<void> => {
+  records.sumBookings()
+  runtime.setLogo()
+  await browser.storage.local.set({
+    sActiveAccountId: settings.activeAccountId
+  })
+}
+
 log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img v-bind:src="titlebar.logo" alt="brandfetch.com logo">
+      <img alt="brandfetch.com logo" v-bind:src="runtime.logo">
     </template>
-    <v-app-bar-title>{{ titlebar.steady.title }}</v-app-bar-title>
+    <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-      v-bind:modelValue="n(records.bookingSum, 'currency')"
-      v-bind:label="titlebar.steady.bookings_sum_label"
       max-width="150"
       v-bind:disabled="true"
+      v-bind:label="t('titleBar.bookingsSumLabel')"
+      v-bind:modelValue="n(records.bookingSum, 'currency')"
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
       v-if="_active_account_id > -1"
       v-model="_active_account_id"
-      v-bind:label="titlebar.steady.account_label"
       max-width="300"
-      v-bind:items="records.accounts.all"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-on:update:modelValue="titlebar.updateTitlebar"
+      v-bind:items="records.accounts.all"
+      v-bind:label="t('titleBar.selectAccountLabel')"
+      v-on:update:modelValue="cUpdateTitlebar"
     ></v-select>
   </v-app-bar>
 </template>

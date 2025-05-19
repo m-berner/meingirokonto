@@ -9,13 +9,11 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
-import {useHeaderBarStore} from '@/components/headerbar'
-import {useDialogPortStore} from '@/components/helper/dialogport'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const headerbar = useHeaderBarStore()
-const dialogport = useDialogPortStore()
+const runtime = useRuntimeStore()
 
 const onIconClick = (ev: Event): Promise<void> => {
   log('HEADERBAR: onIconClick')
@@ -23,7 +21,7 @@ const onIconClick = (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.ADD_ACCOUNT:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           showOkButton: true,
           showHeaderDialog: true,
@@ -31,7 +29,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
           showOkButton: true,
           showHeaderDialog: true,
@@ -39,7 +37,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -47,7 +45,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -55,7 +53,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.ADD_BOOKING:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
           showOkButton: true,
           showHeaderDialog: true,
@@ -63,7 +61,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.EXPORT_DATABASE:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.EXPORT_DATABASE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -71,7 +69,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.IMPORT_DATABASE:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DATABASE,
           showOkButton: true,
           showHeaderDialog: true,
@@ -79,7 +77,7 @@ const onIconClick = (ev: Event): Promise<void> => {
         })
         break
       case CONS.DIALOGS.SHOW_ACCOUNTING:
-        dialogport.setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
           showOkButton: false,
           showHeaderDialog: true,
@@ -102,18 +100,6 @@ const onIconClick = (ev: Event): Promise<void> => {
   })
 }
 
-headerbar.setSteady({
-  home: t('headerBar.home'),
-  addAccount: t('headerBar.addAccount'),
-  deleteAccount: t('headerBar.deleteAccount'),
-  addBooking: t('headerBar.addBooking'),
-  addBookingType: t('headerBar.addBookingType'),
-  deleteBookingType: t('headerBar.deleteBookingType'),
-  exportDatabase: t('headerBar.exportDatabase'),
-  importDatabase: t('headerBar.importDatabase'),
-  showAccounting: t('headerBar.showAccounting'),
-  settings: t('headerBar.settings')
-})
 log('--- HeaderBar.vue setup ---')
 </script>
 
@@ -121,7 +107,7 @@ log('--- HeaderBar.vue setup ---')
   <v-app-bar app height="75" v-bind:flat="true">
     <v-spacer></v-spacer>
     <router-link class="router-link-active" to="/">
-      <v-tooltip location="top" v-bind:text="headerbar.steady.home">
+      <v-tooltip location="top" v-bind:text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
             icon="$home"
@@ -132,7 +118,7 @@ log('--- HeaderBar.vue setup ---')
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.addAccount">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
@@ -145,7 +131,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.deleteAccount">
+    <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.DELETE_ACCOUNT"
@@ -159,7 +145,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.addBooking">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_BOOKING"
@@ -173,7 +159,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.addBookingType">
+    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
@@ -186,7 +172,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.deleteBookingType">
+    <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.DELETE_BOOKING_TYPE"
@@ -200,7 +186,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.exportDatabase">
+    <v-tooltip location="top" v-bind:text="t('headerBar.exportDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.EXPORT_DATABASE"
@@ -213,7 +199,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.importDatabase">
+    <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.IMPORT_DATABASE"
@@ -227,7 +213,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.showAccounting">
+    <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.SHOW_ACCOUNTING"
@@ -241,7 +227,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="headerbar.steady.settings">
+    <v-tooltip location="top" v-bind:text="t('headerBar.settings')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.SETTING"
@@ -254,5 +240,5 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
-  <DialogPort v-if="dialogport.teleport.showHeaderDialog"></DialogPort>
+  <DialogPort v-if="runtime.teleport.showHeaderDialog"></DialogPort>
 </template>
