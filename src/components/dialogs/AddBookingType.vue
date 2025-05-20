@@ -53,7 +53,11 @@ log('--- AddBookingType.vue setup ---')
 
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+    <v-text-field v-if="settings.activeAccountId === -1">
+       {{ t('dialogs.addBookingType.message') }}
+    </v-text-field>
     <v-combobox
+      v-bind:disabled="settings.activeAccountId === -1"
       v-model="state._name"
       ref="name-input"
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"

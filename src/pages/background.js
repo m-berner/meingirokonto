@@ -66,8 +66,8 @@ export const useApp = () => {
                         }
                     }
                 },
-                MIN_VERSION: 1,
-                START_VERSION: 1
+                MIN_VERSION: 21,
+                START_VERSION: 25
             },
             DEFAULTS: {
                 BACKGROUND: '_generated_background_page.html',
@@ -526,7 +526,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 if (ev.oldVersion === 0) {
                     createDB();
                 }
-                else {
+                else if (ev.oldVersion > 25) {
                 }
                 await initStorageLocal();
             }

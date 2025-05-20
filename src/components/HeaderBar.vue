@@ -10,10 +10,12 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
+const settings = useSettingsStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADERBAR: onIconClick')
@@ -55,7 +57,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
-          showOkButton: true,
+          showOkButton: settings.activeAccountId === 1,
           showHeaderDialog: true,
           showOptionDialog: false
         })

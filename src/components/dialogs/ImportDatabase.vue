@@ -43,7 +43,9 @@ const ok = async (): Promise<void> => {
       let bookingType: IBookingType
       let stock: IStock
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
-        await notice(['IMPORTDATABASE: onFileLoaded', 'Invalid backup file version'])
+        await notice([`Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version ${CONS.DB.MIN_VERSION} oder neuer.`])
+      } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
+        // TODO import stockmanager DB
       } else {
         for (account of bkupObject.accounts) {
           records.accounts.all.push(account)

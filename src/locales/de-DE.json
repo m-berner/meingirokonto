@@ -90,6 +90,7 @@
       "creditLabel": "Einnahme",
       "debitLabel": "Ausgabe",
       "typeLabel": "Buchungstyp",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },
@@ -119,6 +120,7 @@
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
       "label": "Buchungstyp",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchungstyp wurde hinzugefügt",
       "error": "Buchungstyp existiert bereits"
     },

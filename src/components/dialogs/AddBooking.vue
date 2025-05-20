@@ -70,6 +70,9 @@ log('--- AddBooking.vue setup ---')
 
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+    <v-text-field v-if="settings.activeAccountId === -1">
+      {{ t('dialogs.addBookingType.message') }}
+    </v-text-field>
     <v-text-field
       ref="date-input"
       v-model="state._date"
