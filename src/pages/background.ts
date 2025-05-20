@@ -23,19 +23,22 @@ declare global {
   }
 
   interface IBooking {
-    // NOTE: correlates with CONS.DB.STORES.BOOKINGS.FIELDS
     cID: number
     cDate: string
+    cExDate: string
     cDebit: number
     cCredit: number
     cDescription?: string
-    cType: number
+    cCount: number
+    cBookingTypeID: number
     cAccountNumberID: number
     cStockID: number
+    cSoli: number
     cTax: number
     cFee: number
     cSourceTax: number
     cTransactionTax: number
+    cMarketPlace: string
   }
 
   interface IStock {
@@ -59,6 +62,7 @@ declare global {
     }
     accounts: IAccount[]
     bookings: IBooking[]
+    transfers: IBooking[]
     booking_types: IBookingType[]
     stocks: IStock[]
   }
@@ -107,51 +111,55 @@ interface IUseApp {
         ACCOUNTS: {
           NAME: string
           FIELDS: {
-            ID: string
-            SWIFT: string
-            LOGO_URL: string
-            NUMBER: string
-            STOCK_ACCOUNT: string
+            ID: keyof IAccount
+            SWIFT: keyof IAccount
+            LOGO_URL: keyof IAccount
+            NUMBER: keyof IAccount
+            STOCK_ACCOUNT: keyof IAccount
           }
         }
         BOOKINGS: {
           NAME: string
           FIELDS: {
-            ID: string
-            DATE: string
-            CREDIT: string
-            DEBIT: string
-            DESC: string
-            TYPE: string
-            ACCOUNT_NUMBER_ID: string
-            STOCK_ID: string
-            TAX: string
-            FEE: string
-            SOURCE_TAX: string
-            TRANSACTION_TAX: string
+            ID: keyof IBooking
+            DATE: keyof IBooking
+            EX_DATE: keyof IBooking
+            COUNT: keyof IBooking
+            CREDIT: keyof IBooking
+            DEBIT: keyof IBooking
+            DESCRIPTION: keyof IBooking
+            BOOKING_TYPE_ID: keyof IBooking
+            ACCOUNT_NUMBER_ID: keyof IBooking
+            STOCK_ID: keyof IBooking
+            SOLI: keyof IBooking
+            MARKET_PLACE: keyof IBooking
+            TAX: keyof IBooking
+            FEE: keyof IBooking
+            SOURCE_TAX: keyof IBooking
+            TRANSACTION_TAX: keyof IBooking
           }
         }
         BOOKING_TYPES: {
           NAME: string
           FIELDS: {
-            ID: string
-            NAME: string
-            ACCOUNT_NUMBER: string
+            ID: keyof IBookingType
+            NAME: keyof IBookingType
+            ACCOUNT_NUMBER: keyof IBookingType
           }
         }
         STOCKS: {
           NAME: string
           FIELDS: {
-            ID: string
-            ISIN: string
-            SYMBOL: string
-            FADE_OUT: string
-            FIRST_PAGE: string
-            URL: string
-            MEETING_DAY: string
-            QUARTER_DAY: string
-            WKN: string
-            COMPANY: string
+            ID: keyof IStock
+            ISIN: keyof IStock
+            SYMBOL: keyof IStock
+            FADE_OUT: keyof IStock
+            FIRST_PAGE: keyof IStock
+            URL: keyof IStock
+            MEETING_DAY: keyof IStock
+            QUARTER_DAY: keyof IStock
+            WKN: keyof IStock
+            COMPANY: keyof IStock
           }
         }
       }
@@ -350,7 +358,6 @@ export const useApp = (): IUseApp => {
       DB: {
         NAME: 'kontenmanager.db',
         STORES: {
-          // <do not change! (part of database)
           ACCOUNTS: {
             NAME: 'accounts',
             FIELDS: {
@@ -366,12 +373,16 @@ export const useApp = (): IUseApp => {
             FIELDS: {
               ID: 'cID',
               DATE: 'cDate',
+              EX_DATE: 'cExDate',
+              COUNT: 'cCount',
               CREDIT: 'cCredit',
               DEBIT: 'cDebit',
-              DESC: 'cDescription',
-              TYPE: 'cType',
+              DESCRIPTION: 'cDescription',
+              BOOKING_TYPE_ID: 'cBookingTypeID',
               ACCOUNT_NUMBER_ID: 'cAccountNumberID',
               STOCK_ID: 'cStockID',
+              SOLI: 'cSoli',
+              MARKET_PLACE: 'cMarketPlace',
               TAX: 'cTax',
               FEE: 'cFee',
               SOURCE_TAX: 'cSourceTax',
@@ -401,7 +412,6 @@ export const useApp = (): IUseApp => {
               COMPANY: 'cCompany'
             }
           }
-          // do not change! (part of database)>
         },
         MIN_VERSION: 1,
         START_VERSION: 1
@@ -755,19 +765,16 @@ export const useApp = (): IUseApp => {
         ]
       }
     }),
-    notice: (messages) => {
-      return new Promise(async (resolve) => {
-        const msg = messages.join('\n')
-        const notificationOption: browser.notifications.CreateNotificationOptions =
-          {
-            type: 'basic',
-            iconUrl: 'assets/icon16.png',
-            title: 'KontenManager',
-            message: msg
-          }
-        await browser.notifications.create(notificationOption)
-        resolve()
-      })
+    notice: async (messages) => {
+      const msg = messages.join('\n')
+      const notificationOption: browser.notifications.CreateNotificationOptions =
+        {
+          type: 'basic',
+          iconUrl: 'assets/icon16.png',
+          title: 'KontenManager',
+          message: msg
+        }
+      await browser.notifications.create(notificationOption)
     },
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
@@ -821,237 +828,205 @@ export const useApp = (): IUseApp => {
   }
 }
 
-const {CONS,initStorageLocal, log} = useApp()
+const {CONS, initStorageLocal, log} = useApp()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   // NOTE: onInstall runs at addon install, addon update and firefox update
-  const onInstall = (): Promise<void> => {
+  const onInstall = async (): Promise<void> => {
     log('BACKGROUND: onInstall')
-    return new Promise(async (resolve): Promise<void> => {
-      //const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
-      const onSuccess = (ev: Event): void => {
-        if (ev.target instanceof IDBRequest) {
-          ev.target.result.close()
+    const onSuccess = (ev: Event): void => {
+      if (ev.target instanceof IDBRequest) {
+        ev.target.result.close()
+      }
+      log('BACKGROUND: onInstall: onSuccess', {info: ev})
+    }
+    const onError = (ev: Event): void => {
+      console.error('BACKGROUND: onError: ', ev)
+    }
+    const onUpgradeNeeded = async (ev: Event): Promise<void> => {
+      if (ev instanceof IDBVersionChangeEvent) {
+        log('BACKGROUND: onInstall: onUpgradeNeeded', {info: ev.newVersion})
+        const createDB = (): void => {
+          log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+          const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
+            CONS.DB.STORES.ACCOUNTS.NAME,
+            {
+              keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+              autoIncrement: true
+            })
+          const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
+            CONS.DB.STORES.BOOKINGS.NAME,
+            {
+              keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+              autoIncrement: true
+            }
+          )
+          const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
+            CONS.DB.STORES.BOOKING_TYPES.NAME,
+            {
+              keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+              autoIncrement: true
+            }
+          )
+          const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
+            CONS.DB.STORES.STOCKS.NAME,
+            {
+              keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+              autoIncrement: true
+            }
+          )
+          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
+          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, {unique: true})
+          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
+          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, {unique: false})
+          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, {unique: false})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, {unique: false})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, {unique: false})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, {unique: false})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, {unique: true})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, {unique: true})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, {unique: true})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
         }
-        log('BACKGROUND: onInstall: onSuccess', {info: ev})
-      }
-      const onError = (ev: Event): void => {
-        console.error('BACKGROUND: onError: ', ev)
-      }
-      const onUpgradeNeeded = async (ev: Event): Promise<void> => {
-        if (ev instanceof IDBVersionChangeEvent) {
-          log('BACKGROUND: onInstall: onUpgradeNeeded', {info: ev.newVersion})
-          const createDB = (): void => {
-            log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
-            const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
-              CONS.DB.STORES.ACCOUNTS.NAME,
-              {
-                keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-                autoIncrement: true
-              })
-            const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
-              CONS.DB.STORES.BOOKINGS.NAME,
-              {
-                keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-                autoIncrement: true
-              }
-            )
-            const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
-              CONS.DB.STORES.BOOKING_TYPES.NAME,
-              {
-                keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-                autoIncrement: true
-              }
-            )
-            const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
-              CONS.DB.STORES.STOCKS.NAME,
-              {
-                keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
-                autoIncrement: true
-              }
-            )
-            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
-            requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, {unique: true})
-            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
-            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, {unique: false})
-            requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, {unique: false})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, {unique: false})
-            requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.TYPE, {unique: false})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, {unique: true})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, {unique: true})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, {unique: true})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
-            requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
-          }
-          // const updateDB = (): void => {
-          //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
-          //   // const optFalse: IDBIndexParameters = {unique: false}
-          //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
-          //   //   log(
-          //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
-          //   //   )
-          //   //   const cursor: IDBCursorWithValue | null = ev.target.result
-          //   //   if (cursor !== null) {
-          //   //     const stock: IStock = cursor.value
-          //   //     cursor.update(migrateStock({...stock}))
-          //   //     cursor.continue()
-          //   //   } else {
-          //   //     stocksOpenCursorRequest?.removeEventListener(
-          //   //       CONS.EVENTS.SUC,
-          //   //       onSuccessStocks,
-          //   //       false
-          //   //     )
-          //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
-          //   //       log(
-          //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
-          //   //       )
-          //   //       const cursor: IDBCursorWithValue | null = ev.target.result
-          //   //       if (cursor !== null) {
-          //   //         const transfer: ITransfer = cursor.value
-          //   //         cursor.update(migrateTransfer({...transfer}))
-          //   //         cursor.continue()
-          //   //       } else {
-          //   //         stocksOpenCursorRequest?.removeEventListener(
-          //   //           CONS.EVENTS.SUC,
-          //   //           onSuccessTransfers,
-          //   //           false
-          //   //         )
-          //   //       }
-          //   //     }
-          //   //     if (dbOpenRequest?.transaction === null) {
-          //   //       console.error('BACKGROUND: open database error')
-          //   //     } else if (
-          //   //       !dbOpenRequest.transaction
-          //   //         ?.objectStore(CONS.DB.STORES.S)
-          //   //         .indexNames.contains('stocks_k2')
-          //   //     ) {
-          //   //       dbOpenRequest.transaction
-          //   //         ?.objectStore(CONS.DB.STORES.S)
-          //   //         .createIndex('stocks_k2', 'cFadeOut', optFalse)
-          //   //     }
-          //   //     const requestTransfersOpenCursor:
-          //   //       | IDBRequest<IDBCursorWithValue | null>
-          //   //       | undefined = dbOpenRequest.transaction?.objectStore(CONS.DB.STORES.T).openCursor()
-          //   //     requestTransfersOpenCursor?.addEventListener(
-          //   //       CONS.EVENTS.SUC,
-          //   //       onSuccessTransfers,
-          //   //       false
-          //   //     )
-          //   //   }
-          //   // }
-          //   // const onErrorStocks = (err: ErrorEvent): void => {
-          //   //   stocksOpenCursorRequest?.removeEventListener(
-          //   //     CONS.EVENTS.ERR,
-          //   //     onError,
-          //   //     false
-          //   //   )
-          //   //   console.error(err.message)
-          //   // }
-          //   // const stocksOpenCursorRequest:
-          //   //   | IDBRequest<IDBCursorWithValue | null>
-          //   //   | undefined = dbOpenRequest?.transaction?.objectStore(CONS.DB.STORES.S).openCursor()
-          //   // stocksOpenCursorRequest?.addEventListener(
-          //   //   CONS.EVENTS.ERR,
-          //   //   onErrorStocks,
-          //   //   false
-          //   // )
-          //   // stocksOpenCursorRequest?.addEventListener(
-          //   //   CONS.EVENTS.SUC,
-          //   //   onSuccessStocks,
-          //   //   false
-          //   // )
-          //   // for (
-          //   //   let i = 0;
-          //   //   i < dbOpenRequest.result.objectStoreNames.length;
-          //   //   i++
-          //   // ) {
-          //   //   if (
-          //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.S &&
-          //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.T
-          //   //   ) {
-          //   //     dbOpenRequest.result.deleteObjectStore(
-          //   //       dbOpenRequest.result.objectStoreNames[i]
-          //   //     )
-          //   //   }
-          //   // }
-          // }
-          // const updateStorageLocal = async () => {
-          //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
-          //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
-          //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
-          //   for (let i = 0; i < storageKeys.length; i++) {
-          //     if (storage[storageKeys[i]] === undefined) {
-          //       await browser.storage.local.set({
-          //         [storageKeys[i]]: storageValues[i]
-          //       })
-          //     }
-          //   }
-          // }
-          //
-          if (ev.oldVersion === 0) {
-            createDB()
-          } else {
-            // updateDB()
-          }
-          await initStorageLocal()
+        // const updateDB = (): void => {
+        //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
+        //   // const optFalse: IDBIndexParameters = {unique: false}
+        //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
+        //   //   log(
+        //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
+        //   //   )
+        //   //   const cursor: IDBCursorWithValue | null = ev.target.result
+        //   //   if (cursor !== null) {
+        //   //     const stock: IStock = cursor.value
+        //   //     cursor.update(migrateStock({...stock}))
+        //   //     cursor.continue()
+        //   //   } else {
+        //   //     stocksOpenCursorRequest?.removeEventListener(
+        //   //       CONS.EVENTS.SUC,
+        //   //       onSuccessStocks,
+        //   //       false
+        //   //     )
+        //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
+        //   //       log(
+        //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
+        //   //       )
+        //   //       const cursor: IDBCursorWithValue | null = ev.target.result
+        //   //       if (cursor !== null) {
+        //   //         const transfer: ITransfer = cursor.value
+        //   //         cursor.update(migrateTransfer({...transfer}))
+        //   //         cursor.continue()
+        //   //       } else {
+        //   //         stocksOpenCursorRequest?.removeEventListener(
+        //   //           CONS.EVENTS.SUC,
+        //   //           onSuccessTransfers,
+        //   //           false
+        //   //         )
+        //   //       }
+        //   //     }
+        //   //     if (dbOpenRequest?.transaction === null) {
+        //   //       console.error('BACKGROUND: open database error')
+        //   //     } else if (
+        //   //       !dbOpenRequest.transaction
+        //   //         ?.objectStore(CONS.DB.STORES.S)
+        //   //         .indexNames.contains('stocks_k2')
+        //   //     ) {
+        //   //       dbOpenRequest.transaction
+        //   //         ?.objectStore(CONS.DB.STORES.S)
+        //   //         .createIndex('stocks_k2', 'cFadeOut', optFalse)
+        //   //     }
+        //   //     const requestTransfersOpenCursor:
+        //   //       | IDBRequest<IDBCursorWithValue | null>
+        //   //       | undefined = dbOpenRequest.transaction?.objectStore(CONS.DB.STORES.T).openCursor()
+        //   //     requestTransfersOpenCursor?.addEventListener(
+        //   //       CONS.EVENTS.SUC,
+        //   //       onSuccessTransfers,
+        //   //       false
+        //   //     )
+        //   //   }
+        //   // }
+        //   // const onErrorStocks = (err: ErrorEvent): void => {
+        //   //   stocksOpenCursorRequest?.removeEventListener(
+        //   //     CONS.EVENTS.ERR,
+        //   //     onError,
+        //   //     false
+        //   //   )
+        //   //   console.error(err.message)
+        //   // }
+        //   // const stocksOpenCursorRequest:
+        //   //   | IDBRequest<IDBCursorWithValue | null>
+        //   //   | undefined = dbOpenRequest?.transaction?.objectStore(CONS.DB.STORES.S).openCursor()
+        //   // stocksOpenCursorRequest?.addEventListener(
+        //   //   CONS.EVENTS.ERR,
+        //   //   onErrorStocks,
+        //   //   false
+        //   // )
+        //   // stocksOpenCursorRequest?.addEventListener(
+        //   //   CONS.EVENTS.SUC,
+        //   //   onSuccessStocks,
+        //   //   false
+        //   // )
+        //   // for (
+        //   //   let i = 0;
+        //   //   i < dbOpenRequest.result.objectStoreNames.length;
+        //   //   i++
+        //   // ) {
+        //   //   if (
+        //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.S &&
+        //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.T
+        //   //   ) {
+        //   //     dbOpenRequest.result.deleteObjectStore(
+        //   //       dbOpenRequest.result.objectStoreNames[i]
+        //   //     )
+        //   //   }
+        //   // }
+        // }
+        // const updateStorageLocal = async () => {
+        //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
+        //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
+        //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
+        //   for (let i = 0; i < storageKeys.length; i++) {
+        //     if (storage[storageKeys[i]] === undefined) {
+        //       await browser.storage.local.set({
+        //         [storageKeys[i]]: storageValues[i]
+        //       })
+        //     }
+        //   }
+        // }
+        //
+        if (ev.oldVersion === 0) {
+          createDB()
+        } else {
+          // updateDB()
         }
+        await initStorageLocal()
       }
-      const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
-      dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-      dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-      dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
-      resolve()
-    })
+    }
+    const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
+    dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+    dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+    dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
   }
-  const onClick = (): Promise<void> => {
+  const onClick = async (): Promise<void> => {
     log('BACKGROUND: onClick')
-    return new Promise(async (resolve) => {
-      const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
-      // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
-      if (foundTabs.length === 0) {
-        await browser.tabs.create({
-          url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
-          active: true
-        })
-      } else {
-        await browser.windows.update(foundTabs[0].windowId ?? 0, {
-          focused: true
-        })
-        await browser.tabs.update(foundTabs[0].id ?? 0, {active: true})
-      }
-      resolve()
-    })
+    const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
+    // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
+    if (foundTabs.length === 0) {
+      await browser.tabs.create({
+        url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+        active: true
+      })
+    } else {
+      await browser.windows.update(foundTabs[0].windowId ?? 0, {
+        focused: true
+      })
+      await browser.tabs.update(foundTabs[0].id ?? 0, {active: true})
+    }
   }
-  // const onSettings = (data: { type: string }): Promise<ISettings> => {
-  //   log('BACKGROUND: onSettings', {info: data.type})
-  //   const startSettings = (): Promise<ISettings> => {
-  //     return new Promise(async (resolve) => {
-  //       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
-  //       const skin = storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN
-  //       const activeAccountId = storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID
-  //       const bookingsPerPage = storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE
-  //       const debug = storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG
-  //       log('BACKGROUND: onSettings: startSettings')
-  //       resolve({
-  //         skin,
-  //         activeAccountId,
-  //         bookingsPerPage,
-  //         debug
-  //       })
-  //     })
-  //   }
-  //   return new Promise(async (resolve): Promise<ISettings | void> => {
-  //     if (data.type === CONS.MESSAGES.GS) {
-  //       resolve(await startSettings())
-  //     } else {
-  //       resolve()
-  //     }
-  //   })
-  // }
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
-  //browser.runtime.onMessage.addListener(onSettings)
   log('BACKGROUND: attached listener', {info: window.location.href})
 }
 

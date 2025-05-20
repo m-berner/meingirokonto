@@ -39,6 +39,7 @@ const ok = async (): Promise<void> => {
       const bkupObject: IBackup = JSON.parse(fr.result)
       let account: IAccount
       let booking: IBooking
+      let transfer: IBooking
       let bookingType: IBookingType
       let stock: IStock
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
@@ -55,6 +56,9 @@ const ok = async (): Promise<void> => {
         }
         for (booking of bkupObject.bookings) {
           records.bookings.all.push(booking)
+        }
+        for (transfer of bkupObject.transfers) {
+          records.bookings.all.push(transfer)
         }
         const result = await records.storeIntoDatabase()
         if (result !== '') {

@@ -15,7 +15,7 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
 
-const onIconClick = (ev: Event): Promise<void> => {
+const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADERBAR: onIconClick')
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
@@ -92,12 +92,9 @@ const onIconClick = (ev: Event): Promise<void> => {
         await parse(elem!.parentElement, loop)
     }
   }
-  return new Promise(async (resolve) => {
-    if (ev.target instanceof Element) {
-      await parse(ev.target)
-      resolve()
-    }
-  })
+  if (ev.target instanceof Element) {
+    await parse(ev.target)
+  }
 }
 
 log('--- HeaderBar.vue setup ---')

@@ -21,7 +21,7 @@ const {rt} = useI18n()
 const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
 
-const onIconClick = (ev: Event): Promise<void> => {
+const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTIONMENU: onIconClick', {info: _props.recordID})
   runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
@@ -40,12 +40,9 @@ const onIconClick = (ev: Event): Promise<void> => {
         await parse(elem!.parentElement, loop)
     }
   }
-  return new Promise(async (resolve) => {
-    if (ev.target instanceof Element) {
-      await parse(ev.target)
-      resolve()
-    }
-  })
+  if (ev.target instanceof Element) {
+    await parse(ev.target)
+  }
 }
 
 log('--- OptionMenu.vue setup ---')

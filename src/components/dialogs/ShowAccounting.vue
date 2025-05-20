@@ -35,7 +35,7 @@ onMounted(() => {
   const sums = []
   for (let i = 1; i < records.bookingTypes.all.length; i++) {
     sums[i-1] = records.bookings.all.filter((entry: IBooking) => {
-      return entry.cType === records.bookingTypes.all[i].cID
+      return entry.cBookingTypeID === records.bookingTypes.all[i].cID
     }).map((entry: IBooking) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)

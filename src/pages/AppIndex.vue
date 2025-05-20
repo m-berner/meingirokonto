@@ -80,16 +80,13 @@ onBeforeMount(async (): Promise<void> => {
       default:
     }
   }
-  const onBeforeUnload = (): Promise<void> => {
+  const onBeforeUnload = async (): Promise<void> => {
     log('APPINDEX: onBeforeUnload')
-    return new Promise(async (resolve) => {
-      const foundTabs = await browser.tabs.query({url: 'about:addons'})
-      if (foundTabs.length > 0) {
-        await browser.tabs.remove(foundTabs[0].id ?? 0)
-      }
-      records.dbi.close()
-      resolve()
-    })
+    const foundTabs = await browser.tabs.query({url: 'about:addons'})
+    if (foundTabs.length > 0) {
+      await browser.tabs.remove(foundTabs[0].id ?? 0)
+    }
+    records.dbi.close()
   }
   const onKeyDown = (ev: KeyboardEvent): void => {
     keyStrokeController.push(ev.key)

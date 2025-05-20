@@ -78,7 +78,7 @@ log('--- HomeContent.vue setup ---')
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
-        <td>{{ records.getBookingTypeNameById(item.cType) }}</td>
+        <td>{{ records.getBookingTypeNameById(item.cBookingTypeID) }}</td>
       </tr>
     </template>
   </v-data-table>

@@ -146,6 +146,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._accounts.all.splice(0, this._accounts.all.length)
       this._stocks.all.splice(0, this._accounts.all.length)
       return new Promise(async (resolve, reject) => {
+        await browser.storage.local.set({sActiveAccountId: -1})
         if (this._dbi != null) {
           const onError = (ev: Event): void => {
             reject(ev)

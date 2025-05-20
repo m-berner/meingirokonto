@@ -74,15 +74,26 @@ const ok = async (): Promise<void> => {
     buffer += i === 0 ? '],\n' : ''
     buffer += '"bookings":[\n'
     for (i = 0; i < records.bookings.all.length; i++) {
-      buffer += JSON.stringify({
-        cID: records.bookings.all[i].cID,
-        cDate: records.bookings.all[i].cDate,
-        cDebit: records.bookings.all[i].cDebit,
-        cCredit: records.bookings.all[i].cCredit,
-        cDescription: records.bookings.all[i].cDescription,
-        cType: records.bookings.all[i].cType,
-        cAccountNumberID: records.bookings.all[i].cAccountNumberID
-      })
+      const booking: IBooking = {
+        cID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.ID],
+        cDate: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DATE],
+        cDebit: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DEBIT],
+        cCredit: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.CREDIT],
+        cDescription: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DESCRIPTION],
+        cBookingTypeID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID],
+        cAccountNumberID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
+        // TODO use memory later!
+        cCount: 0,
+        cStockID: 0,
+        cSoli: 0,
+        cTax: 0,
+        cFee: 0,
+        cSourceTax: 0,
+        cTransactionTax: 0,
+        cMarketPlace: '',
+        cExDate: '1970-01-01'
+      }
+      buffer += JSON.stringify(booking)
       if (i === records.bookings.all.length - 1) {
         buffer += '\n]\n'
       } else {

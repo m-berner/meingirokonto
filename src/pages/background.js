@@ -26,12 +26,16 @@ export const useApp = () => {
                         FIELDS: {
                             ID: 'cID',
                             DATE: 'cDate',
+                            EX_DATE: 'cExDate',
+                            COUNT: 'cCount',
                             CREDIT: 'cCredit',
                             DEBIT: 'cDebit',
-                            DESC: 'cDescription',
-                            TYPE: 'cType',
+                            DESCRIPTION: 'cDescription',
+                            BOOKING_TYPE_ID: 'cBookingTypeID',
                             ACCOUNT_NUMBER_ID: 'cAccountNumberID',
                             STOCK_ID: 'cStockID',
+                            SOLI: 'cSoli',
+                            MARKET_PLACE: 'cMarketPlace',
                             TAX: 'cTax',
                             FEE: 'cFee',
                             SOURCE_TAX: 'cSourceTax',
@@ -407,18 +411,15 @@ export const useApp = () => {
                 ];
             }
         }),
-        notice: (messages) => {
-            return new Promise(async (resolve) => {
-                const msg = messages.join('\n');
-                const notificationOption = {
-                    type: 'basic',
-                    iconUrl: 'assets/icon16.png',
-                    title: 'KontenManager',
-                    message: msg
-                };
-                await browser.notifications.create(notificationOption);
-                resolve();
-            });
+        notice: async (messages) => {
+            const msg = messages.join('\n');
+            const notificationOption = {
+                type: 'basic',
+                iconUrl: 'assets/icon16.png',
+                title: 'KontenManager',
+                message: msg
+            };
+            await browser.notifications.create(notificationOption);
         },
         utcDate: (iso) => {
             return new Date(`${iso}T00:00:00.000`);
@@ -474,86 +475,82 @@ export const useApp = () => {
 };
 const { CONS, initStorageLocal, log } = useApp();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    const onInstall = () => {
+    const onInstall = async () => {
         log('BACKGROUND: onInstall');
-        return new Promise(async (resolve) => {
-            const onSuccess = (ev) => {
-                if (ev.target instanceof IDBRequest) {
-                    ev.target.result.close();
+        const onSuccess = (ev) => {
+            if (ev.target instanceof IDBRequest) {
+                ev.target.result.close();
+            }
+            log('BACKGROUND: onInstall: onSuccess', { info: ev });
+        };
+        const onError = (ev) => {
+            console.error('BACKGROUND: onError: ', ev);
+        };
+        const onUpgradeNeeded = async (ev) => {
+            if (ev instanceof IDBVersionChangeEvent) {
+                log('BACKGROUND: onInstall: onUpgradeNeeded', { info: ev.newVersion });
+                const createDB = () => {
+                    log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                    const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
+                        keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
+                        keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    const requestCreateStockStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
+                        keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+                        autoIncrement: true
+                    });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, { unique: false });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, { unique: true });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
+                };
+                if (ev.oldVersion === 0) {
+                    createDB();
                 }
-                log('BACKGROUND: onInstall: onSuccess', { info: ev });
-            };
-            const onError = (ev) => {
-                console.error('BACKGROUND: onError: ', ev);
-            };
-            const onUpgradeNeeded = async (ev) => {
-                if (ev instanceof IDBVersionChangeEvent) {
-                    log('BACKGROUND: onInstall: onUpgradeNeeded', { info: ev.newVersion });
-                    const createDB = () => {
-                        log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
-                        const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
-                            keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                            keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                            keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        const requestCreateStockStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
-                            keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
-                            autoIncrement: true
-                        });
-                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
-                        requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, { unique: false });
-                        requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, { unique: false });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
-                        requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.TYPE, { unique: false });
-                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, { unique: true });
-                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
-                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
-                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
-                        requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
-                    };
-                    if (ev.oldVersion === 0) {
-                        createDB();
-                    }
-                    else {
-                    }
-                    await initStorageLocal();
+                else {
                 }
-            };
-            const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
-            dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-            dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
-            resolve();
-        });
+                await initStorageLocal();
+            }
+        };
+        const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
+        dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+        dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+        dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
     };
-    const onClick = () => {
+    const onClick = async () => {
         log('BACKGROUND: onClick');
-        return new Promise(async (resolve) => {
-            const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
-            if (foundTabs.length === 0) {
-                await browser.tabs.create({
-                    url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
-                    active: true
-                });
-            }
-            else {
-                await browser.windows.update(foundTabs[0].windowId ?? 0, {
-                    focused: true
-                });
-                await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
-            }
-            resolve();
-        });
+        const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
+        if (foundTabs.length === 0) {
+            await browser.tabs.create({
+                url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+                active: true
+            });
+        }
+        else {
+            await browser.windows.update(foundTabs[0].windowId ?? 0, {
+                focused: true
+            });
+            await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
+        }
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
