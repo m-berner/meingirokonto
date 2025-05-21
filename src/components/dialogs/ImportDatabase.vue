@@ -18,7 +18,7 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS, log, toISODate} = useApp()
 const settings = useSettingsStore()
 
 const state = reactive({
@@ -39,14 +39,95 @@ const ok = async (): Promise<void> => {
       const bkupObject: IBackup = JSON.parse(fr.result)
       let account: IAccount
       let booking: IBooking
-      let transfer: IBooking
+      let transfer: Record<string, never>
       let bookingType: IBookingType
-      let stock: IStock
+      let stock: Record<string, never>
+      let credit = 0
+      let debit = 0
+      let canid = -1
+      let tid = -1
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
-        await notice([`Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version ${CONS.DB.MIN_VERSION} oder neuer.`])
+        await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
       } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
-        // TODO import stockmanager DB
+        if (records.accounts.all.length > 0) {
+          await notice([t('dialogs.importDatabase.messageVersion')])
+          return
+        }
+        //await records.cleanDatabase()
+        if (records.accounts.all.length > 0) {
+          canid = Math.max(...records.accounts.all.map((account: IAccount) => account.cID)) + 1
+        } else {
+          canid = 1
+        }
+        if (records.bookings.all.length > 0) {
+          tid = Math.max(...records.bookings.all.map((account: IAccount) => account.cID)) + 1
+        } else {
+          tid = 1
+        }
+        records.accounts.all.push({cID: canid, cSwift: 'AAAAAAA0000', cNumber: 'XX00000000000000000000', cLogoUrl: CONS.LOGOS.NO_LOGO, cStockAccount: true})
+        for (stock of bkupObject.stocks) {
+          const company = {
+            cID: stock.cID,
+            cISIN: stock.cISIN,
+            cWKN: stock.cWKN,
+            cSymbol: stock.cSym,
+            cFadeOut: stock.cFadeOut,
+            cFirstPage: stock.cFirstPage,
+            cURL: stock.cURL,
+            cCompany: stock.cCompany,
+            cMeetingDay: toISODate(stock.cMeetingDay),
+            cQuarterDay: toISODate(stock.cQuarterDay)
+          }
+          records.stocks.all.push(company)
+        }
+        for (transfer of bkupObject.transfers) {
+          if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
+            credit = -transfer.cUnitQuotation * transfer.cCount
+          }
+          if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
+            debit = transfer.cUnitQuotation * transfer.cCount
+          }
+          if (transfer.cAmount < 0) {
+            debit = -transfer.cAmount
+          }
+          if (transfer.cAmount > 0) {
+            credit = transfer.cAmount
+          }
+          const booking: IBooking = {
+            cID: transfer.cID || tid,
+            cDate: toISODate(transfer.cDate),
+            cExDate: toISODate(transfer.cExDay),
+            cCount: transfer.cCount < 0 ? -transfer.cCount : transfer.cCount,
+            cDescription: transfer.cDescription,
+            cBookingTypeID: transfer.cType,
+            cTransactionTax: -transfer.cFTax,
+            cSourceTax: -transfer.cSTax,
+            cFee: -transfer.cFees,
+            cTax: -transfer.cTax,
+            cMarketPlace: transfer.cMarketPlace,
+            cSoli: -transfer.cSoli,
+            cStockID: transfer.cStockID,
+            cAccountNumberID: canid,
+            cCredit: credit,
+            cDebit: debit
+          }
+          records.bookings.all.push(booking)
+          ++tid
+        }
+        const result = await records.storeIntoDatabase()
+        if (result !== '') {
+          settings.setActiveAccountId(records.accounts.all[0].cID)
+          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+          runtime.setLogo()
+          records.sumBookings()
+          log('IMPORTDATABASE: onFileLoaded', {info: result})
+          await notice(['IMPORTDATABASE: onFileLoaded', result])
+        } else {
+          await notice(['IMPORTDATABASE: onFileLoaded', result])
+        }
       } else {
+        //await records.cleanStore()
+        await records.cleanDatabase()
         for (account of bkupObject.accounts) {
           records.accounts.all.push(account)
         }
@@ -58,9 +139,6 @@ const ok = async (): Promise<void> => {
         }
         for (booking of bkupObject.bookings) {
           records.bookings.all.push(booking)
-        }
-        for (transfer of bkupObject.transfers) {
-          records.bookings.all.push(transfer)
         }
         const result = await records.storeIntoDatabase()
         if (result !== '') {
@@ -77,12 +155,12 @@ const ok = async (): Promise<void> => {
     } else {
       await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
     }
+    console.error(records)
   }
   const fr: FileReader = new FileReader()
   fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
   fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
   if (state._choosen_file !== null) {
-    await records.cleanStoreAndDatabase()
     fr.readAsText(state._choosen_file, 'UTF-8')
   }
 }

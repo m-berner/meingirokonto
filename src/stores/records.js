@@ -104,14 +104,17 @@ export const useRecordsStore = defineStore('records', {
         setBookingSumField(value) {
             this._booking_sum_field = value;
         },
-        cleanStoreAndDatabase() {
-            log('RECORDS: cleanStoreAndDatabase');
+        async cleanStore() {
+            log('RECORDS: cleanStore');
             this._bookings.all.splice(0, this._bookings.all.length);
             this._booking_types.all.splice(0, this._booking_types.all.length);
             this._accounts.all.splice(0, this._accounts.all.length);
             this._stocks.all.splice(0, this._accounts.all.length);
+            await browser.storage.local.set({ sActiveAccountId: -1 });
+        },
+        async cleanDatabase() {
+            log('RECORDS: cleanDatabase');
             return new Promise(async (resolve, reject) => {
-                await browser.storage.local.set({ sActiveAccountId: -1 });
                 if (this._dbi != null) {
                     const onError = (ev) => {
                         reject(ev);

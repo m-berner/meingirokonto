@@ -62,9 +62,9 @@ declare global {
     }
     accounts: IAccount[]
     bookings: IBooking[]
-    transfers: IBooking[]
+    transfers: Array<Record<string, never>>
     booking_types: IBookingType[]
-    stocks: IStock[]
+    stocks: Array<Record<string, never>>
   }
 
   interface IStorageLocal {
@@ -95,7 +95,7 @@ declare global {
     markets: string[]
   }
 }
-
+// TODO use browser.storage API to communicate optionpage and apppage
 interface IUseApp {
   CONS: Readonly<{
     DATE: {
@@ -341,6 +341,7 @@ interface IUseApp {
   }>
   notice: (msgs: string[]) => Promise<void>
   utcDate: (iso: string) => Date
+  toISODate: (ms: number) => string
   initStorageLocal: () => Promise<void>
   log: (msg: string, mode?: { info: unknown }) => void
 }
@@ -778,6 +779,9 @@ export const useApp = (): IUseApp => {
     },
     utcDate: (iso) => {
       return new Date(`${iso}T00:00:00.000`)
+    },
+    toISODate: (ms) => {
+      return new Date(ms).toISOString().substring(0,10)
     },
     initStorageLocal: async () => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()

@@ -424,6 +424,9 @@ export const useApp = () => {
         utcDate: (iso) => {
             return new Date(`${iso}T00:00:00.000`);
         },
+        toISODate: (ms) => {
+            return new Date(ms).toISOString().substring(0, 10);
+        },
         initStorageLocal: async () => {
             const storageLocal = await browser.storage.local.get();
             if (storageLocal.sSkin === undefined) {

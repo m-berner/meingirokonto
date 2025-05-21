@@ -139,14 +139,18 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     setBookingSumField(value: string): void {
       this._booking_sum_field = value
     },
-    cleanStoreAndDatabase(): Promise<string> {
-      log('RECORDS: cleanStoreAndDatabase')
+
+    async cleanStore(): Promise<void> {
+      log('RECORDS: cleanStore')
       this._bookings.all.splice(0, this._bookings.all.length)
       this._booking_types.all.splice(0, this._booking_types.all.length)
       this._accounts.all.splice(0, this._accounts.all.length)
       this._stocks.all.splice(0, this._accounts.all.length)
+      await browser.storage.local.set({sActiveAccountId: -1})
+    },
+    async cleanDatabase(): Promise<string> {
+      log('RECORDS: cleanDatabase')
       return new Promise(async (resolve, reject) => {
-        await browser.storage.local.set({sActiveAccountId: -1})
         if (this._dbi != null) {
           const onError = (ev: Event): void => {
             reject(ev)
@@ -262,12 +266,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       return new Promise(async (resolve, reject) => {
         if (this._dbi != null) {
           const onComplete = (): void => {
-            // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
-            //await notice(['All memory records are added to the database!'])
             resolve('RECORDS: storeIntoDatabase: all memory records are added to the database!')
           }
           const onAbort = (): void => {
-            //await notice(['Transaction aborted!'])
             reject(requestTransaction.error)
           }
           const onError = (ev: Event): void => {
