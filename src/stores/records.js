@@ -89,8 +89,15 @@ export const useRecordsStore = defineStore('records', {
         setBookingSumField(value) {
             this._booking_sum_field = value;
         },
-        async cleanStores() {
-            log('RECORDS: cleanStores');
+        initStore(stores) {
+            log('RECORDS: initStore');
+            this._accounts = stores.accounts;
+            this._bookings = stores.bookings;
+            this._booking_types = stores.bookingTypes;
+            this._stocks = stores.stocks;
+        },
+        async cleanStore() {
+            log('RECORDS: cleanStore');
             this._bookings.splice(0, this._bookings.length);
             this._booking_types.splice(0, this._booking_types.length);
             this._accounts.splice(0, this._accounts.length);

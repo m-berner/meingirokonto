@@ -87,20 +87,20 @@ export const useSettingsStore = defineStore('settings', {
         setExchanges(value) {
             this._exchanges = value;
         },
-        initSettingsStore(theme, settings) {
-            log('SETTINGS: initSettingsStore');
-            theme.global.name.value = settings.skin;
-            this._skin = settings.skin;
-            this._bookings_per_page = settings.bookingsPerPage;
-            this._stocks_per_page = settings.stocksPerPage;
-            this._active_account_id = settings.activeAccountId;
-            this._debug = settings.debug;
-            this._partner = settings.partner;
-            this._service = settings.service;
-            this._materials = settings.materials;
-            this._markets = settings.markets;
-            this._indexes = settings.indexes;
-            this._exchanges = settings.exchanges;
+        initStore(theme, storage) {
+            log('SETTINGS: initStore');
+            theme.global.name.value = storage.sSkin;
+            this._skin = storage.sSkin;
+            this._bookings_per_page = storage.sBookingsPerPage;
+            this._stocks_per_page = storage.sStocksPerPage;
+            this._active_account_id = storage.sActiveAccountId;
+            this._debug = storage.sDebug;
+            this._partner = storage.sPartner;
+            this._service = storage.sService;
+            this._materials = storage.sMaterials;
+            this._markets = storage.sMarkets;
+            this._indexes = storage.sIndexes;
+            this._exchanges = storage.sExchanges;
         }
     }
 });

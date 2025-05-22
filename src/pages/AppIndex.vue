@@ -13,24 +13,26 @@ import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {frontendMessagePort} from '@/pages/app'
-// import {useRuntimeStore} from '@/stores/runtime'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
-//const runtime = useRuntimeStore()
+const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
     case CONS.MESSAGES.DB__INTO_STORE__RESPONSE:
-      const response = Object.values(m)[1]
-      console.error(response)
-      records.cleanStores()
-      // records.accounts.splice(0, records.accounts.length)
-      // records.bookingTypes.all.splice(0, records.bookingTypes.all.length)
-      // records.bookings.all.splice(0, records.bookings.all.length)
-      // records.stocks.all.splice(0, records.stocks.all.length)
+      log('APPINDEX: onResponse', {info: Object.values(m)[1]})
+      records.cleanStore()
+      records.initStore(Object.values(m)[1])
+      runtime.setLogo()
+      records.sumBookings()
+      break
+    case CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE:
+      log('APPINDEX: onResponse', {info: Object.values(m)[1]})
+      settings.initStore(theme, Object.values(m)[1])
       break
     default:
   }
@@ -41,20 +43,6 @@ frontendMessagePort.onMessage.addListener(onResponse);
 onBeforeMount(async (): Promise<void> => {
   log('APPINDEX: onBeforeMount: before')
   const keyStrokeController: string[] = []
-  const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
-  const startSettings: ISettings = {
-    skin: storageLocal.sSkin !== undefined ? storageLocal.sSkin : CONS.DEFAULTS.STORAGE.SKIN,
-    activeAccountId: storageLocal.sActiveAccountId !== undefined ? storageLocal.sActiveAccountId : CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID,
-    bookingsPerPage: storageLocal.sBookingsPerPage !== undefined ? storageLocal.sBookingsPerPage : CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
-    stocksPerPage: storageLocal.sStocksPerPage !== undefined ? storageLocal.sStocksPerPage : CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-    partner: storageLocal.sPartner !== undefined ? storageLocal.sPartner : CONS.DEFAULTS.STORAGE.PARTNER,
-    service: storageLocal.sService !== undefined ? storageLocal.sService : CONS.DEFAULTS.STORAGE.SERVICE,
-    debug: storageLocal.sDebug !== undefined ? storageLocal.sDebug : CONS.DEFAULTS.STORAGE.DEBUG,
-    exchanges: storageLocal.sExchanges !== undefined ? storageLocal.sExchanges : CONS.DEFAULTS.STORAGE.EXCHANGES,
-    indexes: storageLocal.sIndexes !== undefined ? storageLocal.sIndexes : CONS.DEFAULTS.STORAGE.INDEXES,
-    markets: storageLocal.sMarkets !== undefined ? storageLocal.sMarkets : CONS.DEFAULTS.STORAGE.MARKETS,
-    materials: storageLocal.sMaterials !== undefined ? storageLocal.sMaterials : CONS.DEFAULTS.STORAGE.MATERIALS
-  }
   const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
     log('APPINDEX: onStorageChange', {info: area})
     switch (true) {
@@ -103,7 +91,6 @@ onBeforeMount(async (): Promise<void> => {
     if (foundTabs.length > 0) {
       await browser.tabs.remove(foundTabs[0].id ?? 0)
     }
-    //records.dbi.close()
   }
   const onKeyDown = (ev: KeyboardEvent): void => {
     keyStrokeController.push(ev.key)
@@ -139,13 +126,8 @@ onBeforeMount(async (): Promise<void> => {
   if (!browser.storage.onChanged.hasListener(onStorageChange)) {
     browser.storage.onChanged.addListener(onStorageChange)
   }
-  settings.initSettingsStore(theme, startSettings)
+  frontendMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
   frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
-
-
-  //runtime.setLogo()
-  //records.sumBookings()
-  log('APPINDEX: onBeforeMount: after')
 })
 
 log('--- AppIndex.vue setup ---', {info: window.location.href})

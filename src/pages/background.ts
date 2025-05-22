@@ -80,20 +80,6 @@ declare global {
     sIndexes: string[]
     sMarkets: string[]
   }
-
-  interface ISettings {
-    activeAccountId: number
-    bookingsPerPage: number
-    stocksPerPage: number
-    partner: boolean
-    debug: boolean
-    skin: string
-    service: string
-    exchanges: string[]
-    materials: string[]
-    indexes: string[]
-    markets: string[]
-  }
 }
 
 // TODO use browser.storage API to communicate optionspage and app
@@ -239,6 +225,8 @@ interface IUseAppApi {
       DB__DELETE_STOCK: number
       DB__DELETE_STOCK__RESPONSE: number
       DB__CLEAN: number
+      STORE__INIT_SETTINGS: number
+      STORE__INIT_SETTINGS__RESPONSE: number
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -366,7 +354,7 @@ interface IUseAppApi {
 
   toISODate(ms: number): string
 
-  initStorageLocal(): Promise<void>
+  installStorageLocal(): Promise<void>
 
   log(msg: string, mode?: { info: unknown }): void
 }
@@ -393,6 +381,7 @@ interface IUseIndexedDatabaseApi {
 
 let backendMessagePort: browser.runtime.Port
 let dbi: IDBDatabase
+let storageLocal: Partial<IStorageLocal> // startup state
 
 export const useAppApi = (): IUseAppApi => {
   return {
@@ -536,7 +525,9 @@ export const useAppApi = (): IUseAppApi => {
         DB__DELETE_BOOKING_TYPE__RESPONSE: 12017,
         DB__DELETE_STOCK: 12018,
         DB__DELETE_STOCK__RESPONSE: 12019,
-        DB__CLEAN: 12020
+        DB__CLEAN: 12020,
+        STORE__INIT_SETTINGS: 12021,
+        STORE__INIT_SETTINGS__RESPONSE: 12022
       },
       SERVICES: {
         goyax: {
@@ -850,7 +841,7 @@ export const useAppApi = (): IUseAppApi => {
     toISODate: (ms) => {
       return new Date(ms).toISOString().substring(0, 10)
     },
-    initStorageLocal: async () => {
+    installStorageLocal: async () => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
       if (storageLocal.sSkin === undefined) {
         await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
@@ -885,6 +876,7 @@ export const useAppApi = (): IUseAppApi => {
       if (storageLocal.sMaterials === undefined) {
         await browser.storage.local.set({sMaterials: CONS.DEFAULTS.STORAGE.MATERIALS})
       }
+      console.log('BACKGROUND: installStorageLocal: DONE')
     },
     log: async (msg, mode = {info: null}) => {
       const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get(['sDebug'])
@@ -901,26 +893,26 @@ export const useAppApi = (): IUseAppApi => {
 const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
   return {
     clean: async () => {
-      log('RECORDS: clean')
+      log('BACKGROUND: clean')
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onError = (ev: Event): void => {
             reject(ev)
           }
           const onComplete = (): void => {
-            resolve('RECORDS: all stores (databases and memory) are clean!')
+            resolve('BACKGROUND: all stores (databases and memory) are clean!')
           }
           const onSuccessClearBookings = (): void => {
-            log('RECORDS: bookings dropped')
+            log('BACKGROUND: bookings dropped')
           }
           const onSuccessClearAccounts = (): void => {
-            log('RECORDS: accounts dropped')
+            log('BACKGROUND: accounts dropped')
           }
           const onSuccessClearBookingTypes = (): void => {
-            log('RECORDS: booking types dropped')
+            log('BACKGROUND: booking types dropped')
           }
           const onSuccessClearStocks = (): void => {
-            log('RECORDS: stocks dropped')
+            log('BACKGROUND: stocks dropped')
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
@@ -937,20 +929,20 @@ const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
       })
     },
     intoStore: async (p) => {
-      log('RECORDS: intoStore')
+      log('BACKGROUND: intoStore')
       const accounts: IAccount[] = []
       const bookings: IBooking[] = []
       const stocks: IStock[] = []
-      const bookingType: IBookingType[] = []
+      const bookingTypes: IBookingType[] = []
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onComplete = async (): Promise<void> => {
-            log('RECORDS: intoStore: all database records loaded into memory!')
+            log('BACKGROUND: intoStore: all database records sent to frontend!')
             p.postMessage({
               type: CONS.MESSAGES.DB__INTO_STORE__RESPONSE,
-              data: {accounts, bookings, bookingType, stocks}
+              data: {accounts, bookings, bookingTypes, stocks}
             })
-            resolve('RECORDS: intoStore: all database records loaded into memory!')
+            resolve('BACKGROUND: intoStore: all database records sent to frontend!')
           }
           const onAbort = (): void => {
             reject(requestTransaction.error)
@@ -967,7 +959,7 @@ const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
           const onSuccessBookingTypeOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
               if (ev.target.result.value.cAccountNumberID === 1) {
-                bookingType.push(ev.target.result.value)
+                bookingTypes.push(ev.target.result.value)
               }
               ev.target.result.continue()
             }
@@ -1012,7 +1004,7 @@ const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
               }
             }
             dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE)
-            resolve('RECORDS: database opened successfully!')
+            resolve('BACKGROUND: database opened successfully!')
           }
         }
         const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
@@ -1177,7 +1169,7 @@ const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
   }
 }
 
-const {CONS, initStorageLocal, log, notice} = useAppApi()
+const {CONS, installStorageLocal, log, notice} = useAppApi()
 const {clean, intoStore, open} = useIndexedDatabaseApi()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
@@ -1198,6 +1190,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         case CONS.MESSAGES.DB__CLOSE:
           dbi.close()
           break
+        case CONS.MESSAGES.STORE__INIT_SETTINGS:
+          backendMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE, data: storageLocal})
+          break
         default:
       }
     }
@@ -1207,21 +1202,21 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   }
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
-    log('BACKGROUND: onInstall')
+    console.log('BACKGROUND: onInstall')
     const onSuccess = (ev: Event): void => {
       if (ev.target instanceof IDBRequest) {
         ev.target.result.close()
       }
-      log('BACKGROUND: onInstall: onSuccess', {info: ev})
+      console.info('BACKGROUND: onInstall: onSuccess', ev)
     }
     const onError = (ev: Event): void => {
       console.error('BACKGROUND: onError: ', ev)
     }
     const onUpgradeNeeded = async (ev: Event): Promise<void> => {
       if (ev instanceof IDBVersionChangeEvent) {
-        log('BACKGROUND: onInstall: onUpgradeNeeded', {info: ev.newVersion})
+        console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion)
         const createDB = (): void => {
-          log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+          console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
           const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.ACCOUNTS.NAME,
             {
@@ -1375,7 +1370,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         } else if (ev.oldVersion > 25) {
           // updateDB()
         }
-        await initStorageLocal()
+        await installStorageLocal()
       }
     }
     const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
@@ -1386,6 +1381,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const onClick = async (): Promise<void> => {
     log('BACKGROUND: onClick')
     await open()
+    storageLocal = await browser.storage.local.get()
     const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
     // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
     if (foundTabs.length === 0) {
@@ -1403,7 +1399,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onConnect.addListener(onConnect)
-  log('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', {info: window.location.href})
+  console.info('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', window.location.href)
 }
 
 log('--- PAGE_SCRIPT background.js --- CONS + useAppApi ---')

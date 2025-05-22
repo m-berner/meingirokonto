@@ -1,5 +1,6 @@
 let backendMessagePort;
 let dbi;
+let storageLocal;
 export const useAppApi = () => {
     return {
         CONS: Object.freeze({
@@ -142,7 +143,9 @@ export const useAppApi = () => {
                 DB__DELETE_BOOKING_TYPE__RESPONSE: 12017,
                 DB__DELETE_STOCK: 12018,
                 DB__DELETE_STOCK__RESPONSE: 12019,
-                DB__CLEAN: 12020
+                DB__CLEAN: 12020,
+                STORE__INIT_SETTINGS: 12021,
+                STORE__INIT_SETTINGS__RESPONSE: 12022
             },
             SERVICES: {
                 goyax: {
@@ -448,7 +451,7 @@ export const useAppApi = () => {
         toISODate: (ms) => {
             return new Date(ms).toISOString().substring(0, 10);
         },
-        initStorageLocal: async () => {
+        installStorageLocal: async () => {
             const storageLocal = await browser.storage.local.get();
             if (storageLocal.sSkin === undefined) {
                 await browser.storage.local.set({ sSkin: CONS.DEFAULTS.STORAGE.SKIN });
@@ -483,6 +486,7 @@ export const useAppApi = () => {
             if (storageLocal.sMaterials === undefined) {
                 await browser.storage.local.set({ sMaterials: CONS.DEFAULTS.STORAGE.MATERIALS });
             }
+            console.log('BACKGROUND: installStorageLocal: DONE');
         },
         log: async (msg, mode = { info: null }) => {
             const storageLocal = await browser.storage.local.get(['sDebug']);
@@ -500,26 +504,26 @@ export const useAppApi = () => {
 const useIndexedDatabaseApi = () => {
     return {
         clean: async () => {
-            log('RECORDS: clean');
+            log('BACKGROUND: clean');
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onError = (ev) => {
                         reject(ev);
                     };
                     const onComplete = () => {
-                        resolve('RECORDS: all stores (databases and memory) are clean!');
+                        resolve('BACKGROUND: all stores (databases and memory) are clean!');
                     };
                     const onSuccessClearBookings = () => {
-                        log('RECORDS: bookings dropped');
+                        log('BACKGROUND: bookings dropped');
                     };
                     const onSuccessClearAccounts = () => {
-                        log('RECORDS: accounts dropped');
+                        log('BACKGROUND: accounts dropped');
                     };
                     const onSuccessClearBookingTypes = () => {
-                        log('RECORDS: booking types dropped');
+                        log('BACKGROUND: booking types dropped');
                     };
                     const onSuccessClearStocks = () => {
-                        log('RECORDS: stocks dropped');
+                        log('BACKGROUND: stocks dropped');
                     };
                     const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
@@ -536,20 +540,20 @@ const useIndexedDatabaseApi = () => {
             });
         },
         intoStore: async (p) => {
-            log('RECORDS: intoStore');
+            log('BACKGROUND: intoStore');
             const accounts = [];
             const bookings = [];
             const stocks = [];
-            const bookingType = [];
+            const bookingTypes = [];
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onComplete = async () => {
-                        log('RECORDS: intoStore: all database records loaded into memory!');
+                        log('BACKGROUND: intoStore: all database records sent to frontend!');
                         p.postMessage({
                             type: CONS.MESSAGES.DB__INTO_STORE__RESPONSE,
-                            data: { accounts, bookings, bookingType, stocks }
+                            data: { accounts, bookings, bookingTypes, stocks }
                         });
-                        resolve('RECORDS: intoStore: all database records loaded into memory!');
+                        resolve('BACKGROUND: intoStore: all database records sent to frontend!');
                     };
                     const onAbort = () => {
                         reject(requestTransaction.error);
@@ -566,7 +570,7 @@ const useIndexedDatabaseApi = () => {
                     const onSuccessBookingTypeOpenCursor = (ev) => {
                         if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
                             if (ev.target.result.value.cAccountNumberID === 1) {
-                                bookingType.push(ev.target.result.value);
+                                bookingTypes.push(ev.target.result.value);
                             }
                             ev.target.result.continue();
                         }
@@ -611,7 +615,7 @@ const useIndexedDatabaseApi = () => {
                             }
                         };
                         dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
-                        resolve('RECORDS: database opened successfully!');
+                        resolve('BACKGROUND: database opened successfully!');
                     }
                 };
                 const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
@@ -753,7 +757,7 @@ const useIndexedDatabaseApi = () => {
         }
     };
 };
-const { CONS, initStorageLocal, log, notice } = useAppApi();
+const { CONS, installStorageLocal, log, notice } = useAppApi();
 const { clean, intoStore, open } = useIndexedDatabaseApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const onConnect = async (p) => {
@@ -773,6 +777,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 case CONS.MESSAGES.DB__CLOSE:
                     dbi.close();
                     break;
+                case CONS.MESSAGES.STORE__INIT_SETTINGS:
+                    backendMessagePort.postMessage({ type: CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE, data: storageLocal });
+                    break;
                 default:
             }
         };
@@ -780,21 +787,21 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         backendMessagePort.onDisconnect.addListener(onDisconnected);
     };
     const onInstall = async () => {
-        log('BACKGROUND: onInstall');
+        console.log('BACKGROUND: onInstall');
         const onSuccess = (ev) => {
             if (ev.target instanceof IDBRequest) {
                 ev.target.result.close();
             }
-            log('BACKGROUND: onInstall: onSuccess', { info: ev });
+            console.info('BACKGROUND: onInstall: onSuccess', ev);
         };
         const onError = (ev) => {
             console.error('BACKGROUND: onError: ', ev);
         };
         const onUpgradeNeeded = async (ev) => {
             if (ev instanceof IDBVersionChangeEvent) {
-                log('BACKGROUND: onInstall: onUpgradeNeeded', { info: ev.newVersion });
+                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion);
                 const createDB = () => {
-                    log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
                     const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
                         keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
                         autoIncrement: true
@@ -832,7 +839,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 }
                 else if (ev.oldVersion > 25) {
                 }
-                await initStorageLocal();
+                await installStorageLocal();
             }
         };
         const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
@@ -843,6 +850,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const onClick = async () => {
         log('BACKGROUND: onClick');
         await open();
+        storageLocal = await browser.storage.local.get();
         const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
         if (foundTabs.length === 0) {
             await browser.tabs.create({
@@ -860,6 +868,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onConnect.addListener(onConnect);
-    log('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', { info: window.location.href });
+    console.info('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', window.location.href);
 }
 log('--- PAGE_SCRIPT background.js --- CONS + useAppApi ---');

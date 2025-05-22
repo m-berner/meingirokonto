@@ -127,7 +127,7 @@ const ok = async (): Promise<void> => {
           await notice(['IMPORTDATABASE: onFileLoaded', result])
         }
       } else {
-        await records.cleanStores()
+        await records.cleanStore()
         frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
         for (account of bkupObject.accounts) {
           records.accounts.push(account)
