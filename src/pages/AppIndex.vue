@@ -12,19 +12,34 @@ import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {useRuntimeStore} from '@/stores/runtime'
+import {messagePort} from '@/pages/app'
+// import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
-const runtime = useRuntimeStore()
+//const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useApp()
-
 const {_debug} = storeToRefs(settings)
+const onResponse = (m: object): void => {
+  switch (Object.values(m)[0]) {
+    case CONS.MESSAGES.DB__INTO_STORE__RESPONSE:
+      const response = Object.values(m)[1]
+      console.error(response)
+      records.cleanStores()
+      // records.accounts.splice(0, records.accounts.length)
+      // records.bookingTypes.all.splice(0, records.bookingTypes.all.length)
+      // records.bookings.all.splice(0, records.bookings.all.length)
+      // records.stocks.all.splice(0, records.stocks.all.length)
+      break
+    default:
+  }
+}
+// listen for backend responses
+messagePort.onMessage.addListener(onResponse);
 
 onBeforeMount(async (): Promise<void> => {
   log('APPINDEX: onBeforeMount: before')
-
   const keyStrokeController: string[] = []
   const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
   const startSettings: ISettings = {
@@ -83,10 +98,12 @@ onBeforeMount(async (): Promise<void> => {
   const onBeforeUnload = async (): Promise<void> => {
     log('APPINDEX: onBeforeUnload')
     const foundTabs = await browser.tabs.query({url: 'about:addons'})
+    messagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
+    messagePort.disconnect()
     if (foundTabs.length > 0) {
       await browser.tabs.remove(foundTabs[0].id ?? 0)
     }
-    records.dbi.close()
+    //records.dbi.close()
   }
   const onKeyDown = (ev: KeyboardEvent): void => {
     keyStrokeController.push(ev.key)
@@ -122,12 +139,12 @@ onBeforeMount(async (): Promise<void> => {
   if (!browser.storage.onChanged.hasListener(onStorageChange)) {
     browser.storage.onChanged.addListener(onStorageChange)
   }
-
   settings.initSettingsStore(theme, startSettings)
-  await records.openDatabase()
-  await records.databaseIntoStore()
-  runtime.setLogo()
-  records.sumBookings()
+  messagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
+
+
+  //runtime.setLogo()
+  //records.sumBookings()
   log('APPINDEX: onBeforeMount: after')
 })
 

@@ -14,6 +14,8 @@ import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
 import {useApp} from '@/pages/background'
 
+// establish messagePort (bidirectional channel for backend - frontend communication)
+export const messagePort = browser.runtime.connect({ name: 'messagePort' })
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
   console.error(err)

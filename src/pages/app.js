@@ -6,6 +6,7 @@ import componentsPlugin from '@/plugins/components';
 import routerPlugin from '@/plugins/router';
 import piniaPlugin from '@/plugins/pinia';
 import { useApp } from '@/pages/background';
+export const messagePort = browser.runtime.connect({ name: 'messagePort' });
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
     console.error(err);

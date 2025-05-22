@@ -51,7 +51,7 @@ log('--- TitleBar.vue setup ---')
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts.all"
+      v-bind:items="records.accounts"
       v-bind:label="t('titleBar.selectAccountLabel')"
       v-on:update:modelValue="cUpdateTitlebar"
     ></v-select>

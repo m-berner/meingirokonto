@@ -59,7 +59,7 @@ log('--- HomeContent.vue setup ---')
   })"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="_bookings.per_account"
+    v-bind:items="_bookings"
     v-bind:items-per-page="_bookings_per_page"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('appPage.itemsPerPageText')"

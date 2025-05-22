@@ -33,7 +33,7 @@ const ok = async (): Promise<void> => {
     const formIs = await formRef.value!.validate()
     if (formIs.valid) {
       try {
-        //const aNumber = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+        //const aNumber = records.accounts[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
         const aDescription = state._description !== undefined && state._description !== null ? state._description.trim() : ''
         const result = await records.addBooking({
           cDate: state._date,

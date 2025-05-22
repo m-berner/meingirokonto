@@ -22,15 +22,15 @@ const ok = async (): Promise<void> => {
     let buffer: string
     let i: number
     buffer = '"accounts":[\n'
-    for (i = 0; i < records.accounts.all.length; i++) {
+    for (i = 0; i < records.accounts.length; i++) {
       buffer += JSON.stringify({
-        cSwift: records.accounts.all[i].cSwift,
-        cNumber: records.accounts.all[i].cNumber,
-        cLogoUrl: records.accounts.all[i].cLogoUrl,
-        cStockAccount: records.accounts.all[i].cStockAccount,
-        cID: records.accounts.all[i].cID
+        cSwift: records.accounts[i].cSwift,
+        cNumber: records.accounts[i].cNumber,
+        cLogoUrl: records.accounts[i].cLogoUrl,
+        cStockAccount: records.accounts[i].cStockAccount,
+        cID: records.accounts[i].cID
       })
-      if (i === records.accounts.all.length - 1) {
+      if (i === records.accounts.length - 1) {
         buffer += '\n],\n'
       } else {
         buffer += ',\n'

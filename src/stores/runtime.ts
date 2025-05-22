@@ -59,7 +59,7 @@ export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = define
       const records = useRecordsStore()
       const settings = useSettingsStore()
       if (settings.activeAccountId > -1) {
-        this._logo = records.accounts.all[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl
+        this._logo = records.accounts[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl
       } else {
         this._logo = CONS.LOGOS.NO_LOGO
       }

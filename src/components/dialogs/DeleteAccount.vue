@@ -31,8 +31,8 @@ const ok = async (): Promise<void> => {
     if (result === 'Account deleted') {
       formRef.value?.reset()
       if (records.accounts.length > 0) {
-        settings.setActiveAccountId(records.accounts.all[0].cID)
-        await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+        settings.setActiveAccountId(records.accounts[0].cID)
+        await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
       } else {
         settings.setActiveAccountId(-1)
         await browser.storage.local.set({sActiveAccountId: -1})
@@ -65,7 +65,7 @@ log('--- DeleteAccount.vue setup ---')
       required
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts.all"
+      v-bind:items="records.accounts"
       v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
       variant="outlined"
     ></v-select>

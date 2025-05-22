@@ -1,3 +1,5 @@
+let messagePort;
+let dbi;
 export const useApp = () => {
     return {
         CONS: Object.freeze({
@@ -47,7 +49,7 @@ export const useApp = () => {
                         FIELDS: {
                             ID: 'cID',
                             NAME: 'cName',
-                            ACCOUNT_NUMBER: 'cAccountNumberID'
+                            ACCOUNT_NUMBER_ID: 'cAccountNumberID'
                         }
                     },
                     STOCKS: {
@@ -121,7 +123,26 @@ export const useApp = () => {
                 UPG: 'upgradeneeded'
             },
             MESSAGES: {
-                GS: 'GET_SETTINGS'
+                DB__CLOSE: 12001,
+                DB__INTO_STORE: 12002,
+                DB__INTO_STORE__RESPONSE: 12003,
+                DB__ADD_ACCOUNT: 12004,
+                DB__ADD_ACCOUNT__RESPONSE: 12005,
+                DB__ADD_BOOKING: 12006,
+                DB__ADD_BOOKING__RESPONSE: 12007,
+                DB__ADD_BOOKING_TYPE: 12008,
+                DB__ADD_BOOKING_TYPE__RESPONSE: 12009,
+                DB__ADD_STOCK: 12010,
+                DB__ADD_STOCK__RESPONSE: 12011,
+                DB__DELETE_ACCOUNT: 12012,
+                DB__DELETE_ACCOUNT__RESPONSE: 12013,
+                DB__DELETE_BOOKING: 12014,
+                DB__DELETE_BOOKING__RESPONSE: 12015,
+                DB__DELETE_BOOKING_TYPE: 12016,
+                DB__DELETE_BOOKING_TYPE__RESPONSE: 12017,
+                DB__DELETE_STOCK: 12018,
+                DB__DELETE_STOCK__RESPONSE: 12019,
+                DB__CLEAN: 12020
             },
             SERVICES: {
                 goyax: {
@@ -476,8 +497,288 @@ export const useApp = () => {
         }
     };
 };
-const { CONS, initStorageLocal, log } = useApp();
+const useIndexedDbApi = () => {
+    return {
+        clean: async () => {
+            log('RECORDS: clean');
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const onComplete = () => {
+                        resolve('RECORDS: all stores (databases and memory) are clean!');
+                    };
+                    const onSuccessClearBookings = () => {
+                        log('RECORDS: bookings dropped');
+                    };
+                    const onSuccessClearAccounts = () => {
+                        log('RECORDS: accounts dropped');
+                    };
+                    const onSuccessClearBookingTypes = () => {
+                        log('RECORDS: booking types dropped');
+                    };
+                    const onSuccessClearStocks = () => {
+                        log('RECORDS: stocks dropped');
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                    requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                    const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                    const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                    const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                    requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        intoStore: async (p) => {
+            log('RECORDS: intoStore');
+            const accounts = [];
+            const bookings = [];
+            const stocks = [];
+            const bookingType = [];
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onComplete = async () => {
+                        log('RECORDS: intoStore: all database records loaded into memory!');
+                        p.postMessage({
+                            type: CONS.MESSAGES.DB__INTO_STORE__RESPONSE,
+                            data: { accounts, bookings, bookingType, stocks }
+                        });
+                        resolve('RECORDS: intoStore: all database records loaded into memory!');
+                    };
+                    const onAbort = () => {
+                        reject(requestTransaction.error);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
+                    requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                    requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                    const onSuccessAccountOpenCursor = (ev) => {
+                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            accounts.push(ev.target.result.value);
+                            ev.target.result.continue();
+                        }
+                    };
+                    const onSuccessBookingTypeOpenCursor = (ev) => {
+                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            if (ev.target.result.value.cAccountNumberID === 1) {
+                                bookingType.push(ev.target.result.value);
+                            }
+                            ev.target.result.continue();
+                        }
+                    };
+                    const onSuccessBookingOpenCursor = (ev) => {
+                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            if (ev.target.result.value.cAccountNumberID === 1) {
+                                bookings.push(ev.target.result.value);
+                            }
+                            ev.target.result.continue();
+                        }
+                    };
+                    const onSuccessStockOpenCursor = (ev) => {
+                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            stocks.push(ev.target.result.value);
+                            ev.target.result.continue();
+                        }
+                    };
+                    const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
+                    requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
+                    const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
+                    requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
+                    const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
+                    requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
+                    const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
+                    requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
+                }
+            });
+        },
+        open: async () => {
+            return new Promise(async (resolve, reject) => {
+                const onError = (ev) => {
+                    reject(ev);
+                };
+                const onSuccess = (ev) => {
+                    if (ev.target instanceof IDBOpenDBRequest) {
+                        dbi = ev.target.result;
+                        const onVersionChangeSuccess = () => {
+                            if (dbi != null) {
+                                dbi.close();
+                                notice(['Database is outdated, please reload the page.']);
+                            }
+                        };
+                        dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
+                        resolve('RECORDS: database opened successfully!');
+                    }
+                };
+                const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
+                openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+            });
+        },
+        addAccount: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = async (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            const memRecord = {
+                                ...record,
+                                cID: ev.target.result
+                            };
+                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord });
+                            resolve(ev.target.result);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        deleteAccount: async (ident) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = () => {
+                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident });
+                        resolve('Account deleted');
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
+                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        addBookingType: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            const memRecord = {
+                                ...record,
+                                cID: ev.target.result
+                            };
+                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: memRecord });
+                            resolve(CONS.RESULTS.SUCCESS);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        deleteBookingType: async (ident) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = () => {
+                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident });
+                        resolve('Booking type deleted');
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident);
+                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        addBooking: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            const memRecord = {
+                                ...record,
+                                cID: ev.target.result
+                            };
+                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord });
+                            resolve(CONS.RESULTS.SUCCESS);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        deleteBooking: async (ident) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = () => {
+                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident });
+                        resolve('Booking deleted');
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        }
+    };
+};
+const { CONS, initStorageLocal, log, notice } = useApp();
+const { clean, intoStore, open } = useIndexedDbApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+    const onConnect = async (p) => {
+        messagePort = p;
+        const onDisconnected = () => {
+            messagePort.disconnect();
+            log('BACKGROUND: onDisconnected', { info: 'App disconnected!' });
+        };
+        const onRequest = async (m) => {
+            switch (Object.values(m)[0]) {
+                case CONS.MESSAGES.DB__INTO_STORE:
+                    await intoStore(messagePort);
+                    break;
+                case CONS.MESSAGES.DB__CLEAN:
+                    await clean();
+                    break;
+                case CONS.MESSAGES.DB__CLOSE:
+                    dbi.close();
+                    break;
+                default:
+            }
+        };
+        messagePort.onMessage.addListener(onRequest);
+        messagePort.onDisconnect.addListener(onDisconnected);
+    };
     const onInstall = async () => {
         log('BACKGROUND: onInstall');
         const onSuccess = (ev) => {
@@ -514,7 +815,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
                     requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
                     requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, { unique: false });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER, { unique: false });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
@@ -541,6 +842,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     };
     const onClick = async () => {
         log('BACKGROUND: onClick');
+        await open();
         const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
         if (foundTabs.length === 0) {
             await browser.tabs.create({
@@ -557,6 +859,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
-    log('BACKGROUND: attached listener', { info: window.location.href });
+    browser.runtime.onConnect.addListener(onConnect);
+    log('--- PAGE_SCRIPT background.js --- CONS + useApp + attached listeners ---', { info: window.location.href });
 }
 log('--- PAGE_SCRIPT background.js --- CONS + useApp ---');

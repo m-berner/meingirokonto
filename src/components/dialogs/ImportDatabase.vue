@@ -12,6 +12,7 @@ import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {reactive} from 'vue'
+import {messagePort} from '@/pages/app'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
@@ -49,13 +50,13 @@ const ok = async (): Promise<void> => {
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
       } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
-        if (records.accounts.all.length > 0) {
+        if (records.accounts.length > 0) {
           await notice([t('dialogs.importDatabase.messageVersion')])
           return
         }
-        //await records.cleanDatabase()
-        if (records.accounts.all.length > 0) {
-          canid = Math.max(...records.accounts.all.map((account: IAccount) => account.cID)) + 1
+        //await records.clean()
+        if (records.accounts.length > 0) {
+          canid = Math.max(...records.accounts.map((account: IAccount) => account.cID)) + 1
         } else {
           canid = 1
         }
@@ -64,7 +65,7 @@ const ok = async (): Promise<void> => {
         } else {
           tid = 1
         }
-        records.accounts.all.push({cID: canid, cSwift: 'AAAAAAA0000', cNumber: 'XX00000000000000000000', cLogoUrl: CONS.LOGOS.NO_LOGO, cStockAccount: true})
+        records.accounts.push({cID: canid, cSwift: 'AAAAAAA0000', cNumber: 'XX00000000000000000000', cLogoUrl: CONS.LOGOS.NO_LOGO, cStockAccount: true})
         for (stock of bkupObject.stocks) {
           const company = {
             cID: stock.cID,
@@ -116,8 +117,8 @@ const ok = async (): Promise<void> => {
         }
         const result = await records.storeIntoDatabase()
         if (result !== '') {
-          settings.setActiveAccountId(records.accounts.all[0].cID)
-          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+          settings.setActiveAccountId(records.accounts[0].cID)
+          await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
           runtime.setLogo()
           records.sumBookings()
           log('IMPORTDATABASE: onFileLoaded', {info: result})
@@ -126,10 +127,10 @@ const ok = async (): Promise<void> => {
           await notice(['IMPORTDATABASE: onFileLoaded', result])
         }
       } else {
-        //await records.cleanStore()
-        await records.cleanDatabase()
+        await records.cleanStores()
+        messagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
         for (account of bkupObject.accounts) {
-          records.accounts.all.push(account)
+          records.accounts.push(account)
         }
         for (stock of bkupObject.stocks) {
           records.stocks.all.push(stock)
@@ -142,10 +143,10 @@ const ok = async (): Promise<void> => {
         }
         const result = await records.storeIntoDatabase()
         if (result !== '') {
-          settings.setActiveAccountId(records.accounts.all[0].cID)
+          settings.setActiveAccountId(records.accounts[0].cID)
           runtime.setLogo()
           records.sumBookings()
-          await browser.storage.local.set({sActiveAccountId: records.accounts.all[0].cID})
+          await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
           log('IMPORTDATABASE: onFileLoaded', {info: result})
           await notice(['IMPORTDATABASE: onFileLoaded', result])
         } else {
