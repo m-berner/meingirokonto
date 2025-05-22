@@ -8,11 +8,11 @@
 <script lang="ts" setup>
 import {onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 
 const {t} = useI18n()
-const {CONS, log, notice} = useApp()
+const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 

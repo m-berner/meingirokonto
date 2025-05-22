@@ -97,7 +97,7 @@ declare global {
 }
 
 // TODO use browser.storage API to communicate optionspage and app
-interface IUseApp {
+interface IUseAppApi {
   CONS: Readonly<{
     DATE: {
       DEFAULT: number
@@ -371,7 +371,7 @@ interface IUseApp {
   log(msg: string, mode?: { info: unknown }): void
 }
 
-interface IUseIndexedDbApi {
+interface IUseIndexedDatabaseApi {
   clean(): Promise<string>
 
   open(): Promise<string>
@@ -391,10 +391,10 @@ interface IUseIndexedDbApi {
   deleteBooking(ident: number): Promise<string>
 }
 
-let messagePort: browser.runtime.Port
+let backendMessagePort: browser.runtime.Port
 let dbi: IDBDatabase
 
-export const useApp = (): IUseApp => {
+export const useAppApi = (): IUseAppApi => {
   return {
     CONS: Object.freeze({
       DATE: {
@@ -898,7 +898,7 @@ export const useApp = (): IUseApp => {
     }
   }
 }
-const useIndexedDbApi = (): IUseIndexedDbApi => {
+const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
   return {
     clean: async () => {
       log('RECORDS: clean')
@@ -1030,7 +1030,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
                 ...record,
                 cID: ev.target.result
               }
-              messagePort.postMessage({type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord}) //this._accounts.push(memRecord)
+              backendMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord}) //this._accounts.push(memRecord)
               resolve(ev.target.result)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -1054,7 +1054,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
         if (dbi != null) {
           const onSuccess = (): void => {
             //this._accounts.splice(indexOfAccount, 1)
-            messagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
+            backendMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
             resolve('Account deleted')
           }
           const onError = (ev: Event): void => {
@@ -1077,7 +1077,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
                 ...record,
                 cID: ev.target.result
               }
-              messagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: memRecord})
+              backendMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: memRecord})
               //this._booking_types.all.push(memRecord)
               //this._booking_types.per_account.push(memRecord)
               resolve(CONS.RESULTS.SUCCESS)
@@ -1106,7 +1106,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
         if (dbi != null) {
           const onSuccess = (): void => {
             //this._booking_types.all.splice(indexOfBookingType, 1)
-            messagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident})
+            backendMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident})
             //this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1)
             resolve('Booking type deleted')
           }
@@ -1131,7 +1131,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
                 cID: ev.target.result
               }
               //this._bookings.all.push(memRecord)
-              messagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord})
+              backendMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord})
               //this._bookings.per_account.push(memRecord)
               //this._booking_sum = this._bookings.per_account.map((entry: IBooking) => {
               //  return entry.cCredit - entry.cDebit
@@ -1159,7 +1159,7 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
         if (dbi != null) {
           const onSuccess = (): void => {
             //this._bookings.all.splice(indexOfBooking, 1)
-            messagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
+            backendMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
             //this.sumBookings()
             resolve('Booking deleted')
           }
@@ -1177,20 +1177,20 @@ const useIndexedDbApi = (): IUseIndexedDbApi => {
   }
 }
 
-const {CONS, initStorageLocal, log, notice} = useApp()
-const {clean, intoStore, open} = useIndexedDbApi()
+const {CONS, initStorageLocal, log, notice} = useAppApi()
+const {clean, intoStore, open} = useIndexedDatabaseApi()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const onConnect = async (p: browser.runtime.Port): Promise<void> => {
-    messagePort = p
+    backendMessagePort = p
     const onDisconnected = () => {
-      messagePort.disconnect()
+      backendMessagePort.disconnect()
       log('BACKGROUND: onDisconnected', {info: 'App disconnected!'})
     }
     const onRequest = async (m: object): Promise<void> => {
       switch (Object.values(m)[0]) {
         case CONS.MESSAGES.DB__INTO_STORE:
-          await intoStore(messagePort)
+          await intoStore(backendMessagePort)
           break
         case CONS.MESSAGES.DB__CLEAN:
           await clean()
@@ -1202,8 +1202,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
     }
     // listen for messages from frontend
-    messagePort.onMessage.addListener(onRequest)
-    messagePort.onDisconnect.addListener(onDisconnected)
+    backendMessagePort.onMessage.addListener(onRequest)
+    backendMessagePort.onDisconnect.addListener(onDisconnected)
   }
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
@@ -1403,7 +1403,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onConnect.addListener(onConnect)
-  log('--- PAGE_SCRIPT background.js --- CONS + useApp + attached listeners ---', {info: window.location.href})
+  log('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', {info: window.location.href})
 }
 
-log('--- PAGE_SCRIPT background.js --- CONS + useApp ---')
+log('--- PAGE_SCRIPT background.js --- CONS + useAppApi ---')

@@ -9,16 +9,16 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
-const {notice, VALIDATORS} = useApp()
+const {notice, VALIDATORS} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 const state = reactive({
   _date: '',

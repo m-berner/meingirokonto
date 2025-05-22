@@ -7,12 +7,12 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {log, notice} = useApp()
+const {log, notice} = useAppApi()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 

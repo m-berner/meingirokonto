@@ -10,7 +10,7 @@ import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onMounted, reactive, toRaw} from 'vue'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -28,7 +28,7 @@ interface IOptionsIndex {
 
 const {rt, t, tm} = useI18n()
 const theme = useTheme()
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 const settings = useSettingsStore()
 const {_service, _skin, _exchanges, _indexes, _markets, _materials} = storeToRefs(settings)
 

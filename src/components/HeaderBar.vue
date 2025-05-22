@@ -7,13 +7,13 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 

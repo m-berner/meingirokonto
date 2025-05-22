@@ -8,10 +8,10 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 const {t} = useI18n()
-const {CONS, log, notice} = useApp()
+const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${records.dbi.version}_${CONS.DB.NAME}.json`

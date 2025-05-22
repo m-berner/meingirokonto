@@ -7,10 +7,10 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 const {t} = useI18n()
-const {log} = useApp()
+const {log} = useAppApi()
 
 log('--- PrivacyContent.vue setup ---')
 </script>

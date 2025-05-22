@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, stockmanager@gmx.de. All rights reserved.
  */
 import {defineStore, type StoreDefinition} from 'pinia'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -28,7 +28,7 @@ interface IRuntimeStore {
   }
 }
 
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = defineStore('runtime', {
   state: (): IRuntimeStore => {

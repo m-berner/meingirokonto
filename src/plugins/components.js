@@ -1,5 +1,5 @@
 import {} from 'vue';
-import { useApp } from '@/pages/background';
+import { useAppApi } from '@/pages/background';
 import AddAccount from '@/components/dialogs/AddAccount.vue';
 import DeleteAccount from '@/components/dialogs/DeleteAccount.vue';
 import AddBookingType from '@/components/dialogs/AddBookingType.vue';
@@ -9,7 +9,7 @@ import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
-const { CONS, log } = useApp();
+const { CONS, log } = useAppApi();
 export default {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount);

@@ -10,7 +10,7 @@ import {createApp} from 'vue'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
 import piniaPlugin from '@/plugins/pinia'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
@@ -24,6 +24,6 @@ op.use(i18nPlugin.i18n)
 op.use(piniaPlugin.pinia)
 op.mount('#options')
 
-const {log} = useApp()
+const {log} = useAppApi()
 
 log('--- PAGE_SCRIPT options.js ---', {info: window.location.href})

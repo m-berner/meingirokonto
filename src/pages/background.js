@@ -1,6 +1,6 @@
-let messagePort;
+let backendMessagePort;
 let dbi;
-export const useApp = () => {
+export const useAppApi = () => {
     return {
         CONS: Object.freeze({
             DATE: {
@@ -497,7 +497,7 @@ export const useApp = () => {
         }
     };
 };
-const useIndexedDbApi = () => {
+const useIndexedDatabaseApi = () => {
     return {
         clean: async () => {
             log('RECORDS: clean');
@@ -628,7 +628,7 @@ const useIndexedDbApi = () => {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord });
+                            backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord });
                             resolve(ev.target.result);
                         }
                         else {
@@ -649,7 +649,7 @@ const useIndexedDbApi = () => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onSuccess = () => {
-                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident });
+                        backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident });
                         resolve('Account deleted');
                     };
                     const onError = (ev) => {
@@ -672,7 +672,7 @@ const useIndexedDbApi = () => {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: memRecord });
+                            backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: memRecord });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -693,7 +693,7 @@ const useIndexedDbApi = () => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onSuccess = () => {
-                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident });
+                        backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident });
                         resolve('Booking type deleted');
                     };
                     const onError = (ev) => {
@@ -716,7 +716,7 @@ const useIndexedDbApi = () => {
                                 ...record,
                                 cID: ev.target.result
                             };
-                            messagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord });
+                            backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -737,7 +737,7 @@ const useIndexedDbApi = () => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onSuccess = () => {
-                        messagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident });
+                        backendMessagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident });
                         resolve('Booking deleted');
                     };
                     const onError = (ev) => {
@@ -753,19 +753,19 @@ const useIndexedDbApi = () => {
         }
     };
 };
-const { CONS, initStorageLocal, log, notice } = useApp();
-const { clean, intoStore, open } = useIndexedDbApi();
+const { CONS, initStorageLocal, log, notice } = useAppApi();
+const { clean, intoStore, open } = useIndexedDatabaseApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const onConnect = async (p) => {
-        messagePort = p;
+        backendMessagePort = p;
         const onDisconnected = () => {
-            messagePort.disconnect();
+            backendMessagePort.disconnect();
             log('BACKGROUND: onDisconnected', { info: 'App disconnected!' });
         };
         const onRequest = async (m) => {
             switch (Object.values(m)[0]) {
                 case CONS.MESSAGES.DB__INTO_STORE:
-                    await intoStore(messagePort);
+                    await intoStore(backendMessagePort);
                     break;
                 case CONS.MESSAGES.DB__CLEAN:
                     await clean();
@@ -776,8 +776,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 default:
             }
         };
-        messagePort.onMessage.addListener(onRequest);
-        messagePort.onDisconnect.addListener(onDisconnected);
+        backendMessagePort.onMessage.addListener(onRequest);
+        backendMessagePort.onDisconnect.addListener(onDisconnected);
     };
     const onInstall = async () => {
         log('BACKGROUND: onInstall');
@@ -860,6 +860,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onConnect.addListener(onConnect);
-    log('--- PAGE_SCRIPT background.js --- CONS + useApp + attached listeners ---', { info: window.location.href });
+    log('--- PAGE_SCRIPT background.js --- CONS + useAppApi + attached listeners ---', { info: window.location.href });
 }
-log('--- PAGE_SCRIPT background.js --- CONS + useApp ---');
+log('--- PAGE_SCRIPT background.js --- CONS + useAppApi ---');

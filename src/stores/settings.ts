@@ -7,7 +7,7 @@
  */
 import {defineStore, type StoreDefinition} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 interface ISettingsStore {
   _skin: string
@@ -23,7 +23,7 @@ interface ISettingsStore {
   _exchanges: string[]
 }
 
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = defineStore('settings', {
   state: (): ISettingsStore => {

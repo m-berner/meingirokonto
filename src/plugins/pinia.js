@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia';
-import { useApp } from '@/pages/background';
-const { log } = useApp();
+import { useAppApi } from '@/pages/background';
+const { log } = useAppApi();
 export default {
     pinia: createPinia()
 };

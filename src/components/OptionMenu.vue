@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import DialogPort from '@/components/helper/DialogPort.vue'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface PropsOptionMenu {
@@ -19,7 +19,7 @@ interface PropsOptionMenu {
 const _props = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTIONMENU: onIconClick', {info: _props.recordID})

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/pages/background';
+import { useAppApi } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-const { log } = useApp();
+const { log } = useAppApi();
 export const useRecordsStore = defineStore('records', {
     state: () => {
         return {
@@ -96,7 +96,7 @@ export const useRecordsStore = defineStore('records', {
             this._accounts.splice(0, this._accounts.length);
             this._stocks.splice(0, this._accounts.length);
             await browser.storage.local.set({ sActiveAccountId: -1 });
-        },
+        }
     }
 });
 log('--- STORE records.js ---');

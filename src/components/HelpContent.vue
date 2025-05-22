@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 interface IContent {
   title: string
@@ -17,7 +17,7 @@ interface IContent {
 }
 
 const {rt, t, tm} = useI18n()
-const {log} = useApp()
+const {log} = useAppApi()
 
 log('--- HelpContent.vue setup ---')
 </script>

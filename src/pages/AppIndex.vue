@@ -10,16 +10,16 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {messagePort} from '@/pages/app'
+import {frontendMessagePort} from '@/pages/app'
 // import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
 //const runtime = useRuntimeStore()
 const theme = useTheme()
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
@@ -36,7 +36,7 @@ const onResponse = (m: object): void => {
   }
 }
 // listen for backend responses
-messagePort.onMessage.addListener(onResponse);
+frontendMessagePort.onMessage.addListener(onResponse);
 
 onBeforeMount(async (): Promise<void> => {
   log('APPINDEX: onBeforeMount: before')
@@ -98,8 +98,8 @@ onBeforeMount(async (): Promise<void> => {
   const onBeforeUnload = async (): Promise<void> => {
     log('APPINDEX: onBeforeUnload')
     const foundTabs = await browser.tabs.query({url: 'about:addons'})
-    messagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
-    messagePort.disconnect()
+    frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
+    frontendMessagePort.disconnect()
     if (foundTabs.length > 0) {
       await browser.tabs.remove(foundTabs[0].id ?? 0)
     }
@@ -140,7 +140,7 @@ onBeforeMount(async (): Promise<void> => {
     browser.storage.onChanged.addListener(onStorageChange)
   }
   settings.initSettingsStore(theme, startSettings)
-  messagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
+  frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
 
 
   //runtime.setLogo()

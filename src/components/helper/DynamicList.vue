@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {toRaw} from 'vue'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 interface DynamicListProps {
   _title: string
@@ -24,7 +24,7 @@ interface DynamicList extends DynamicListProps {
   _newItem: string
 }
 
-const {log} = useApp()
+const {log} = useAppApi()
 const _props = defineProps<DynamicListProps>()
 const state: DynamicList = {..._props, _newItem: ''}
 // NOTE:

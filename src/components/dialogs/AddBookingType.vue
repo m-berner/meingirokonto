@@ -9,11 +9,11 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
-const {CONS, log, notice, VALIDATORS} = useApp()
+const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()

@@ -8,18 +8,18 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {reactive} from 'vue'
-import {messagePort} from '@/pages/app'
+import {frontendMessagePort} from '@/pages/app'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
 }
 
 const {t} = useI18n()
-const {CONS, log, toISODate} = useApp()
+const {CONS, log, toISODate} = useAppApi()
 const settings = useSettingsStore()
 
 const state = reactive({
@@ -28,7 +28,7 @@ const state = reactive({
 
 const ok = async (): Promise<void> => {
   log('IMPORTDATABASE: ok', {info: state._choosen_file})
-  const {notice} = useApp()
+  const {notice} = useAppApi()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
   const onError = async (): Promise<void> => {
@@ -128,7 +128,7 @@ const ok = async (): Promise<void> => {
         }
       } else {
         await records.cleanStores()
-        messagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
+        frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
         for (account of bkupObject.accounts) {
           records.accounts.push(account)
         }

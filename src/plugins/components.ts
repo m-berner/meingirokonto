@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type ObjectPlugin} from 'vue'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 import AddAccount from '@/components/dialogs/AddAccount.vue'
 import DeleteAccount from '@/components/dialogs/DeleteAccount.vue'
 import AddBookingType from '@/components/dialogs/AddBookingType.vue'
@@ -17,7 +17,7 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue'
 
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 export default <ObjectPlugin<[]>>{
   install: (app) => {

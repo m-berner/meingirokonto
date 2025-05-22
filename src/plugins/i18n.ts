@@ -7,7 +7,7 @@
  */
 import {createI18n, type I18n} from 'vue-i18n'
 import messages from '@intlify/unplugin-vue-i18n/messages'
-import {useApp} from '@/pages/background'
+import {useAppApi} from '@/pages/background'
 
 interface II18n {
   i18n: I18n
@@ -19,7 +19,7 @@ interface IBrowserUI {
   locale: string
 }
 
-const {CONS, log} = useApp()
+const {CONS, log} = useAppApi()
 
 const getUI = (): IBrowserUI => {
   const result = {

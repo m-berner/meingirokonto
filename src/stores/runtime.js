@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/pages/background';
+import { useAppApi } from '@/pages/background';
 import { useRecordsStore } from '@/stores/records';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS, log } = useApp();
+const { CONS, log } = useAppApi();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {
