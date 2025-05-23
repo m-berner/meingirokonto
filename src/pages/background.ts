@@ -214,8 +214,8 @@ interface IUseAppApi {
       PORT__APP: string
       PORT__OPTIONS: string
       DB__CLOSE: number
-      DB__INTO_STORE: number
-      DB__INTO_STORE__RESPONSE: number
+      DB__TO_STORE: number
+      DB__TO_STORE__RESPONSE: number
       DB__ADD_ACCOUNT: number
       DB__ADD_ACCOUNT__RESPONSE: number
       DB__ADD_BOOKING: number
@@ -232,10 +232,9 @@ interface IUseAppApi {
       DB__DELETE_BOOKING_TYPE__RESPONSE: number
       DB__DELETE_STOCK: number
       DB__DELETE_STOCK__RESPONSE: number
-      DB__CLEAN: number
       STORES__INIT_SETTINGS: number
       STORES__INIT_SETTINGS__RESPONSE: number
-      STORES__INTO_DATABASE: number
+      DB__ADD_STORES: number
       OPTIONS__SET_SKIN: number
       OPTIONS__SET_SERVICE: number
       OPTIONS__SET_INDEXES: number
@@ -373,12 +372,10 @@ interface IUseAppApi {
   log(msg: string, mode?: { info: unknown }): void
 }
 
-interface IUseIndexedDatabaseApi {
-  clean(): Promise<string>
-
+interface IUseDatabaseApi {
   open(): Promise<string>
 
-  intoStore(p: browser.runtime.Port): Promise<string>
+  toStores(p: browser.runtime.Port): Promise<string>
 
   addAccount(record: Omit<IAccount, 'cID'>): Promise<string>
 
@@ -392,7 +389,9 @@ interface IUseIndexedDatabaseApi {
 
   deleteBooking(ident: number): Promise<string>
 
-  intoDatabase(stores: IStores): Promise<void>
+  addStores(stores: IStores): Promise<string>
+
+  addStock(record: Omit<IStock, 'cID'>): Promise<string>
 }
 
 export const useAppApi = (): IUseAppApi => {
@@ -521,8 +520,8 @@ export const useAppApi = (): IUseAppApi => {
         PORT__APP: 'app',
         PORT__OPTIONS: 'optionsMessagePort',
         DB__CLOSE: 12001,
-        DB__INTO_STORE: 12002,
-        DB__INTO_STORE__RESPONSE: 12003,
+        DB__TO_STORE: 12002,
+        DB__TO_STORE__RESPONSE: 12003,
         DB__ADD_ACCOUNT: 12004,
         DB__ADD_ACCOUNT__RESPONSE: 12005,
         DB__ADD_BOOKING: 12006,
@@ -539,10 +538,9 @@ export const useAppApi = (): IUseAppApi => {
         DB__DELETE_BOOKING_TYPE__RESPONSE: 12017,
         DB__DELETE_STOCK: 12018,
         DB__DELETE_STOCK__RESPONSE: 12019,
-        DB__CLEAN: 12020,
         STORES__INIT_SETTINGS: 12021,
         STORES__INIT_SETTINGS__RESPONSE: 12022,
-        STORES__INTO_DATABASE: 12023,
+        DB__ADD_STORES: 12023,
         OPTIONS__SET_SKIN: 12024,
         OPTIONS__SET_SERVICE: 12025,
         OPTIONS__SET_INDEXES: 12026,
@@ -875,300 +873,318 @@ export const useAppApi = (): IUseAppApi => {
     }
   }
 }
-const {CONS, log, notice} = useAppApi()
-// TODO move all async code into backend!!!
-if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  let backendAppMessagePort: browser.runtime.Port
-  let backendOptionsMessagePort: browser.runtime.Port
-  let dbi: IDBDatabase
-  const useIndexedDatabaseApi = (): IUseIndexedDatabaseApi => {
-    return {
-      clean: async () => {
-        log('BACKGROUND: clean')
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const onComplete = (): void => {
-              resolve('BACKGROUND: all stores (databases and memory) are clean!')
-            }
-            const onSuccessClearBookings = (): void => {
-              log('BACKGROUND: bookings dropped')
-            }
-            const onSuccessClearAccounts = (): void => {
-              log('BACKGROUND: accounts dropped')
-            }
-            const onSuccessClearBookingTypes = (): void => {
-              log('BACKGROUND: booking types dropped')
-            }
-            const onSuccessClearStocks = (): void => {
-              log('BACKGROUND: stocks dropped')
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
-            requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
-            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
-            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
-            const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
-            requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
-            const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
-            requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+const useDatabaseApi = (): IUseDatabaseApi => {
+  return {
+    toStores: async (p) => {
+      log('BACKGROUND: toStores')
+      const accounts: IAccount[] = []
+      const bookings: IBooking[] = []
+      const stocks: IStock[] = []
+      const bookingTypes: IBookingType[] = []
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const storage = await browser.storage.local.get(['sActiveAccountId'])
+          const onComplete = async (): Promise<void> => {
+            log('BACKGROUND: toStores: all database records sent to frontend!')
+            p.postMessage({
+              type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
+              data: {accounts, bookings, bookingTypes, stocks}
+            })
+            // if (accounts.length > 0) {
+            //   await browser.storage.local.set({sActiveAccountId: accounts[0].cID})
+            // }
+            resolve('BACKGROUND: toStores: all database records sent to frontend!')
           }
-        })
-      },
-      intoStore: async (p) => {
-        log('BACKGROUND: intoStore')
-        const accounts: IAccount[] = []
-        const bookings: IBooking[] = []
-        const stocks: IStock[] = []
-        const bookingTypes: IBookingType[] = []
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onComplete = async (): Promise<void> => {
-              log('BACKGROUND: intoStore: all database records sent to frontend!')
-              p.postMessage({
-                type: CONS.MESSAGES.DB__INTO_STORE__RESPONSE,
-                data: {accounts, bookings, bookingTypes, stocks}
-              })
-              if (accounts.length > 0) {
-                await browser.storage.local.set({sActiveAccountID: accounts[0].cID})
-              }
-              resolve('BACKGROUND: intoStore: all database records sent to frontend!')
-            }
-            const onAbort = (): void => {
-              reject(requestTransaction.error)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly')
-            requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
-            requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-            const onSuccessAccountOpenCursor = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                accounts.push(ev.target.result.value)
-                ev.target.result.continue()
-              }
-            }
-            const onSuccessBookingTypeOpenCursor = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                if (ev.target.result.value.cAccountNumberID === 1) {
-                  bookingTypes.push(ev.target.result.value)
-                }
-                ev.target.result.continue()
-              }
-            }
-            const onSuccessBookingOpenCursor = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                if (ev.target.result.value.cAccountNumberID === 1) {
-                  bookings.push(ev.target.result.value)
-                }
-                ev.target.result.continue()
-              }
-            }
-            const onSuccessStockOpenCursor = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                stocks.push(ev.target.result.value)
-                ev.target.result.continue()
-              }
-            }
-            const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
-            requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
-            const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor()
-            requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false)
-            const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor()
-            requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
-            const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor()
-            requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false)
+          const onAbort = (): void => {
+            reject(requestTransaction.error)
           }
-        })
-      },
-      open: async () => {
-        return new Promise(async (resolve, reject) => {
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+          const onSuccessAccountOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              accounts.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessBookingTypeOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                bookingTypes.push(ev.target.result.value)
+              }
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessBookingOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                bookings.push(ev.target.result.value)
+              }
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessStockOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              stocks.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
+          requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
+          const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor()
+          requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false)
+          const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor()
+          requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
+          const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor()
+          requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false)
+        }
+      })
+    },
+    open: async () => {
+      return new Promise(async (resolve, reject) => {
+        const onError = (ev: Event): void => {
+          reject(ev)
+        }
+        const onSuccess = (ev: Event): void => {
+          if (ev.target instanceof IDBOpenDBRequest) {
+            dbi = ev.target.result
+            const onVersionChangeSuccess = (): void => {
+              if (dbi != null) {
+                dbi.close()
+                notice(['Database is outdated, please reload the page.'])
+              }
+            }
+            dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE)
+            resolve('BACKGROUND: database opened successfully!')
+          }
+        }
+        const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
+        console.error(openDBRequest)
+        openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+      })
+    },
+    addAccount: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = async (ev: Event): Promise<void> => {
+            if (ev.target instanceof IDBRequest) {
+              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: ev.target.result})
+              await browser.storage.local.set({sActiveAccountId: ev.target.result})
+              resolve(ev.target.result)
+            } else {
+              reject(CONS.RESULTS.ERROR)
+            }
+          }
           const onError = (ev: Event): void => {
             reject(ev)
           }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    deleteAccount: async (ident) => {
+      // const indexOfAccount = this._accounts.findIndex((account: IAccount) => {
+      //   return account.cID === ident
+      // })
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (): void => {
+            //this._accounts.splice(indexOfAccount, 1)
+            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
+            resolve('Account deleted')
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    addBookingType: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
           const onSuccess = (ev: Event): void => {
-            if (ev.target instanceof IDBOpenDBRequest) {
-              dbi = ev.target.result
-              const onVersionChangeSuccess = (): void => {
-                if (dbi != null) {
-                  dbi.close()
-                  notice(['Database is outdated, please reload the page.'])
-                }
-              }
-              dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE)
-              resolve('BACKGROUND: database opened successfully!')
+            if (ev.target instanceof IDBRequest) {
+              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: ev.target.result})
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
             }
           }
-          const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
-          openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-          openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-        })
-      },
-      addAccount: async (record) => {
-        return new Promise(async (resolve, reject) => {
-          //const settings = useSettingsStore()
-          if (dbi != null) {
-            const onSuccess = async (ev: Event): Promise<void> => {
-              if (ev.target instanceof IDBRequest) {
-                const memRecord: IAccount = {
-                  ...record,
-                  cID: ev.target.result
-                }
-                backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: memRecord}) //this._accounts.push(memRecord)
-                resolve(ev.target.result)
-              } else {
-                reject(CONS.RESULTS.ERROR)
-              }
-            }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record)
-            requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const onError = (ev: Event): void => {
+            reject(ev)
           }
-        })
-      },
-      deleteAccount: async (ident) => {
-        // const indexOfAccount = this._accounts.findIndex((account: IAccount) => {
-        //   return account.cID === ident
-        // })
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onSuccess = (): void => {
-              //this._accounts.splice(indexOfAccount, 1)
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
-              resolve('Account deleted')
-            }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident)
-            requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    deleteBookingType: async (ident) => {
+      // const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
+      //   return bookingType.cID === ident
+      // })
+      // const indexOfBookingTypePerAccount = this._booking_types.per_account.findIndex((bookingType: IBookingType) => {
+      //   return bookingType.cID === ident
+      // })
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (): void => {
+            //this._booking_types.all.splice(indexOfBookingType, 1)
+            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident})
+            //this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1)
+            resolve('Booking type deleted')
           }
-        })
-      },
-      addBookingType: async (record) => {
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onSuccess = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest) {
-                const memRecord: IBookingType = {
-                  ...record,
-                  cID: ev.target.result
-                }
-                backendAppMessagePort.postMessage({
-                  type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
-                  data: memRecord
-                })
-                //this._booking_types.all.push(memRecord)
-                //this._booking_types.per_account.push(memRecord)
-                resolve(CONS.RESULTS.SUCCESS)
-              } else {
-                reject(CONS.RESULTS.ERROR)
-              }
-            }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record)
-            requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const onError = (ev: Event): void => {
+            reject(ev)
           }
-        })
-      },
-      deleteBookingType: async (ident) => {
-        // const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
-        //   return bookingType.cID === ident
-        // })
-        // const indexOfBookingTypePerAccount = this._booking_types.per_account.findIndex((bookingType: IBookingType) => {
-        //   return bookingType.cID === ident
-        // })
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onSuccess = (): void => {
-              //this._booking_types.all.splice(indexOfBookingType, 1)
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident})
-              //this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1)
-              resolve('Booking type deleted')
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    addBooking: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest) {
+              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: ev.target.result})
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
             }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident)
-            requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
           }
-        })
-      },
-      addBooking: async (record) => {
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onSuccess = (ev: Event): void => {
-              if (ev.target instanceof IDBRequest) {
-                const memRecord: IBooking = {
-                  ...record,
-                  cID: ev.target.result
-                }
-                //this._bookings.all.push(memRecord)
-                backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord})
-                //this._bookings.per_account.push(memRecord)
-                //this._booking_sum = this._bookings.per_account.map((entry: IBooking) => {
-                //  return entry.cCredit - entry.cDebit
-                //}).reduce((acc: number, cur: number) => acc + cur, 0)
-                resolve(CONS.RESULTS.SUCCESS)
-              } else {
-                reject(CONS.RESULTS.ERROR)
-              }
-            }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record)
-            requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const onError = (ev: Event): void => {
+            reject(ev)
           }
-        })
-      },
-      deleteBooking: async (ident) => {
-        // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
-        //   return booking.cID === ident
-        // })
-        return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
-            const onSuccess = (): void => {
-              //this._bookings.all.splice(indexOfBooking, 1)
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
-              //this.sumBookings()
-              resolve('Booking deleted')
-            }
-            const onError = (ev: Event): void => {
-              reject(ev)
-            }
-            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident)
-            requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-            requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    deleteBooking: async (ident) => {
+      // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
+      //   return booking.cID === ident
+      // })
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (): void => {
+            //this._bookings.all.splice(indexOfBooking, 1)
+            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
+            //this.sumBookings()
+            resolve('Booking deleted')
           }
-        })
-      },
-      intoDatabase: async (stores) => {
-        console.error(stores)
-      }
-    }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    addStores: async (stores) => {
+      log('BACKGROUND: addStores', {info: dbi})
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onComplete = async (): Promise<void> => {
+            // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
+            await notice(['All memory records are added to the database!'])
+            resolve('BACKGROUND: addStores: all memory records are added to the database!')
+          }
+          const onAbort = (): void => {
+            //await notice(['Transaction aborted!'])
+            reject(requestTransaction.error)
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+          const onSuccessClearBookings = (): void => {
+            log('BACKGROUND: bookings dropped')
+            for (let i = 0; i < stores.bookings.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+            }
+          }
+          const onSuccessClearAccounts = (): void => {
+            log('BACKGROUND: accounts dropped')
+            for (let i = 0; i < stores.accounts.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+            }
+          }
+          const onSuccessClearBookingTypes = (): void => {
+            log('BACKGROUND: booking types dropped')
+            for (let i = 0; i < stores.bookingTypes.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
+            }
+          }
+          const onSuccessClearStocks = (): void => {
+            log('BACKGROUND: stocks dropped')
+            for (let i = 0; i < stores.stocks.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
+            }
+          }
+          const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+          requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+          const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+          requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+          const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+          requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+          const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
+          requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    addStock: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest) {
+              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result})
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
+            }
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
   }
-  const {clean, intoStore, open} = useIndexedDatabaseApi()
+}
+
+const {CONS, log, notice} = useAppApi()
+let dbi: IDBDatabase
+let backendAppMessagePort: browser.runtime.Port
+let backendOptionsMessagePort: browser.runtime.Port
+// TODO move all async code into backend!!!
+if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+  const {addAccount, addBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
@@ -1411,17 +1427,26 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
       const onAppRequest = async (m: object): Promise<void> => {
         switch (Object.values(m)[0]) {
-          case CONS.MESSAGES.DB__INTO_STORE:
-            await intoStore(backendAppMessagePort)
-            break
-          case CONS.MESSAGES.DB__CLEAN:
-            await clean()
+          case CONS.MESSAGES.DB__TO_STORE:
+            await toStores(backendAppMessagePort)
             break
           case CONS.MESSAGES.DB__CLOSE:
             dbi.close()
             break
-          case CONS.MESSAGES.STORES__INTO_DATABASE:
-            console.error('STORESSSS', Object.values(m)[1])
+          case CONS.MESSAGES.DB__ADD_STORES:
+            await addStores(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__ADD_ACCOUNT:
+            await addAccount(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__ADD_BOOKING:
+            await addBooking(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
+            await addBookingType(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__ADD_STOCK:
+            await addStock(Object.values(m)[1])
             break
           case CONS.MESSAGES.STORES__INIT_SETTINGS:
             backendAppMessagePort.postMessage({

@@ -106,13 +106,33 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     initStore(stores): void {
       log('RECORDS: initStore')
+      this._bookings.splice(0, this._bookings.length)
+      this._booking_types.splice(0, this._booking_types.length)
+      this._accounts.splice(0, this._accounts.length)
+      this._stocks.splice(0, this._accounts.length)
       this._accounts = stores.accounts
       this._bookings = stores.bookings
       this._booking_types = stores.bookingTypes
       this._stocks = stores.stocks
     },
-    cleanStores(): void {
-      log('RECORDS: cleanStores')
+    addAccount(value: IAccount): void {
+      log('RECORDS: addAccount')
+      this._accounts.push(value)
+    },
+    addBooking(value: IBooking): void {
+      log('RECORDS: addBooking')
+      this._bookings.push(value)
+    },
+    addStocks(value: IStock): void {
+      log('RECORDS: addStocks')
+      this._stocks.push(value)
+    },
+    addBookingTypes(value: IBookingType): void {
+      log('RECORDS: addBookingTypes')
+      this._booking_types.push(value)
+    },
+    cleanStore(): void {
+      log('RECORDS: cleanStore')
       this._bookings.splice(0, this._bookings.length)
       this._booking_types.splice(0, this._booking_types.length)
       this._accounts.splice(0, this._accounts.length)

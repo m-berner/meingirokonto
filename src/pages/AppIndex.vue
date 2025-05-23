@@ -24,13 +24,14 @@ const {_debug} = storeToRefs(settings)
 
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
-    case CONS.MESSAGES.DB__INTO_STORE__RESPONSE:
+    case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
       log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-      records.cleanStores()
-      records.initStore(Object.values(m)[1])
-      settings.setActiveAccountId(settings.accounts[0].cID)
-      runtime.setLogo()
-      records.sumBookings()
+      if (Object.values(m)[1].accounts.length > 0) {
+        records.initStore(Object.values(m)[1])
+        settings.setActiveAccountId(records.accounts[0].cID)
+        runtime.setLogo()
+        records.sumBookings()
+      }
       break
     case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
       log('APPINDEX: onResponse', {info: Object.values(m)[1]})
@@ -128,7 +129,7 @@ appMessagePort.onMessage.addListener(onResponse);
   //   browser.storage.onChanged.addListener(onStorageChange)
   // }
   appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
-  appMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
+  appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
 //})
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>

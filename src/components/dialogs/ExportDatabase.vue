@@ -14,7 +14,7 @@ const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const prefix = new Date().toISOString().substring(0, 10)
-const fn = `${prefix}_${records.dbi.version}_${CONS.DB.NAME}.json`
+const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
 
 const ok = async (): Promise<void> => {
   log('EXPORTDATABASE: ok')
@@ -38,20 +38,20 @@ const ok = async (): Promise<void> => {
     }
     buffer += i === 0 ? '],\n' : ''
     buffer += '"stocks":[\n'
-    for (i = 0; i < records.stocks.all.length; i++) {
+    for (i = 0; i < records.stocks.length; i++) {
       buffer += JSON.stringify({
-        cID: records.stocks.all[i].cID,
-        cISIN: records.stocks.all[i].cISIN,
-        cWKN: records.stocks.all[i].cWKN,
-        cSymbol: records.stocks.all[i].cSymbol,
-        cFadeOut: records.stocks.all[i].cFadeOut,
-        cFirstPage: records.stocks.all[i].cFirstPage,
-        cCompany: records.stocks.all[i].cCompany,
-        cMeetingDay: records.stocks.all[i].cMeetingDay,
-        cQuarterDay: records.stocks.all[i].cQuarterDay,
-        cURL: records.stocks.all[i].cURL
+        cID: records.stocks[i].cID,
+        cISIN: records.stocks[i].cISIN,
+        cWKN: records.stocks[i].cWKN,
+        cSymbol: records.stocks[i].cSymbol,
+        cFadeOut: records.stocks[i].cFadeOut,
+        cFirstPage: records.stocks[i].cFirstPage,
+        cCompany: records.stocks[i].cCompany,
+        cMeetingDay: records.stocks[i].cMeetingDay,
+        cQuarterDay: records.stocks[i].cQuarterDay,
+        cURL: records.stocks[i].cURL
       })
-      if (i === records.stocks.all.length - 1) {
+      if (i === records.stocks.length - 1) {
         buffer += '\n],\n'
       } else {
         buffer += ',\n'
@@ -59,13 +59,13 @@ const ok = async (): Promise<void> => {
     }
     buffer += i === 0 ? '],\n' : ''
     buffer += '"booking_types":[\n'
-    for (i = 0; i < records.bookingTypes.all.length; i++) {
+    for (i = 0; i < records.bookingTypes.length; i++) {
       buffer += JSON.stringify({
-        cID: records.bookingTypes.all[i].cID,
-        cName: records.bookingTypes.all[i].cName,
-        cAccountNumberID: records.bookingTypes.all[i].cAccountNumberID,
+        cID: records.bookingTypes[i].cID,
+        cName: records.bookingTypes[i].cName,
+        cAccountNumberID: records.bookingTypes[i].cAccountNumberID,
       })
-      if (i === records.bookingTypes.all.length - 1) {
+      if (i === records.bookingTypes.length - 1) {
         buffer += '\n],\n'
       } else {
         buffer += ',\n'
@@ -73,15 +73,15 @@ const ok = async (): Promise<void> => {
     }
     buffer += i === 0 ? '],\n' : ''
     buffer += '"bookings":[\n'
-    for (i = 0; i < records.bookings.all.length; i++) {
+    for (i = 0; i < records.bookings.length; i++) {
       const booking: IBooking = {
-        cID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.ID],
-        cDate: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DATE],
-        cDebit: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DEBIT],
-        cCredit: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.CREDIT],
-        cDescription: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.DESCRIPTION],
-        cBookingTypeID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID],
-        cAccountNumberID: records.bookings.all[i][CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
+        cID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.ID],
+        cDate: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.DATE],
+        cDebit: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.DEBIT],
+        cCredit: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.CREDIT],
+        cDescription: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.DESCRIPTION],
+        cBookingTypeID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID],
+        cAccountNumberID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
         // TODO use memory later!
         cCount: 0,
         cStockID: 0,
@@ -94,7 +94,7 @@ const ok = async (): Promise<void> => {
         cExDate: '1970-01-01'
       }
       buffer += JSON.stringify(booking)
-      if (i === records.bookings.all.length - 1) {
+      if (i === records.bookings.length - 1) {
         buffer += '\n]\n'
       } else {
         buffer += ',\n'
@@ -104,7 +104,7 @@ const ok = async (): Promise<void> => {
     return buffer
   }
   let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${
-    records.dbi.version
+    CONS.DB.START_VERSION
   }, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'

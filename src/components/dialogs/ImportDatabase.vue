@@ -115,21 +115,9 @@ const ok = async (): Promise<void> => {
           records.bookings.push(booking)
           ++tid
         }
-        const result = await records.storeIntoDatabase()
-        if (result !== '') {
-          settings.setActiveAccountId(records.accounts[0].cID)
-          await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
-          runtime.setLogo()
-          records.sumBookings()
-          log('IMPORTDATABASE: onFileLoaded', {info: result})
-          await notice(['IMPORTDATABASE: onFileLoaded', result])
-        } else {
-          await notice(['IMPORTDATABASE: onFileLoaded', result])
-        }
       } else {
-        appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
-        records.cleanStores()
-        // file into stores TODO only per activeAccountID
+        records.cleanStore()
+        // file into stores
         for (account of bkupObject.accounts) {
           records.accounts.push(account)
         }
@@ -137,10 +125,14 @@ const ok = async (): Promise<void> => {
           records.stocks.push(stock)
         }
         for (bookingType of bkupObject.booking_types) {
-          records.bookingTypes.push(bookingType)
+          if(bkupObject.accounts[0].cID === bookingType.cAccountNumberID) {
+            records.bookingTypes.push(bookingType)
+          }
         }
         for (booking of bkupObject.bookings) {
-          records.bookings.push(booking)
+          if(bkupObject.accounts[0].cID === booking.cAccountNumberID) {
+            records.bookings.push(booking)
+          }
         }
         const stores: IStores = { accounts: bkupObject.accounts, bookings: bkupObject.bookings, bookingTypes: bkupObject.booking_types, stocks: bkupObject.stocks}
         //
@@ -148,7 +140,7 @@ const ok = async (): Promise<void> => {
         runtime.setLogo()
         records.sumBookings()
         //
-        appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INTO_DATABASE, data: stores})
+        appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       }
     } else {
       await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])

@@ -12,11 +12,14 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
-const {log, notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const runtime = useRuntimeStore()
+const settings = useSettingsStore()
+const records = useRecordsStore()
 
 const state = reactive({
   _swift: '',
@@ -47,30 +50,34 @@ const ibanMask = (iban: string) => {
 
 const ok = async (): Promise<void> => {
   log('ADD_ACCOUNT: ok')
-    const formIs = await formRef.value!.validate()
-    if (formIs.valid) {
-      try {
-        const records = useRecordsStore()
-        const settings = useSettingsStore()
-        const result = await records.addAccount({
-          cSwift: state._swift.trim().toUpperCase(),
-          cNumber: state._number.replace(/\s/g, ''),
-          cLogoUrl: state._logoUrl,
-          cStockAccount: state._stockAccount ? 1 : 0
-        })
-        if (result > 0) {
-          settings.setActiveAccountId(result)
-          runtime.setLogo()
-          await browser.storage.local.set({sActiveAccountId: result})
-          await notice([t('dialogs.addAccount.success')])
-          formRef.value!.reset()
-        }
-
-      } catch (e) {
-        console.error(e)
-        await notice([t('dialogs.addAccount.error')])
+  const formIs = await formRef.value!.validate()
+  if (formIs.valid) {
+    try {
+      const account = {
+        cSwift: state._swift.trim().toUpperCase(),
+        cNumber: state._number.replace(/\s/g, ''),
+        cLogoUrl: state._logoUrl,
+        cStockAccount: state._stockAccount ? 1 : 0
       }
+      records.addAccount(account)
+      runtime.setLogo()
+      const onResponse = async (m: object): Promise<void> => {
+        log('APPINDEX: onResponse', {info: Object.values(m)[1]})
+        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
+          settings.setActiveAccountId(Object.values(m)[1])
+          await notice([t('dialogs.addAccount.success')])
+        }
+      }
+      appMessagePort.onMessage.addListener(onResponse)
+      appMessagePort.postMessage({
+        type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
+      })
+      formRef.value!.reset()
+    } catch (e) {
+      console.error(e)
+      await notice([t('dialogs.addAccount.error')])
     }
+  }
 }
 const title = t('dialogs.addAccount.title')
 
