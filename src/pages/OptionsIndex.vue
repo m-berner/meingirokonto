@@ -75,7 +75,7 @@ const state: IOptionsIndex = reactive({
 const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
-    case CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE:
+    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
       log('OPTIONS_INDEX: onResponse', {info: Object.values(m)[1]})
       settings.initStore(theme, Object.values(m)[1])
       break
@@ -84,7 +84,7 @@ const onResponse = (m: object): void => {
 }
 // listen for backend responses
 optionsMessagePort.onMessage.addListener(onResponse)
-optionsMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
+optionsMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
 
 const setIndexes = (): void => {
   optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})

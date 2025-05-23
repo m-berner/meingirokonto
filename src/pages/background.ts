@@ -67,6 +67,13 @@ declare global {
     stocks: Array<Record<string, never>>
   }
 
+  interface IStores {
+    accounts: IAccount[],
+    bookings: IBooking[],
+    bookingTypes: IBookingType[],
+    stocks: Array<Record<string, never>>
+  }
+
   interface IStorageLocal {
     sActiveAccountId: number
     sBookingsPerPage: number
@@ -226,8 +233,9 @@ interface IUseAppApi {
       DB__DELETE_STOCK: number
       DB__DELETE_STOCK__RESPONSE: number
       DB__CLEAN: number
-      STORE__INIT_SETTINGS: number
-      STORE__INIT_SETTINGS__RESPONSE: number
+      STORES__INIT_SETTINGS: number
+      STORES__INIT_SETTINGS__RESPONSE: number
+      STORES__INTO_DATABASE: number
       OPTIONS__SET_SKIN: number
       OPTIONS__SET_SERVICE: number
       OPTIONS__SET_INDEXES: number
@@ -383,6 +391,8 @@ interface IUseIndexedDatabaseApi {
   addBooking(record: Omit<IBooking, 'cID'>): Promise<string>
 
   deleteBooking(ident: number): Promise<string>
+
+  intoDatabase(stores: IStores): Promise<void>
 }
 
 export const useAppApi = (): IUseAppApi => {
@@ -530,14 +540,15 @@ export const useAppApi = (): IUseAppApi => {
         DB__DELETE_STOCK: 12018,
         DB__DELETE_STOCK__RESPONSE: 12019,
         DB__CLEAN: 12020,
-        STORE__INIT_SETTINGS: 12021,
-        STORE__INIT_SETTINGS__RESPONSE: 12022,
-        OPTIONS__SET_SKIN: 12023,
-        OPTIONS__SET_SERVICE: 12024,
-        OPTIONS__SET_INDEXES: 12025,
-        OPTIONS__SET_MATERIALS: 12026,
-        OPTIONS__SET_EXCHANGES: 12027,
-        OPTIONS__SET_MARKETS: 12028
+        STORES__INIT_SETTINGS: 12021,
+        STORES__INIT_SETTINGS__RESPONSE: 12022,
+        STORES__INTO_DATABASE: 12023,
+        OPTIONS__SET_SKIN: 12024,
+        OPTIONS__SET_SERVICE: 12025,
+        OPTIONS__SET_INDEXES: 12026,
+        OPTIONS__SET_MATERIALS: 12027,
+        OPTIONS__SET_EXCHANGES: 12028,
+        OPTIONS__SET_MARKETS: 12029
       },
       SERVICES: {
         goyax: {
@@ -922,6 +933,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 type: CONS.MESSAGES.DB__INTO_STORE__RESPONSE,
                 data: {accounts, bookings, bookingTypes, stocks}
               })
+              if (accounts.length > 0) {
+                await browser.storage.local.set({sActiveAccountID: accounts[0].cID})
+              }
               resolve('BACKGROUND: intoStore: all database records sent to frontend!')
             }
             const onAbort = (): void => {
@@ -1148,6 +1162,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
           }
         })
+      },
+      intoDatabase: async (stores) => {
+        console.error(stores)
       }
     }
   }
@@ -1403,15 +1420,15 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.DB__CLOSE:
             dbi.close()
             break
-          case CONS.MESSAGES.STORE__INIT_SETTINGS:
+          case CONS.MESSAGES.STORES__INTO_DATABASE:
+            console.error('STORESSSS', Object.values(m)[1])
+            break
+          case CONS.MESSAGES.STORES__INIT_SETTINGS:
             backendAppMessagePort.postMessage({
-              type: CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE,
+              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
               data: await browser.storage.local.get()
             })
             break
-          // case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-          //   await browser.storage.local.set({sIndexes: Object.values(m)[1]})
-          //   break
           default:
         }
       }
@@ -1427,9 +1444,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       const onOptionsRequest = async (m: object): Promise<void> => {
         log('BACKGROUND: onOptionsRequest', {info: Object.values(m)})
         switch (Object.values(m)[0]) {
-          case CONS.MESSAGES.STORE__INIT_SETTINGS:
+          case CONS.MESSAGES.STORES__INIT_SETTINGS:
             backendOptionsMessagePort.postMessage({
-              type: CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE,
+              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
               data: await browser.storage.local.get()
             })
             break

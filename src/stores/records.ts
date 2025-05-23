@@ -111,13 +111,13 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._booking_types = stores.bookingTypes
       this._stocks = stores.stocks
     },
-    async cleanStore(): Promise<void> {
-      log('RECORDS: cleanStore')
+    cleanStores(): void {
+      log('RECORDS: cleanStores')
       this._bookings.splice(0, this._bookings.length)
       this._booking_types.splice(0, this._booking_types.length)
       this._accounts.splice(0, this._accounts.length)
       this._stocks.splice(0, this._accounts.length)
-      await browser.storage.local.set({sActiveAccountId: -1})
+      //await browser.storage.local.set({sActiveAccountId: -1})
     }
   }
 })

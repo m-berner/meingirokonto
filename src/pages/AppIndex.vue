@@ -26,12 +26,13 @@ const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
     case CONS.MESSAGES.DB__INTO_STORE__RESPONSE:
       log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-      records.cleanStore()
+      records.cleanStores()
       records.initStore(Object.values(m)[1])
+      settings.setActiveAccountId(settings.accounts[0].cID)
       runtime.setLogo()
       records.sumBookings()
       break
-    case CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE:
+    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
       log('APPINDEX: onResponse', {info: Object.values(m)[1]})
       settings.initStore(theme, Object.values(m)[1])
       break
@@ -88,7 +89,6 @@ appMessagePort.onMessage.addListener(onResponse);
     log('APPINDEX: onBeforeUnload')
     const foundTabs = await browser.tabs.query({url: 'about:addons'})
     appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
-    appMessagePort.disconnect()
     if (foundTabs.length > 0) {
       await browser.tabs.remove(foundTabs[0].id ?? 0)
     }
@@ -127,10 +127,9 @@ appMessagePort.onMessage.addListener(onResponse);
   // if (!browser.storage.onChanged.hasListener(onStorageChange)) {
   //   browser.storage.onChanged.addListener(onStorageChange)
   // }
-  appMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
+  appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
   appMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
 //})
-console.error('APP', window)
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>
 

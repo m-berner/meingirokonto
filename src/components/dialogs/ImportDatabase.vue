@@ -60,8 +60,8 @@ const ok = async (): Promise<void> => {
         } else {
           canid = 1
         }
-        if (records.bookings.all.length > 0) {
-          tid = Math.max(...records.bookings.all.map((account: IAccount) => account.cID)) + 1
+        if (records.bookings.length > 0) {
+          tid = Math.max(...records.bookings.map((account: IAccount) => account.cID)) + 1
         } else {
           tid = 1
         }
@@ -79,7 +79,7 @@ const ok = async (): Promise<void> => {
             cMeetingDay: toISODate(stock.cMeetingDay),
             cQuarterDay: toISODate(stock.cQuarterDay)
           }
-          records.stocks.all.push(company)
+          records.stocks.push(company)
         }
         for (transfer of bkupObject.transfers) {
           if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
@@ -112,7 +112,7 @@ const ok = async (): Promise<void> => {
             cCredit: credit,
             cDebit: debit
           }
-          records.bookings.all.push(booking)
+          records.bookings.push(booking)
           ++tid
         }
         const result = await records.storeIntoDatabase()
@@ -127,36 +127,32 @@ const ok = async (): Promise<void> => {
           await notice(['IMPORTDATABASE: onFileLoaded', result])
         }
       } else {
-        await records.cleanStore()
         appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
+        records.cleanStores()
+        // file into stores TODO only per activeAccountID
         for (account of bkupObject.accounts) {
           records.accounts.push(account)
         }
         for (stock of bkupObject.stocks) {
-          records.stocks.all.push(stock)
+          records.stocks.push(stock)
         }
         for (bookingType of bkupObject.booking_types) {
-          records.bookingTypes.all.push(bookingType)
+          records.bookingTypes.push(bookingType)
         }
         for (booking of bkupObject.bookings) {
-          records.bookings.all.push(booking)
+          records.bookings.push(booking)
         }
-        const result = await records.storeIntoDatabase()
-        if (result !== '') {
-          settings.setActiveAccountId(records.accounts[0].cID)
-          runtime.setLogo()
-          records.sumBookings()
-          await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
-          log('IMPORTDATABASE: onFileLoaded', {info: result})
-          await notice(['IMPORTDATABASE: onFileLoaded', result])
-        } else {
-          await notice(['IMPORTDATABASE: onFileLoaded', result])
-        }
+        const stores: IStores = { accounts: bkupObject.accounts, bookings: bkupObject.bookings, bookingTypes: bkupObject.booking_types, stocks: bkupObject.stocks}
+        //
+        settings.setActiveAccountId(records.accounts[0].cID)
+        runtime.setLogo()
+        records.sumBookings()
+        //
+        appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INTO_DATABASE, data: stores})
       }
     } else {
       await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
     }
-    console.error(records)
   }
   const fr: FileReader = new FileReader()
   fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
