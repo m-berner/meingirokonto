@@ -6,7 +6,8 @@ import componentsPlugin from '@/plugins/components';
 import routerPlugin from '@/plugins/router';
 import piniaPlugin from '@/plugins/pinia';
 import { useAppApi } from '@/pages/background';
-export const frontendMessagePort = browser.runtime.connect({ name: 'frontendMessagePort' });
+const { CONS, log } = useAppApi();
+export const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP });
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
     console.error(err);
@@ -20,5 +21,4 @@ app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
 app.use(routerPlugin.router);
 app.mount('#app');
-const { log } = useAppApi();
 log('--- PAGE_SCRIPT app.js ---');

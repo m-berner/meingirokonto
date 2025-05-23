@@ -8,11 +8,11 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {onBeforeMount} from 'vue'
+//import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {frontendMessagePort} from '@/pages/app'
+import {appMessagePort} from '@/pages/app'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
@@ -21,6 +21,7 @@ const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
+
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
     case CONS.MESSAGES.DB__INTO_STORE__RESPONSE:
@@ -38,56 +39,56 @@ const onResponse = (m: object): void => {
   }
 }
 // listen for backend responses
-frontendMessagePort.onMessage.addListener(onResponse);
+appMessagePort.onMessage.addListener(onResponse);
 
-onBeforeMount(async (): Promise<void> => {
-  log('APPINDEX: onBeforeMount: before')
+//onBeforeMount(async (): Promise<void> => {
+//  log('APPINDEX: onBeforeMount: before')
   const keyStrokeController: string[] = []
-  const onStorageChange = (changes: Record<string, browser.storage.StorageChange>, area: string): void => {
-    log('APPINDEX: onStorageChange', {info: area})
-    switch (true) {
-      case changes.sSkin?.oldValue !== undefined:
-        theme.global.name.value = changes.sSkin.newValue
-        settings.setSkin(changes.sSkin.newValue)
-        break
-      case changes.sDebug?.oldValue !== undefined:
-        settings.setDebug(changes.sDebug.newValue)
-        break
-      case changes.sBookingsPerPage?.oldValue !== undefined:
-        settings.setBookingsPerPage(changes.sBookingsPerPage.newValue)
-        break
-      case changes.sStocksPerPage?.oldValue !== undefined:
-        settings.setStocksPerPage(changes.sStocksPerPage.newValue)
-        break
-      case changes.sActiveAccountId?.oldValue !== undefined:
-        settings.setActiveAccountId(changes.sActiveAccountId.newValue)
-        break
-      case changes.sPartner?.oldValue !== undefined:
-        settings.setPartner(changes.sPartner.newValue)
-        break
-      case changes.sService?.oldValue !== undefined:
-        settings.setService(changes.sService.newValue)
-        break
-      case changes.sExchanges?.oldValue !== undefined:
-        settings.setExchanges(changes.sExchanges.newValue)
-        break
-      case changes.sIndexes?.oldValue !== undefined:
-        settings.setIndexes(changes.sIndexes.newValue)
-        break
-      case changes.sMaterials?.oldValue !== undefined:
-        settings.setMaterials(changes.sMaterials.newValue)
-        break
-      case changes.sMarkets?.oldValue !== undefined:
-        settings.setMarkets(changes.sMarkets.newValue)
-        break
-      default:
-    }
-  }
+  // const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
+  //   log('APPINDEX: onStorageChange', {info: changes})
+  //   switch (true) {
+  //     case changes.sSkin?.oldValue !== undefined:
+  //       theme.global.name.value = changes.sSkin.newValue
+  //       settings.setSkin(changes.sSkin.newValue)
+  //       break
+  //     case changes.sDebug?.oldValue !== undefined:
+  //       settings.setDebug(changes.sDebug.newValue)
+  //       break
+  //     case changes.sBookingsPerPage?.oldValue !== undefined:
+  //       settings.setBookingsPerPage(changes.sBookingsPerPage.newValue)
+  //       break
+  //     case changes.sStocksPerPage?.oldValue !== undefined:
+  //       settings.setStocksPerPage(changes.sStocksPerPage.newValue)
+  //       break
+  //     case changes.sActiveAccountId?.oldValue !== undefined:
+  //       settings.setActiveAccountId(changes.sActiveAccountId.newValue)
+  //       break
+  //     case changes.sPartner?.oldValue !== undefined:
+  //       settings.setPartner(changes.sPartner.newValue)
+  //       break
+  //     case changes.sService?.oldValue !== undefined:
+  //       settings.setService(changes.sService.newValue)
+  //       break
+  //     case changes.sExchanges?.oldValue !== undefined:
+  //       settings.setExchanges(changes.sExchanges.newValue)
+  //       break
+  //     case changes.sIndexes?.oldValue !== undefined:
+  //       settings.setIndexes(changes.sIndexes.newValue)
+  //       break
+  //     case changes.sMaterials?.oldValue !== undefined:
+  //       settings.setMaterials(changes.sMaterials.newValue)
+  //       break
+  //     case changes.sMarkets?.oldValue !== undefined:
+  //       settings.setMarkets(changes.sMarkets.newValue)
+  //       break
+  //     default:
+  //   }
+  // }
   const onBeforeUnload = async (): Promise<void> => {
     log('APPINDEX: onBeforeUnload')
     const foundTabs = await browser.tabs.query({url: 'about:addons'})
-    frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
-    frontendMessagePort.disconnect()
+    appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
+    appMessagePort.disconnect()
     if (foundTabs.length > 0) {
       await browser.tabs.remove(foundTabs[0].id ?? 0)
     }
@@ -123,13 +124,13 @@ onBeforeMount(async (): Promise<void> => {
   window.addEventListener('keydown', onKeyDown, false)
   window.addEventListener('keyup', onKeyUp, false)
   window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-  if (!browser.storage.onChanged.hasListener(onStorageChange)) {
-    browser.storage.onChanged.addListener(onStorageChange)
-  }
-  frontendMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
-  frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
-})
-
+  // if (!browser.storage.onChanged.hasListener(onStorageChange)) {
+  //   browser.storage.onChanged.addListener(onStorageChange)
+  // }
+  appMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
+  appMessagePort.postMessage({type: CONS.MESSAGES.DB__INTO_STORE})
+//})
+console.error('APP', window)
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>
 

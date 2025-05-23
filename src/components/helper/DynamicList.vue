@@ -18,37 +18,57 @@ interface DynamicListProps {
   _counter?: number
   _placeholder?: string
   _toUpperCase?: boolean
+  _port?: browser.runtime.Port
 }
 
-interface DynamicList extends DynamicListProps {
+interface IState {
   _newItem: string
+  _list: Array<string | number | undefined>
 }
 
-const {log} = useAppApi()
+const {CONS, log, notice} = useAppApi()
 const _props = defineProps<DynamicListProps>()
-const state: DynamicList = {..._props, _newItem: ''}
+const state: IState = {
+  _newItem: '',
+  _list: _props._list
+}
+let messageType: number
 // NOTE:
 // reading a v-text-field does work without reactivity
-// to write to it reactivity is required
-const localStorageProperty = `s${state._tab[0].toUpperCase()}${state._tab.slice(1)}`
+// to write to it only with reactivity
+if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
+  messageType = CONS.MESSAGES.OPTIONS__SET_MARKETS
+} else {
+  messageType = CONS.MESSAGES.OPTIONS__SET_EXCHANGES
+}
 
 const mAddItem = async (item: string): Promise<void> => {
-  console.log('DYNAMICLIST: mAddItem')
+  log('DYNAMICLIST: mAddItem')
   if (!state._list.includes(item)) {
-    if (state._toUpperCase) {
+    if (_props._toUpperCase) {
       state._list.push(item.toUpperCase())
     } else {
       state._list.push(item)
     }
   }
-  await browser.storage.local.set({[localStorageProperty]: toRaw(state._list)})
-  state._newItem = ''
+  if (_props._port !== undefined) {
+    _props._port.postMessage({type: messageType, data: toRaw(state._list)})
+    state._newItem = ''
+  } else {
+    await notice(['DynamicList', CONS.SYSTEM.ERRORS.PORT])
+    console.error(CONS.SYSTEM.ERRORS.PORT)
+  }
 }
 const mRemoveItem = async (n: number): Promise<void> => {
-  console.log('DYNAMICLIST: mRemoveItem')
+  log('DYNAMICLIST: mRemoveItem')
   if (n > 0) {
-    state._list.splice(n, 1)
-    await browser.storage.local.set({[localStorageProperty]: toRaw(state._list)})
+    if (_props._port !== undefined) {
+      state._list.splice(n, 1)
+      _props._port.postMessage({type: messageType, data: toRaw(state._list)})
+    } else {
+      await notice(['DynamicList', CONS.SYSTEM.ERRORS.PORT])
+      console.error(CONS.SYSTEM.ERRORS.PORT)
+    }
   }
 }
 
@@ -56,8 +76,8 @@ log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
-  <v-card v-bind:title="state._title" color="secondary">
-    <v-list v-model="state._list" bg-color="secondary">
+  <v-card color="secondary" v-bind:title="_props._title">
+    <v-list bg-color="secondary">
       <v-list-item
         v-for="(item, i) in state._list"
         v-bind:key="item"
@@ -77,13 +97,13 @@ log('--- DynamicList.vue setup ---')
         type="text"
         v-bind:autofocus="true"
         v-bind:clearable="true"
-        v-bind:label="state._label"
-        v-bind:placeholder="state._placeholder">
+        v-bind:label="_props._label"
+        v-bind:placeholder="_props._placeholder">
         <template v-slot:append>
-          <v-btn color="primary"
-            class="ml-3"
-            icon="$add"
-            v-on:click="mAddItem(state._newItem)"></v-btn>
+          <v-btn class="ml-3"
+                 color="primary"
+                 icon="$add"
+                 v-on:click="mAddItem(state._newItem)"></v-btn>
         </template>
       </v-text-field>
     </v-card-actions>

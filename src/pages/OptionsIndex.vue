@@ -9,7 +9,7 @@
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
-import {onMounted, reactive, toRaw} from 'vue'
+import {reactive, toRaw} from 'vue'
 import {useAppApi} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
 import {useSettingsStore} from '@/stores/settings'
@@ -72,35 +72,43 @@ const state: IOptionsIndex = reactive({
   _materialsB: materials_keys_b
 })
 
-const setIndexes = async (): Promise<void> => {
-  await browser.storage.local.set({sIndexes: toRaw(settings.indexes)})
+const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
+const onResponse = (m: object): void => {
+  switch (Object.values(m)[0]) {
+    case CONS.MESSAGES.STORE__INIT_SETTINGS__RESPONSE:
+      log('OPTIONS_INDEX: onResponse', {info: Object.values(m)[1]})
+      settings.initStore(theme, Object.values(m)[1])
+      break
+    default:
+  }
+}
+// listen for backend responses
+optionsMessagePort.onMessage.addListener(onResponse)
+optionsMessagePort.postMessage({type: CONS.MESSAGES.STORE__INIT_SETTINGS})
+
+const setIndexes = (): void => {
+  optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})
 }
 
-const setMaterials = async (): Promise<void> => {
-  await browser.storage.local.set({sMaterials: toRaw(settings.materials)})
+const setMaterials = (): void => {
+  log('OPTIONS_INDEX: setMaterials', {info: optionsMessagePort})
+  optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_MATERIALS, data: toRaw(settings.materials)})
 }
 
-const setSkin = async (skin: string): Promise<void> => {
-  theme.global.name.value = skin
-  await browser.storage.local.set({sSkin: skin})
+const setSkin = (ev: Event): void => {
+  log('OPTIONS_INDEX: setSkin', {info: optionsMessagePort})
+  if (ev.target instanceof HTMLInputElement) {
+    theme.global.name.value = ev.target.value
+    optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value})
+  }
 }
 
-const setService = async (service: string): Promise<void> => {
-  await browser.storage.local.set({sService: service})
+const setService = (ev: Event): void => {
+  log('OPTIONS_INDEX: setService', {info: optionsMessagePort})
+  if (ev.target instanceof HTMLInputElement) {
+    optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value})
+  }
 }
-
-onMounted(async (): Promise<void> => {
-  log('OPTIONS_INDEX: onMounted')
-  const localStorage = await browser.storage.local.get()
-  state._tab = 0
-  theme.global.name.value = localStorage.sSkin
-  _skin.value = localStorage.sSkin
-  _service.value = localStorage.sService
-  _indexes.value = localStorage.sIndexes
-  _materials.value = localStorage.sMaterials
-  _markets.value = localStorage.sMarkets
-  _exchanges.value = localStorage.sExchanges
-})
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>
@@ -118,13 +126,13 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
           <v-tabs-window-item v-bind:value="0">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group column v-bind:modelValue="_skin">
+                <v-radio-group v-model="_skin" column>
                   <v-radio
                     v-for="item in state._themeKeys"
                     v-bind:key="item"
                     v-bind:label="rt(state._themeNames[item])"
                     v-bind:value="item"
-                    v-on:click="async () => await setSkin(item)"
+                    v-on:click="setSkin"
                   ></v-radio>
                 </v-radio-group>
               </v-col>
@@ -135,7 +143,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                     v-bind:key="item"
                     v-bind:label="CONS.SERVICES[item].NAME ?? ''"
                     v-bind:value="item"
-                    v-on:click="async () => await setService(item)"
+                    v-on:click="setService"
                   ></v-radio>
                 </v-radio-group>
               </v-col>
@@ -149,6 +157,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:_list="_markets"
                   v-bind:_tab="CONS.SETTINGS.MARKETS_TAB"
                   v-bind:_title="t('optionsPage.markets.title')"
+                  v-bind:_port="optionsMessagePort"
                 ></DynamicList>
               </v-col>
             </v-row>
@@ -214,6 +223,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:_tab="CONS.SETTINGS.EXCHANGES_TAB"
                   v-bind:_title="t('optionsPage.exchanges.title')"
                   v-bind:_toUpperCase="true"
+                  v-bind:_port="optionsMessagePort"
                 ></DynamicList>
               </v-col>
             </v-row>

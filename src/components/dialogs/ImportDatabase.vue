@@ -12,7 +12,7 @@ import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {reactive} from 'vue'
-import {frontendMessagePort} from '@/pages/app'
+import {appMessagePort} from '@/pages/app'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
@@ -128,7 +128,7 @@ const ok = async (): Promise<void> => {
         }
       } else {
         await records.cleanStore()
-        frontendMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
+        appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLEAN})
         for (account of bkupObject.accounts) {
           records.accounts.push(account)
         }
