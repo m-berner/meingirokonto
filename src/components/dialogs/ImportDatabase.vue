@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {reactive} from 'vue'
+import {reactive, toRaw} from 'vue'
 import {appMessagePort} from '@/pages/app'
 
 interface IEventTarget extends HTMLInputElement {
@@ -37,35 +37,35 @@ const ok = async (): Promise<void> => {
   const onFileLoaded = async (): Promise<void> => {
     log('IMPORTDATABASE: onFileLoaded')
     if (typeof fr.result === 'string') {
+      const FAKE_ACCOUNT_ID = 1
       const bkupObject: IBackup = JSON.parse(fr.result)
       let account: IAccount
       let booking: IBooking
       let transfer: Record<string, never>
       let bookingType: IBookingType
+      let bookingTypeId: number
       let stock: Record<string, never>
       let credit = 0
       let debit = 0
-      let canid = -1
-      let tid = -1
+      let tid = 1
+      let bid = 1
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
       } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
         if (records.accounts.length > 0) {
-          await notice([t('dialogs.importDatabase.messageVersion')])
+          await notice(['Die Daten können nur in eine leere Datenbank importiert werden.'])
           return
         }
-        //await records.clean()
-        if (records.accounts.length > 0) {
-          canid = Math.max(...records.accounts.map((account: IAccount) => account.cID)) + 1
-        } else {
-          canid = 1
-        }
-        if (records.bookings.length > 0) {
-          tid = Math.max(...records.bookings.map((account: IAccount) => account.cID)) + 1
-        } else {
-          tid = 1
-        }
-        records.accounts.push({cID: canid, cSwift: 'AAAAAAA0000', cNumber: 'XX00000000000000000000', cLogoUrl: CONS.LOGOS.NO_LOGO, cStockAccount: true})
+        // Create fake account
+        records.cleanStore()
+        records.addAccount({
+          cID: FAKE_ACCOUNT_ID,
+          cSwift: 'AAAAAAA0000',
+          cNumber: 'XX00000000000000000000',
+          cLogoUrl: CONS.LOGOS.NO_LOGO,
+          cStockAccount: true
+        })
+        // file into stores (migration)
         for (stock of bkupObject.stocks) {
           const company = {
             cID: stock.cID,
@@ -77,15 +77,15 @@ const ok = async (): Promise<void> => {
             cURL: stock.cURL,
             cCompany: stock.cCompany,
             cMeetingDay: toISODate(stock.cMeetingDay),
-            cQuarterDay: toISODate(stock.cQuarterDay)
+            cQuarterDay: toISODate(stock.cQuarterDay),
+            cAccountNumberID: FAKE_ACCOUNT_ID,
           }
-          records.stocks.push(company)
+          records.addStock(company)
         }
         for (transfer of bkupObject.transfers) {
           if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
-            credit = -transfer.cUnitQuotation * transfer.cCount
-          }
-          if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
+            credit = -(transfer.cUnitQuotation * transfer.cCount)
+          } else if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
             debit = transfer.cUnitQuotation * transfer.cCount
           }
           if (transfer.cAmount < 0) {
@@ -94,8 +94,18 @@ const ok = async (): Promise<void> => {
           if (transfer.cAmount > 0) {
             credit = transfer.cAmount
           }
+          if (transfer.cType > 0) {
+            // avoid doubles
+            bookingTypeId = transfer.cAmount
+            records.addBookingType({
+              cID: bid,
+              cName: 'AAAAAAA0000',
+              cAccountNumberID: FAKE_ACCOUNT_ID
+            })
+            ++bid
+          }
           const booking: IBooking = {
-            cID: transfer.cID || tid,
+            cID: tid,
             cDate: toISODate(transfer.cDate),
             cExDate: toISODate(transfer.cExDay),
             cCount: transfer.cCount < 0 ? -transfer.cCount : transfer.cCount,
@@ -108,38 +118,50 @@ const ok = async (): Promise<void> => {
             cMarketPlace: transfer.cMarketPlace,
             cSoli: -transfer.cSoli,
             cStockID: transfer.cStockID,
-            cAccountNumberID: canid,
+            cAccountNumberID: FAKE_ACCOUNT_ID,
             cCredit: credit,
             cDebit: debit
           }
-          records.bookings.push(booking)
+          records.addBooking(booking)
           ++tid
         }
+        const stores: IStores = {
+          accounts: toRaw(records.accounts),
+          bookings: toRaw(records.bookings),
+          bookingTypes: [],
+          stocks: toRaw(records.stocks)
+        }
+        appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       } else {
         records.cleanStore()
         // file into stores
         for (account of bkupObject.accounts) {
-          records.accounts.push(account)
+          records.addAccount(account)
         }
         for (stock of bkupObject.stocks) {
-          records.stocks.push(stock)
+          records.addStock(stock)
         }
         for (bookingType of bkupObject.booking_types) {
-          if(bkupObject.accounts[0].cID === bookingType.cAccountNumberID) {
-            records.bookingTypes.push(bookingType)
+          if (bkupObject.accounts[0].cID === bookingType.cAccountNumberID) {
+            records.addBookingType(bookingType)
           }
         }
         for (booking of bkupObject.bookings) {
-          if(bkupObject.accounts[0].cID === booking.cAccountNumberID) {
-            records.bookings.push(booking)
+          if (bkupObject.accounts[0].cID === booking.cAccountNumberID) {
+            records.addBooking(booking)
           }
         }
-        const stores: IStores = { accounts: bkupObject.accounts, bookings: bkupObject.bookings, bookingTypes: bkupObject.booking_types, stocks: bkupObject.stocks}
         //
         settings.setActiveAccountId(records.accounts[0].cID)
         runtime.setLogo()
         records.sumBookings()
         //
+        const stores: IStores = {
+          accounts: bkupObject.accounts,
+          bookings: bkupObject.bookings,
+          bookingTypes: bkupObject.booking_types,
+          stocks: bkupObject.stocks
+        }
         appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       }
     } else {

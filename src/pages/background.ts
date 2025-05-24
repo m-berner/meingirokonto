@@ -52,6 +52,7 @@ declare global {
     cMeetingDay: number
     cQuarterDay: number
     cURL: string
+    cAccountNumberID: number
   }
 
   interface IBackup {
@@ -153,6 +154,7 @@ interface IUseAppApi {
             QUARTER_DAY: keyof IStock
             WKN: keyof IStock
             COMPANY: keyof IStock
+            ACCOUNT_NUMBER_ID: keyof IStock
           }
         }
       }
@@ -458,7 +460,8 @@ export const useAppApi = (): IUseAppApi => {
               MEETING_DAY: 'cMeetingDay',
               QUARTER_DAY: 'cQuarterDay',
               WKN: 'cWKN',
-              COMPANY: 'cCompany'
+              COMPANY: 'cCompany',
+              ACCOUNT_NUMBER_ID: 'cAccountNumberID'
             }
           }
         },
@@ -1239,44 +1242,47 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion)
         const createDB = (): void => {
           console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+          const accounts_kp = CONS.DB.STORES.ACCOUNTS.FIELDS.ID
+          const bookings_kp = [CONS.DB.STORES.BOOKINGS.FIELDS.ID, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID]
+          const booking_types_kp = [CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID]
+          const stocks_kp = [CONS.DB.STORES.STOCKS.FIELDS.ID, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID]
           const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.ACCOUNTS.NAME,
             {
-              keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+              keyPath: accounts_kp,
               autoIncrement: true
             })
           const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKINGS.NAME,
             {
-              keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+              keyPath: bookings_kp,
               autoIncrement: true
             }
           )
           const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKING_TYPES.NAME,
             {
-              keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+              keyPath: booking_types_kp,
               autoIncrement: true
             }
           )
           const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.STOCKS.NAME,
             {
-              keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+              keyPath: stocks_kp,
               autoIncrement: true
             }
           )
-          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, {unique: true})
+          requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, accounts_kp, {unique: true})
           requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, {unique: true})
-          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, {unique: true})
-          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, {unique: false})
+          requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, booking_types_kp, {unique: true})
           requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
-          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, {unique: true})
+          requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, bookings_kp, {unique: true})
           requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, {unique: false})
           requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, {unique: false})
           requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
           requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, {unique: false})
-          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, {unique: true})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, stocks_kp, {unique: true})
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, {unique: true})
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, {unique: true})
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
