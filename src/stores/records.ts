@@ -83,16 +83,17 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       if (activeAccountIndex === -1) {
         return
       }
-      const bookings_per_account = this._bookings.filter((rec: IBooking) => {
-        return rec.cAccountNumberID === this._accounts[activeAccountIndex].cID
-      })
+      // const bookings_per_account = this._bookings.filter((rec: IBooking) => {
+      //   return rec.cAccountNumberID === this._accounts[activeAccountIndex].cID
+      // })
+      const bookings_per_account = [...this._bookings]
       if (bookings_per_account.length > 0) {
         bookings_per_account.sort((a: IBooking, b: IBooking) => {
           const A = new Date(a.cDate).getTime()
           const B = new Date(b.cDate).getTime()
           return A - B
         })
-        this._bookings = bookings_per_account
+        //this._bookings = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)

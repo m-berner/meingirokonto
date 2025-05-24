@@ -53,97 +53,105 @@ const ok = async (): Promise<void> => {
       } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
         if (records.accounts.length > 0) {
           await notice(['Die Daten können nur in eine leere Datenbank importiert werden.'])
-          return
+        } else {
+          // Create fake account
+          records.cleanStore()
+          records.addAccount({
+            cID: FAKE_ACCOUNT_ID,
+            cSwift: 'AAAAAAA0000',
+            cNumber: 'XX00000000000000000000',
+            cLogoUrl: CONS.LOGOS.NO_LOGO,
+            cStockAccount: true
+          })
+          // file into stores (migration)
+          for (stock of bkupObject.stocks) {
+            const company = {
+              cID: stock.cID,
+              cISIN: stock.cISIN,
+              cWKN: stock.cWKN,
+              cSymbol: stock.cSym,
+              cFadeOut: stock.cFadeOut,
+              cFirstPage: stock.cFirstPage,
+              cURL: stock.cURL,
+              cCompany: stock.cCompany,
+              cMeetingDay: toISODate(stock.cMeetingDay),
+              cQuarterDay: toISODate(stock.cQuarterDay),
+              cAccountNumberID: FAKE_ACCOUNT_ID,
+            }
+            records.addStock(company)
+          }
+          records.addBookingType({
+            cID: 1,
+            cName: 'Aktienkauf',
+            cAccountNumberID: FAKE_ACCOUNT_ID
+          })
+          records.addBookingType({
+            cID: 2,
+            cName: 'Aktienverkauf',
+            cAccountNumberID: FAKE_ACCOUNT_ID
+          })
+          records.addBookingType({
+            cID: 3,
+            cName: 'Dividende',
+            cAccountNumberID: FAKE_ACCOUNT_ID
+          })
+          records.addBookingType({
+            cID: 6,
+            cName: 'Sonstiges',
+            cAccountNumberID: FAKE_ACCOUNT_ID
+          })
+          for (transfer of bkupObject.transfers) {
+            credit = 0
+            debit = 0
+            bookingTypeId = transfer.cType
+            if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
+              credit = -(transfer.cUnitQuotation * transfer.cCount)
+            } else if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
+              debit = transfer.cUnitQuotation * transfer.cCount
+            }
+            if (transfer.cAmount < 0) {
+              debit = -transfer.cAmount
+              bookingTypeId = 6
+            }
+            if (transfer.cAmount > 0) {
+              credit = transfer.cAmount
+              bookingTypeId = 6
+            }
+            const booking: IBooking = {
+              cID: tid,
+              cDate: toISODate(transfer.cDate),
+              cExDate: toISODate(transfer.cExDay),
+              cCount: transfer.cCount < 0 ? -transfer.cCount : transfer.cCount,
+              cDescription: transfer.cDescription,
+              cBookingTypeID: bookingTypeId,
+              cTransactionTax: -transfer.cFTax,
+              cSourceTax: -transfer.cSTax,
+              cFee: -transfer.cFees,
+              cTax: -transfer.cTax,
+              cMarketPlace: transfer.cMarketPlace,
+              cSoli: -transfer.cSoli,
+              cStockID: transfer.cStockID,
+              cAccountNumberID: FAKE_ACCOUNT_ID,
+              cCredit: credit,
+              cDebit: debit
+            }
+            console.error(typeof booking)
+            records.addBooking(booking)
+            ++tid
+          }
+          //
+          settings.setActiveAccountId(records.accounts[0].cID)
+          runtime.setLogo()
+          records.sumBookings()
+          //
+          const stores: IStores = {
+            accounts: toRaw(records.accounts),
+            bookings: toRaw(records.bookings),
+            bookingTypes: toRaw(records.bookingTypes),
+            stocks: toRaw(records.stocks)
+          }
+          appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
         }
-        // Create fake account
-        records.cleanStore()
-        records.addAccount({
-          cID: FAKE_ACCOUNT_ID,
-          cSwift: 'AAAAAAA0000',
-          cNumber: 'XX00000000000000000000',
-          cLogoUrl: CONS.LOGOS.NO_LOGO,
-          cStockAccount: true
-        })
-        // file into stores (migration)
-        for (stock of bkupObject.stocks) {
-          const company = {
-            cID: stock.cID,
-            cISIN: stock.cISIN,
-            cWKN: stock.cWKN,
-            cSymbol: stock.cSym,
-            cFadeOut: stock.cFadeOut,
-            cFirstPage: stock.cFirstPage,
-            cURL: stock.cURL,
-            cCompany: stock.cCompany,
-            cMeetingDay: toISODate(stock.cMeetingDay),
-            cQuarterDay: toISODate(stock.cQuarterDay),
-            cAccountNumberID: FAKE_ACCOUNT_ID,
-          }
-          records.addStock(company)
-        }
-        records.addBookingType({
-          cID: 1,
-          cName: 'Aktienkauf',
-          cAccountNumberID: FAKE_ACCOUNT_ID
-        })
-        records.addBookingType({
-          cID: 2,
-          cName: 'Aktienverkauf',
-          cAccountNumberID: FAKE_ACCOUNT_ID
-        })
-        records.addBookingType({
-          cID: 3,
-          cName: 'Dividende',
-          cAccountNumberID: FAKE_ACCOUNT_ID
-        })
-        records.addBookingType({
-          cID: 6,
-          cName: 'Sonstiges',
-          cAccountNumberID: FAKE_ACCOUNT_ID
-        })
-        for (transfer of bkupObject.transfers) {
-          bookingTypeId = transfer.cType;
-          if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
-            credit = -(transfer.cUnitQuotation * transfer.cCount)
-          } else if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
-            debit = transfer.cUnitQuotation * transfer.cCount
-          }
-          if (transfer.cAmount < 0) {
-            debit = -transfer.cAmount
-            bookingTypeId = 6
-          }
-          if (transfer.cAmount > 0) {
-            credit = transfer.cAmount
-            bookingTypeId = 6
-          }
-          const booking: IBooking = {
-            cID: tid,
-            cDate: toISODate(transfer.cDate),
-            cExDate: toISODate(transfer.cExDay),
-            cCount: transfer.cCount < 0 ? -transfer.cCount : transfer.cCount,
-            cDescription: transfer.cDescription,
-            cBookingTypeID: bookingTypeId,
-            cTransactionTax: -transfer.cFTax,
-            cSourceTax: -transfer.cSTax,
-            cFee: -transfer.cFees,
-            cTax: -transfer.cTax,
-            cMarketPlace: transfer.cMarketPlace,
-            cSoli: -transfer.cSoli,
-            cStockID: transfer.cStockID,
-            cAccountNumberID: FAKE_ACCOUNT_ID,
-            cCredit: credit,
-            cDebit: debit
-          }
-          records.addBooking(booking)
-          ++tid
-        }
-        const stores: IStores = {
-          accounts: toRaw(records.accounts),
-          bookings: toRaw(records.bookings),
-          bookingTypes: toRaw(records.bookingType),
-          stocks: toRaw(records.stocks)
-        }
-        appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       } else {
         records.cleanStore()
         // file into stores

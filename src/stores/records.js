@@ -67,16 +67,13 @@ export const useRecordsStore = defineStore('records', {
             if (activeAccountIndex === -1) {
                 return;
             }
-            const bookings_per_account = this._bookings.filter((rec) => {
-                return rec.cAccountNumberID === this._accounts[activeAccountIndex].cID;
-            });
+            const bookings_per_account = [...this._bookings];
             if (bookings_per_account.length > 0) {
                 bookings_per_account.sort((a, b) => {
                     const A = new Date(a.cDate).getTime();
                     const B = new Date(b.cDate).getTime();
                     return A - B;
                 });
-                this._bookings = bookings_per_account;
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
                 }).reduce((acc, cur) => acc + cur, 0);

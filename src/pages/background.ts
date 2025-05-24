@@ -1104,6 +1104,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
     },
     addStores: async (stores) => {
       log('BACKGROUND: addStores', {info: dbi})
+      console.error(stores)
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onComplete = async (): Promise<void> => {
