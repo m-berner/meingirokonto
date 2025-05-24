@@ -465,7 +465,7 @@ export const useAppApi = (): IUseAppApi => {
             }
           }
         },
-        MIN_VERSION: 21,
+        MIN_VERSION: 24,
         START_VERSION: 25
       },
       DEFAULTS: {

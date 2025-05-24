@@ -96,7 +96,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         //this._bookings = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
-        }).reduce((acc: number, cur: number) => acc + cur, 0)
+        }).reduce((acc: number, cur: number) => {console.error(acc,cur); return acc + cur}, 0)
       } else {
         this._bookings = []
         this._booking_sum = 0

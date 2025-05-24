@@ -67,7 +67,7 @@ log('--- AddBookingType.vue setup ---')
       max-width="300"
       v-bind:menu=true
       v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+      v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
     ></v-combobox>
   </v-form>
 </template>

@@ -76,7 +76,7 @@ export const useRecordsStore = defineStore('records', {
                 });
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
-                }).reduce((acc, cur) => acc + cur, 0);
+                }).reduce((acc, cur) => { console.error(acc, cur); return acc + cur; }, 0);
             }
             else {
                 this._bookings = [];

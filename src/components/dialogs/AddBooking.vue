@@ -109,7 +109,7 @@ log('--- AddBooking.vue setup ---')
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-      v-bind:items="records.bookingTypes.all.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+      v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
       v-bind:label="t('dialogs.addBooking.typeLabel')"
       v-bind:menu=false
       v-bind:menu-props="{ maxHeight: 250 }"

@@ -49,9 +49,11 @@ const ok = async (): Promise<void> => {
       let debit = 0
       let costs = 0
       let tid = 1
-      if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
+      if (bkupObject.sm.cDBVersion === undefined) {
+        await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
+      } else if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
-      } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
+      } else if (bkupObject.sm.cDBVersion === CONS.DB.MIN_VERSION) {
         if (records.accounts.length > 0) {
           await notice(['Die Daten können nur in eine leere Datenbank importiert werden.'])
         } else {
@@ -105,28 +107,20 @@ const ok = async (): Promise<void> => {
             credit = 0
             debit = 0
             bookingTypeId = transfer.cType
-            costs = -transfer.cFTax-transfer.cSTax-transfer.cFees-transfer.cTax-transfer.cSoli
+            costs = -transfer.cFTax - transfer.cSTax - transfer.cFees - transfer.cTax - transfer.cSoli
             if (bookingTypeId === 1) {
-              debit = -(transfer.cUnitQuotation * transfer.cCount) - costs
+              debit = (transfer.cUnitQuotation * transfer.cCount) - costs
             } else if (bookingTypeId === 2) {
               credit = -(transfer.cUnitQuotation * transfer.cCount) - costs
             } else if (bookingTypeId === 3) {
               credit = transfer.cUnitQuotation * transfer.cCount - costs
-            }else if (bookingTypeId === 4) {
+            } else if (bookingTypeId === 4) {
               credit = -costs + transfer.cAmount
               bookingTypeId = 6
-            }else if (bookingTypeId === 5) {
-              debit = -costs-transfer.cAmount
+            } else if (bookingTypeId === 5) {
+              debit = costs - transfer.cAmount
               bookingTypeId = 6
             }
-            // if (transfer.cAmount < 0) {
-            //   debit = -transfer.cAmount
-            //   bookingTypeId = 6
-            // }
-            // if (transfer.cAmount > 0) {
-            //   credit = transfer.cAmount
-            //   bookingTypeId = 6
-            // }
             const booking: IBooking = {
               cID: tid,
               cDate: toISODate(transfer.cDate),
@@ -193,8 +187,6 @@ const ok = async (): Promise<void> => {
         }
         appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       }
-    } else {
-      await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
     }
   }
   const fr: FileReader = new FileReader()
