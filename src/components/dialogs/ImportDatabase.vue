@@ -48,7 +48,6 @@ const ok = async (): Promise<void> => {
       let credit = 0
       let debit = 0
       let tid = 1
-      let bid = 1
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
       } else if (bkupObject.sm.cDBVersion >= CONS.DB.MIN_VERSION && bkupObject.sm.cDBVersion < CONS.DB.START_VERSION) {
@@ -82,7 +81,28 @@ const ok = async (): Promise<void> => {
           }
           records.addStock(company)
         }
+        records.addBookingType({
+          cID: 1,
+          cName: 'Aktienkauf',
+          cAccountNumberID: FAKE_ACCOUNT_ID
+        })
+        records.addBookingType({
+          cID: 2,
+          cName: 'Aktienverkauf',
+          cAccountNumberID: FAKE_ACCOUNT_ID
+        })
+        records.addBookingType({
+          cID: 3,
+          cName: 'Dividende',
+          cAccountNumberID: FAKE_ACCOUNT_ID
+        })
+        records.addBookingType({
+          cID: 6,
+          cName: 'Sonstiges',
+          cAccountNumberID: FAKE_ACCOUNT_ID
+        })
         for (transfer of bkupObject.transfers) {
+          bookingTypeId = transfer.cType;
           if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
             credit = -(transfer.cUnitQuotation * transfer.cCount)
           } else if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
@@ -90,19 +110,11 @@ const ok = async (): Promise<void> => {
           }
           if (transfer.cAmount < 0) {
             debit = -transfer.cAmount
+            bookingTypeId = 6
           }
           if (transfer.cAmount > 0) {
             credit = transfer.cAmount
-          }
-          if (transfer.cType > 0) {
-            // avoid doubles
-            bookingTypeId = transfer.cAmount
-            records.addBookingType({
-              cID: bid,
-              cName: 'AAAAAAA0000',
-              cAccountNumberID: FAKE_ACCOUNT_ID
-            })
-            ++bid
+            bookingTypeId = 6
           }
           const booking: IBooking = {
             cID: tid,
@@ -110,7 +122,7 @@ const ok = async (): Promise<void> => {
             cExDate: toISODate(transfer.cExDay),
             cCount: transfer.cCount < 0 ? -transfer.cCount : transfer.cCount,
             cDescription: transfer.cDescription,
-            cBookingTypeID: transfer.cType,
+            cBookingTypeID: bookingTypeId,
             cTransactionTax: -transfer.cFTax,
             cSourceTax: -transfer.cSTax,
             cFee: -transfer.cFees,
@@ -128,7 +140,7 @@ const ok = async (): Promise<void> => {
         const stores: IStores = {
           accounts: toRaw(records.accounts),
           bookings: toRaw(records.bookings),
-          bookingTypes: [],
+          bookingTypes: toRaw(records.bookingType),
           stocks: toRaw(records.stocks)
         }
         appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})

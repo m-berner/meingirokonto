@@ -62,7 +62,8 @@ export const useAppApi = () => {
                             MEETING_DAY: 'cMeetingDay',
                             QUARTER_DAY: 'cQuarterDay',
                             WKN: 'cWKN',
-                            COMPANY: 'cCompany'
+                            COMPANY: 'cCompany',
+                            ACCOUNT_NUMBER_ID: 'cAccountNumberID'
                         }
                     }
                 },
@@ -553,7 +554,7 @@ const useDatabaseApi = () => {
                     }
                 };
                 const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
-                console.error(openDBRequest);
+                log('BACKGROUND: open: database ready', { info: dbi });
                 openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                 openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
             });
@@ -604,14 +605,7 @@ const useDatabaseApi = () => {
                 if (dbi != null) {
                     const onSuccess = (ev) => {
                         if (ev.target instanceof IDBRequest) {
-                            const memRecord = {
-                                ...record,
-                                cID: ev.target.result
-                            };
-                            backendAppMessagePort.postMessage({
-                                type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
-                                data: memRecord
-                            });
+                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: ev.target.result });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -651,11 +645,7 @@ const useDatabaseApi = () => {
                 if (dbi != null) {
                     const onSuccess = (ev) => {
                         if (ev.target instanceof IDBRequest) {
-                            const memRecord = {
-                                ...record,
-                                cID: ev.target.result
-                            };
-                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: memRecord });
+                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: ev.target.result });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -742,7 +732,29 @@ const useDatabaseApi = () => {
                     requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                 }
             });
-        }
+        },
+        addStock: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result });
+                            resolve(CONS.RESULTS.SUCCESS);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
     };
 };
 const { CONS, log, notice } = useAppApi();
@@ -750,7 +762,7 @@ let dbi;
 let backendAppMessagePort;
 let backendOptionsMessagePort;
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    const { addAccount, toStores, addStores, open } = useDatabaseApi();
+    const { addAccount, addBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -794,7 +806,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             if (ev.target instanceof IDBRequest) {
                 ev.target.result.close();
             }
-            console.info('BACKGROUND: onInstall: onSuccess', ev);
+            console.log('BACKGROUND: onInstall: DONE');
         };
         const onError = (ev) => {
             console.error('BACKGROUND: onError: ', ev);
@@ -820,19 +832,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
                         autoIncrement: true
                     });
-                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.ID, { unique: true });
-                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk2`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_uk1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, { unique: true });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME, { unique: false });
-                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k2`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
-                    requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_uk1`, CONS.DB.STORES.BOOKINGS.FIELDS.ID, { unique: true });
+                    requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
+                    requestCreateBookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
                     requestCreateBookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
-                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ID, { unique: true });
-                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
-                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk3`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
                 };
@@ -887,6 +894,15 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         break;
                     case CONS.MESSAGES.DB__ADD_ACCOUNT:
                         await addAccount(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__ADD_BOOKING:
+                        await addBooking(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
+                        await addBookingType(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__ADD_STOCK:
+                        await addStock(Object.values(m)[1]);
                         break;
                     case CONS.MESSAGES.STORES__INIT_SETTINGS:
                         backendAppMessagePort.postMessage({

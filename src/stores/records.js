@@ -104,6 +104,18 @@ export const useRecordsStore = defineStore('records', {
             log('RECORDS: addAccount');
             this._accounts.push(value);
         },
+        addBooking(value) {
+            log('RECORDS: addBooking');
+            this._bookings.push(value);
+        },
+        addStocks(value) {
+            log('RECORDS: addStocks');
+            this._stocks.push(value);
+        },
+        addBookingTypes(value) {
+            log('RECORDS: addBookingTypes');
+            this._booking_types.push(value);
+        },
         cleanStore() {
             log('RECORDS: cleanStore');
             this._bookings.splice(0, this._bookings.length);
