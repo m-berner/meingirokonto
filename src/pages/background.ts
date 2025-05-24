@@ -1104,7 +1104,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
     },
     addStores: async (stores) => {
       log('BACKGROUND: addStores', {info: dbi})
-      console.error(stores)
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onComplete = async (): Promise<void> => {
@@ -1434,6 +1433,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             break
           case CONS.MESSAGES.DB__ADD_STORES:
             await addStores(Object.values(m)[1])
+            await browser.storage.local.set({sActiveAccountId: Object.values(m)[1].accounts[0].cID})
             break
           case CONS.MESSAGES.DB__ADD_ACCOUNT:
             await addAccount(Object.values(m)[1])

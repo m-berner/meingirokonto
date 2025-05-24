@@ -47,6 +47,7 @@ const ok = async (): Promise<void> => {
       let stock: Record<string, never>
       let credit = 0
       let debit = 0
+      let costs = 0
       let tid = 1
       if (bkupObject.sm.cDBVersion < CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
@@ -104,19 +105,28 @@ const ok = async (): Promise<void> => {
             credit = 0
             debit = 0
             bookingTypeId = transfer.cType
-            if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount < 0) {
-              credit = -(transfer.cUnitQuotation * transfer.cCount)
-            } else if (transfer.cAmount === 0 && transfer.cUnitQuotation * transfer.cCount > 0) {
-              debit = transfer.cUnitQuotation * transfer.cCount
-            }
-            if (transfer.cAmount < 0) {
-              debit = -transfer.cAmount
+            costs = -transfer.cFTax-transfer.cSTax-transfer.cFees-transfer.cTax-transfer.cSoli
+            if (bookingTypeId === 1) {
+              debit = -(transfer.cUnitQuotation * transfer.cCount) - costs
+            } else if (bookingTypeId === 2) {
+              credit = -(transfer.cUnitQuotation * transfer.cCount) - costs
+            } else if (bookingTypeId === 3) {
+              credit = transfer.cUnitQuotation * transfer.cCount - costs
+            }else if (bookingTypeId === 4) {
+              credit = -costs + transfer.cAmount
+              bookingTypeId = 6
+            }else if (bookingTypeId === 5) {
+              debit = -costs-transfer.cAmount
               bookingTypeId = 6
             }
-            if (transfer.cAmount > 0) {
-              credit = transfer.cAmount
-              bookingTypeId = 6
-            }
+            // if (transfer.cAmount < 0) {
+            //   debit = -transfer.cAmount
+            //   bookingTypeId = 6
+            // }
+            // if (transfer.cAmount > 0) {
+            //   credit = transfer.cAmount
+            //   bookingTypeId = 6
+            // }
             const booking: IBooking = {
               cID: tid,
               cDate: toISODate(transfer.cDate),
@@ -135,7 +145,6 @@ const ok = async (): Promise<void> => {
               cCredit: credit,
               cDebit: debit
             }
-            console.error(typeof booking)
             records.addBooking(booking)
             ++tid
           }
