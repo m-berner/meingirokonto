@@ -123,11 +123,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       log('RECORDS: addBooking')
       this._bookings.push(value)
     },
-    addStocks(value: IStock): void {
+    addStock(value: IStock): void {
       log('RECORDS: addStocks')
       this._stocks.push(value)
     },
-    addBookingTypes(value: IBookingType): void {
+    addBookingType(value: IBookingType): void {
       log('RECORDS: addBookingTypes')
       this._booking_types.push(value)
     },
